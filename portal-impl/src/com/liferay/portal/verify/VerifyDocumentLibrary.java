@@ -14,19 +14,26 @@
 
 package com.liferay.portal.verify;
 
+import com.liferay.portal.NoSuchModelException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.repository.model.FileEntry;
 import com.liferay.portal.kernel.repository.model.FileVersion;
+import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.repository.liferayrepository.model.LiferayFileEntry;
 import com.liferay.portal.repository.liferayrepository.model.LiferayFileVersion;
 import com.liferay.portlet.documentlibrary.model.DLFileEntry;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryType;
 import com.liferay.portlet.documentlibrary.model.DLFileEntryTypeConstants;
+import com.liferay.portlet.documentlibrary.model.DLFileVersion;
 import com.liferay.portlet.documentlibrary.service.DLAppHelperLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryLocalServiceUtil;
 import com.liferay.portlet.documentlibrary.service.DLFileEntryTypeLocalServiceUtil;
+import com.liferay.portlet.documentlibrary.store.DLStoreUtil;
+import com.liferay.portlet.documentlibrary.util.comparator.FileVersionVersionComparator;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -58,9 +65,84 @@ public class VerifyDocumentLibrary extends VerifyProcess {
 			dlFileEntryType, false);
 	}
 
+	protected void checkMisversionedFileEntries() throws Exception {
+		List<DLFileEntry> dlFileEntries =
+			DLFileEntryLocalServiceUtil.getMisversionedFileEntries();
+
+		if (_log.isDebugEnabled()) {
+			_log.debug(
+				"Processing " + dlFileEntries.size() +
+					" file entries with invalid version");
+		}
+
+		FileVersionVersionComparator comparator =
+			new FileVersionVersionComparator();
+
+		for (DLFileEntry dlFileEntry : dlFileEntries) {
+			String originalVersion = dlFileEntry.getVersion();
+
+			List<DLFileVersion> dlFileVersions = dlFileEntry.getFileVersions(
+				WorkflowConstants.STATUS_APPROVED);
+
+			if (dlFileVersions.isEmpty()) {
+				dlFileVersions = dlFileEntry.getFileVersions(
+					WorkflowConstants.STATUS_ANY);
+
+				if (dlFileVersions.isEmpty()) {
+					try {
+						DLFileEntryLocalServiceUtil.deleteFileEntry(
+							dlFileEntry.getFileEntryId());
+					}
+					catch (Exception e) {
+						if (_log.isWarnEnabled()) {
+							_log.warn(
+								"Unable to remove file entry " +
+									dlFileEntry.getFileEntryId() + ": " +
+										e.getMessage());
+						}
+					}
+
+					continue;
+				}
+			}
+
+			dlFileVersions = ListUtil.copy(dlFileVersions);
+
+			Collections.sort(dlFileVersions, comparator);
+
+			DLFileVersion dlFileVersion = dlFileVersions.get(0);
+
+			dlFileEntry.setModifiedDate(dlFileVersion.getModifiedDate());
+			dlFileEntry.setExtension(dlFileVersion.getExtension());
+			dlFileEntry.setMimeType(dlFileVersion.getMimeType());
+			dlFileEntry.setTitle(dlFileVersion.getTitle());
+			dlFileEntry.setDescription(dlFileVersion.getDescription());
+			dlFileEntry.setExtraSettings(dlFileVersion.getExtraSettings());
+			dlFileEntry.setFileEntryId(dlFileVersion.getFileEntryId());
+			dlFileEntry.setVersion(dlFileVersion.getVersion());
+			dlFileEntry.setSize(dlFileVersion.getSize());
+
+			DLFileEntryLocalServiceUtil.updateDLFileEntry(dlFileEntry);
+
+			try {
+				DLStoreUtil.deleteFile(
+					dlFileEntry.getCompanyId(),
+					dlFileEntry.getDataRepositoryId(), dlFileEntry.getName(),
+					originalVersion);
+			}
+			catch (NoSuchModelException nsme) {
+			}
+		}
+
+		if (_log.isDebugEnabled()) {
+			_log.debug("Fixed misversioned file entries");
+		}
+	}
+
 	@Override
 	protected void doVerify() throws Exception {
 		checkFileEntryType();
+		checkMisversionedFileEntries();
 		removeOrphanedFileEntries();
 		updateAssets();
 	}

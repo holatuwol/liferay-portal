@@ -78,6 +78,23 @@
 				(DLFileEntry.custom2ImageId = ?)
 		]]>
 	</sql>
+	<sql id="com.liferay.portlet.documentlibrary.service.persistence.DLFileEntryFinder.findByMisversionedFileEntries">
+		<![CDATA[
+			SELECT
+				{DLFileEntry.*}
+			FROM
+				DLFileEntry
+			WHERE NOT EXISTS
+				(
+					SELECT 1
+					FROM
+						DLFileVersion
+					WHERE
+						(DLFileVersion.fileEntryId = DLFileEntry.fileEntryId) AND
+						(DLFileVersion.version = DLFileEntry.version)
+				)
+		]]>
+	</sql>
 	<sql id="com.liferay.portlet.documentlibrary.service.persistence.DLFileEntryFinder.findByNoAssets">
 		<![CDATA[
 			SELECT
