@@ -48,7 +48,7 @@ import java.util.List;
  */
 public class VerifyDocumentLibrary extends VerifyProcess {
 
-	protected void addFileVerion(DLFileEntry dlFileEntry)
+	protected void addFileVersion(DLFileEntry dlFileEntry)
 		throws SystemException {
 
 		long fileVersionId = CounterLocalServiceUtil.increment();
@@ -129,7 +129,7 @@ public class VerifyDocumentLibrary extends VerifyProcess {
 		for (DLFileEntry dlFileEntry : dlFileEntries) {
 			copyFile(dlFileEntry);
 
-			addFileVerion(dlFileEntry);
+			addFileVersion(dlFileEntry);
 		}
 
 		if (_log.isDebugEnabled()) {
