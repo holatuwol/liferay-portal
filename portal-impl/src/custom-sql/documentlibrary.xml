@@ -84,15 +84,16 @@
 				{DLFileEntry.*}
 			FROM
 				DLFileEntry
-			WHERE NOT EXISTS
-				(
-					SELECT 1
+			WHERE
+				(fileEntryId NOT IN(
+					SELECT
+						DLFileVersion.fileEntryId
 					FROM
 						DLFileVersion
 					WHERE
 						(DLFileVersion.fileEntryId = DLFileEntry.fileEntryId) AND
 						(DLFileVersion.version = DLFileEntry.version)
-				)
+				))
 		]]>
 	</sql>
 	<sql id="com.liferay.portlet.documentlibrary.service.persistence.DLFileEntryFinder.findByNoAssets">
