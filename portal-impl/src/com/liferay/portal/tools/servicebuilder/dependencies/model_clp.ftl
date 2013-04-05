@@ -221,6 +221,7 @@ public class ${entity.name}Clp extends BaseModelImpl<${entity.name}> implements 
 			if (_${entity.varName}RemoteModel != null) {
 				try {
 					Class<?> clazz = _${entity.varName}RemoteModel.getClass();
+
 					java.lang.reflect.Method method = clazz.getMethod("set${column.methodName}", ${column.type}.class);
 
 					method.invoke(_${entity.varName}RemoteModel, ${column.name});
@@ -334,6 +335,7 @@ public class ${entity.name}Clp extends BaseModelImpl<${entity.name}> implements 
 			{
 				try {
 					Class<?> clazz = _${entity.varName}RemoteModel.getClass();
+
 					java.lang.reflect.Method method = clazz.getMethod("${method.name}"
 
 					<#list parameters as parameter>
@@ -359,7 +361,7 @@ public class ${entity.name}Clp extends BaseModelImpl<${entity.name}> implements 
 					);
 
 					<#if serviceBuilder.getTypeGenericsName(method.returns) != "void">
-					return returnObj;
+						return returnObj;
 					</#if>
 				}
 				catch (Exception e) {
