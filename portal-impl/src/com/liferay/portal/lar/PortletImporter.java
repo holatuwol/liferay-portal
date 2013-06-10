@@ -397,6 +397,8 @@ public class PortletImporter {
 				"Invalid type of LAR file (" + type + ")");
 		}
 
+		portletDataContext.setLarType(type);
+
 		// Portlet compatibility
 
 		String rootPortletId = headerElement.attributeValue("root-portlet-id");
@@ -1100,9 +1102,15 @@ public class PortletImporter {
 		throws Exception {
 
 		long defaultUserId = UserLocalServiceUtil.getDefaultUserId(companyId);
+
+		String languageId = LocaleUtil.toLanguageId(
+			LocaleUtil.getMostRelevantLocale());
+
 		long plid = 0;
 		String scopeType = StringPool.BLANK;
 		String scopeLayoutUuid = StringPool.BLANK;
+
+		String portletSetupTitle = StringPool.BLANK;
 
 		if (layout != null) {
 			plid = layout.getPlid();
@@ -1111,6 +1119,11 @@ public class PortletImporter {
 				javax.portlet.PortletPreferences jxPreferences =
 					PortletPreferencesFactoryUtil.getLayoutPortletSetup(
 						layout, portletId);
+
+				portletSetupTitle = GetterUtil.getString(
+					jxPreferences.getValue(
+						"portletSetupTitle_" + languageId,
+						PortalUtil.getPortletTitle(portletId, languageId)));
 
 				scopeType = GetterUtil.getString(
 					jxPreferences.getValue("lfrScopeType", null));
@@ -1242,6 +1255,9 @@ public class PortletImporter {
 			try {
 				jxPreferences.setValue("lfrScopeType", scopeType);
 				jxPreferences.setValue("lfrScopeLayoutUuid", scopeLayoutUuid);
+
+				jxPreferences.setValue(
+					"portletSetupTitle_" + languageId, portletSetupTitle);
 
 				jxPreferences.store();
 			}
@@ -1694,6 +1710,12 @@ public class PortletImporter {
 
 	protected void setPortletScope(
 		PortletDataContext portletDataContext, Element portletElement) {
+
+		String larType = portletDataContext.getLarType();
+
+		if (larType.equals("portlet")) {
+			return;
+		}
 
 		// Portlet data scope
 
