@@ -952,6 +952,11 @@ public class PortletDataContextImpl implements PortletDataContext {
 	}
 
 	@Override
+	public String getLarType() {
+		return _larType;
+	}
+
+	@Override
 	public String getLayoutPath(long plid) {
 		return ExportImportPathUtil.getLayoutPath(this, plid);
 	}
@@ -1732,6 +1737,11 @@ public class PortletDataContextImpl implements PortletDataContext {
 	}
 
 	@Override
+	public void setLarType(String larType) {
+		_larType = larType;
+	}
+
+	@Override
 	public void setMissingReferencesElement(Element missingReferencesElement) {
 		_missingReferencesElement = missingReferencesElement;
 	}
@@ -2270,6 +2280,7 @@ public class PortletDataContextImpl implements PortletDataContext {
 	private Element _exportDataRootElement;
 	private long _groupId;
 	private Element _importDataRootElement;
+	private String _larType;
 	private Map<String, Lock> _locksMap = new HashMap<String, Lock>();
 	private ManifestSummary _manifestSummary = new ManifestSummary();
 	private Set<String> _missingReferences = new HashSet<String>();

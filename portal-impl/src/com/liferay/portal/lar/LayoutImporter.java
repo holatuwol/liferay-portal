@@ -343,6 +343,8 @@ public class LayoutImporter {
 
 		String larType = _headerElement.attributeValue("type");
 
+		portletDataContext.setLarType(larType);
+
 		if (group.isLayoutPrototype() && larType.equals("layout-prototype")) {
 			deleteMissingLayouts = false;
 

@@ -238,6 +238,8 @@ public interface PortletDataContext extends Serializable {
 
 	public Element getImportDataStagedModelElement(StagedModel stagedModel);
 
+	public String getLarType();
+
 	/**
 	 * @deprecated As of 6.2.0, replaced by {@link
 	 *             ExportImportPathUtil#getLayoutPath(PortletDataContext, long)}
@@ -437,6 +439,8 @@ public interface PortletDataContext extends Serializable {
 	public void setGroupId(long groupId);
 
 	public void setImportDataRootElement(Element importDataRootElement);
+
+	public void setLarType(String larType);
 
 	public void setMissingReferencesElement(Element missingReferencesElement);
 
