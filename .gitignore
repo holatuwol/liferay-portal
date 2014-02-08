@@ -6,9 +6,6 @@
 *.swp
 .ant_targets
 .ant-targets-build.xml
-.sass-cache
-.sass_cache_*.css
-_sass_cache_*.css
 cobertura.ser
 log
 
@@ -136,9 +133,6 @@ log
 
 /portal-web/docroot/html/ALLOY_ZIP
 
-/portal-web/docroot/html/css/portal/aui_deprecated.css
-/portal-web/docroot/html/css/portal/bootstrap.css
-
 /portal-web/docroot/html/icons/_sprite.*
 
 /portal-web/docroot/html/js/aui
@@ -148,18 +142,13 @@ log
 /portal-web/docroot/html/js/editor/fckeditor
 /portal-web/docroot/html/js/editor/tiny_mce
 
-/portal-web/docroot/html/themes/_unstyled/css/aui
 /portal-web/docroot/html/themes/_unstyled/images/aui
 
-/portal-web/docroot/html/themes/classic/css
 /portal-web/docroot/html/themes/classic/images
 /portal-web/docroot/html/themes/classic/javascript
 /portal-web/docroot/html/themes/classic/js
 /portal-web/docroot/html/themes/classic/templates
 
-/portal-web/docroot/html/themes/classic/_diffs/css/alloy.css
-
-/portal-web/docroot/html/themes/control_panel/css
 /portal-web/docroot/html/themes/control_panel/images
 /portal-web/docroot/html/themes/control_panel/javascript
 /portal-web/docroot/html/themes/control_panel/js
