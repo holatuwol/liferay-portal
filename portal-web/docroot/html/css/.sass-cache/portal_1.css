@@ -197,7 +197,6 @@
 .lfr-add-content-preview .asset-title {
   color: #369;
   font-size: 14px; }
-
 .lfr-asset-category-container {
   height: 260px;
   margin-bottom: 0.5em;
@@ -289,7 +288,6 @@
   font-size: 0.9em;
   text-align: right;
   width: 25%; }
-
 .lfr-asset-column-content {
   margin-right: 1em;
   padding: 0; }
@@ -399,7 +397,6 @@
 
 .lfr-asset-panels .lfr-panel.lfr-extended, .lfr-asset-column-details .lfr-panel.lfr-extended {
   border-color: #CCC; }
-
 .lfr-form-row {
   border-bottom: 1px solid transparent;
   margin-bottom: 10px;
@@ -457,7 +454,6 @@
 
 .lfr-form-row .handle-sort-vertical {
   background: url(@theme_image_path@/application/handle_sort_vertical.png) no-repeat 0 50%; }
-
 .lfr-device-preview-panel {
   width: 200px; }
   .lfr-device-preview-panel .nav-list {
@@ -627,7 +623,6 @@
   background: #666; }
 .lfr-device.smartphone, .lfr-device.tablet {
   background: #333; }
-
 .lfr-edit-layout-panel {
   width: 440px; }
   .lfr-edit-layout-panel .navbar {
@@ -662,7 +657,6 @@
 /* Skin */
 .lfr-edit-layout-panel .taglib-form-navigator .button-holder {
   background-color: #FFF; }
-
 .lfr-flyout ul {
   display: none; }
 
@@ -682,7 +676,6 @@
   background: url(@theme_image_path@/arrows/04_left.png) no-repeat 5px 50%; }
   .js .lfr-flyout-has-children.send-right {
     background-image: url(@theme_image_path@/arrows/04_right.png); }
-
 .control-group-inline {
   display: inline-block; }
 
@@ -807,7 +800,6 @@
 @media (max-width: 979px) and (max-width: 767px) {
   .aui input[type=file] {
     width: 100%; } }
-
 td.lfr-center {
   text-align: center; }
 td.lfr-top {
@@ -1040,7 +1032,6 @@ img.icon {
 
 .ie .lfr-checkbox-preselected, .ie .lfr-configurator-visibility, .ie .lfr-configurator-visibility .portlet-topper {
   zoom: 1; }
-
 .lfr-header-row {
   border: 1px solid transparent;
   min-height: 31px; }
@@ -1062,10 +1053,8 @@ img.icon {
   border-bottom-color: #7B7B7B; }
   .lfr-header-row .lfr-search-combobox {
     border-color: #5F5F5F; }
-
 .lfr-template {
   display: none; }
-
 .popup-alert-notice .notice-date {
   margin: 0 10px; }
 .popup-alert-notice .current-user-language {
@@ -1074,7 +1063,6 @@ img.icon {
   display: inline;
   margin: 0 10px;
   padding: 0 15px; }
-
 .openid-login input[type="text"] {
   padding-left: 18px; }
 
@@ -1093,7 +1081,6 @@ img.icon {
   background-color: #FFF;
   background-position: 0 50%;
   color: #000; }
-
 .page-extra-settings .lfr-panel-titlebar .lfr-panel-title {
   padding: 0.5em 0; }
 .page-extra-settings .lfr-extended .lfr-panel-titlebar {
@@ -1104,7 +1091,6 @@ img.icon {
 /* Skin */
 .page-extra-settings .lfr-panel-titlebar .lfr-panel-title {
   font-size: 1em; }
-
 .lfr-panel-container, .lfr-floating-container {
   clear: both; }
 
@@ -1204,7 +1190,6 @@ img.icon {
   background-position: 100% 50%;
   background-repeat: no-repeat;
   text-decoration: none; }
-
 .lfr-panel-page .portal-add-content {
   padding: 0;
   padding-left: 4px; }

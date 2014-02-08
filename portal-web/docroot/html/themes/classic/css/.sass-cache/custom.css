@@ -665,7 +665,6 @@
   .aui body.yui3-skin-sam .yui3-widget-mask {
     filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
     opacity: 0.8; }
-
 .aui .dark, .aui .light {
   /* ---------- Breadcrumbs ---------- */
   /* ---------- Portlet ---------- */
@@ -801,7 +800,6 @@
       -moz-transition: border-color 0.2s ease-in;
       -o-transition: border-color 0.2s ease-in;
       transition: border-color 0.2s ease-in; }
-
 .aui .dark {
   background: #363636;
   color: #E3E3E3;
@@ -841,7 +839,6 @@
     color: #00CAFF; }
   .aui .dark .table {
     color: #555; }
-
 .aui .light {
   background: #FAFAFA;
   /* ---------- Portlet ---------- */
@@ -856,7 +853,6 @@
     color: #29B23E; }
   .aui .light .columns-max .portlet .portlet-topper-toolbar a {
     color: #555; }
-
 /* ---------- Base styles ---------- */
 .aui {
   background-color: transparent;

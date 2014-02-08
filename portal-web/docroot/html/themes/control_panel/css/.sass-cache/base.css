@@ -19,11 +19,11 @@ body.html-editor {
   hyphens: auto;
   word-wrap: break-word; }
   .html-editor.portlet-message-boards blockquote {
-    background: #eef0f2 url(../images/message_boards/quoteleft.png) no-repeat 5px 5px;
+    background: #eef0f2 url(@base_url@/html/themes/control_panel/css/../images/message_boards/quoteleft.png) no-repeat 5px 5px;
     border: 1px solid #777;
     padding: 5px 45px; }
     .html-editor.portlet-message-boards blockquote:after {
-      background: url(../images/message_boards/quoteright.png) no-repeat 50%;
+      background: url(@base_url@/html/themes/control_panel/css/../images/message_boards/quoteright.png) no-repeat 50%;
       content: '';
       display: block;
       float: right;
@@ -50,7 +50,7 @@ body.html-editor {
 
 /* ---------- Loading animation ---------- */
 .loading-animation {
-  background: url(../images/progress_bar/loading_animation.gif) no-repeat top center;
+  background: url(@base_url@/html/themes/control_panel/css/../images/progress_bar/loading_animation.gif) no-repeat top center;
   margin-top: 10px;
   padding-top: 40px;
   text-align: left; }

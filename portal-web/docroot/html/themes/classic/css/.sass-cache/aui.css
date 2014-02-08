@@ -2,8 +2,8 @@
  * -------------------------- */
 @font-face {
   font-family: 'fontawesome-alloy';
-  src: url("aui/alloy-font-awesome/font/fontawesome-alloy.eot");
-  src: url("aui/alloy-font-awesome/font/fontawesome-alloy.eot?#iefix") format("embedded-opentype"), url("aui/alloy-font-awesome/font/fontawesome-alloy.woff") format("woff"), url("aui/alloy-font-awesome/font/fontawesome-alloy.ttf") format("truetype"), url("aui/alloy-font-awesome/font/fontawesome-alloy.svg#fontawesome-alloy") format("svg");
+  src: url("@base_url@/html/themes/classic/css/aui/alloy-font-awesome/font/fontawesome-alloy.eot");
+  src: url("@base_url@/html/themes/classic/css/aui/alloy-font-awesome/font/fontawesome-alloy.eot?#iefix") format("embedded-opentype"), url("@base_url@/html/themes/classic/css/aui/alloy-font-awesome/font/fontawesome-alloy.woff") format("woff"), url("@base_url@/html/themes/classic/css/aui/alloy-font-awesome/font/fontawesome-alloy.ttf") format("truetype"), url("@base_url@/html/themes/classic/css/aui/alloy-font-awesome/font/fontawesome-alloy.svg#fontawesome-alloy") format("svg");
   font-weight: normal;
   font-style: normal; }
 
@@ -126,8 +126,8 @@
   /* ensure rotation occurs inside anchor tags */
   @font-face {
     font-family: 'fontawesome-alloy';
-    src: url("fonts/fontawesome-alloy.eot");
-    src: url("fonts/fontawesome-alloy.eot?#iefix") format("embedded-opentype"), url("fonts/fontawesome-alloy.woff") format("woff"), url("fonts/fontawesome-alloy.ttf") format("truetype"), url("fonts/fontawesome-alloy.svg#fontawesome-alloy") format("svg");
+    src: url("@base_url@/html/themes/classic/css/fonts/fontawesome-alloy.eot");
+    src: url("@base_url@/html/themes/classic/css/fonts/fontawesome-alloy.eot?#iefix") format("embedded-opentype"), url("@base_url@/html/themes/classic/css/fonts/fontawesome-alloy.woff") format("woff"), url("@base_url@/html/themes/classic/css/fonts/fontawesome-alloy.ttf") format("truetype"), url("@base_url@/html/themes/classic/css/fonts/fontawesome-alloy.svg#fontawesome-alloy") format("svg");
     font-weight: normal;
     font-style: normal; }
 
@@ -1675,7 +1675,7 @@
     *margin-right: .3em;
     line-height: 14px;
     vertical-align: text-top;
-    background-image: url("../images/aui/glyphicons-halflings.png");
+    background-image: url("@base_url@/html/themes/classic/css/../images/aui/glyphicons-halflings.png");
     background-position: 14px 14px;
     background-repeat: no-repeat;
     margin-top: 1px; }
@@ -1696,7 +1696,7 @@
   .aui .dropdown-submenu:focus > a > [class^="icon-"],
   .aui .dropdown-submenu:hover > a > [class*=" icon-"],
   .aui .dropdown-submenu:focus > a > [class*=" icon-"] {
-    background-image: url("../images/aui/glyphicons-halflings-white.png"); }
+    background-image: url("@base_url@/html/themes/classic/css/../images/aui/glyphicons-halflings-white.png"); }
   .aui .icon-glass {
     background-position: 0      0; }
   .aui .icon-music {
@@ -5195,7 +5195,7 @@
       height: auto !important;
       overflow: visible !important; } }
   .aui .portlet-msg-progress {
-    background-image: url(../images/aui/loading_indicator.gif);
+    background-image: url(@base_url@/html/themes/classic/css/../images/aui/loading_indicator.gif);
     background-repeat: no-repeat;
     background-position: 6px 50%;
     padding-left: 30px; }

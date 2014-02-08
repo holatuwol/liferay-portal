@@ -4,7 +4,6 @@
 .taglib-input-repeat .weekdays {
   clear: both;
   padding-top: 1em; }
-
 .taglib-language-option {
   padding-left: 26px;
   margin: 1px; }
@@ -22,14 +21,12 @@
 
 .taglib-language-list-text {
   border-right-color: #CCC; }
-
 .taglib-logo-selector {
   text-align: center; }
   .taglib-logo-selector .portrait-icons {
     margin: 1em 0; }
   .taglib-logo-selector .lfr-change-logo.show-background {
     padding: 10px; }
-
 @media (max-width: 979px) {
   .navbar .container {
     position: relative; }
@@ -80,7 +77,6 @@
     background-color: #D3DADD;
     font-size: 1.4em;
     font-weight: bold; }
-
 .taglib-ratings.stars {
   margin: 1.5em 0 0;
   overflow: hidden; }
@@ -113,10 +109,8 @@
   display: inline; }
 .ie6 .taglib-ratings.stars {
   display: inline-block; }
-
 .taglib-rss-settings .rss-settings-options {
   margin-left: 2em; }
-
 .user-status-tooltip .user-status-avatar {
   float: left;
   margin-right: 5px; }
@@ -127,7 +121,6 @@
   overflow: hidden; }
   .user-status-tooltip .user-status-info .user-status-date {
     font-size: 11px; }
-
 .lfr-search-container {
   margin-top: 1.5em;
   overflow: auto; }
@@ -198,10 +191,8 @@
     @media (max-width: 979px) {
       .taglib-page-iterator .search-results {
         display: none; } }
-
 .taglib-search-toggle .popover .arrow {
   left: 70%; }
-
 .sites-directory-taglib {
   overflow: hidden; }
   .sites-directory-taglib .app-view-entry-taglib.entry-display-style.display-icon {
@@ -214,7 +205,6 @@
 
 .ie8 .sites-directory-taglib .app-view-entry-taglib.entry-display-style .entry-thumbnail {
   width: 100px; }
-
 .taglib-social-activities table {
   width: 100%; }
 .taglib-social-activities td {
@@ -231,7 +221,6 @@
 /* Skin */
 .taglib-social-activities .day-separator {
   border-bottom-color: #CCC; }
-
 .taglib-social-bookmarks {
   margin-top: 1.5em; }
   .taglib-social-bookmarks a.social-bookmark-link {
@@ -239,7 +228,6 @@
     padding-left: 20px; }
   .taglib-social-bookmarks .social-bookmark {
     margin-right: 1em; }
-
 .taglib-asset-tags-summary .tag {
   margin-bottom: 3px;
   margin-right: 3px;
@@ -248,7 +236,6 @@
 /* Skin */
 .taglib-asset-tags-summary .tag {
   background: url(@theme_image_path@/common/tag.png) no-repeat 0 50%; }
-
 .taglib-trash-empty .trash-empty-button, .taglib-trash-empty .trash-undo-button, .taglib-trash-undo .trash-empty-button, .taglib-trash-undo .trash-undo-button {
   display: inline; }
 .taglib-trash-empty .trash-empty-link, .taglib-trash-empty .trash-undo-link, .taglib-trash-undo .trash-empty-link, .taglib-trash-undo .trash-undo-link {
@@ -258,7 +245,6 @@
   display: none; }
 .js .taglib-trash-empty .trash-empty-link, .js .taglib-trash-empty .trash-undo-link, .js .taglib-trash-undo .trash-empty-link, .js .taglib-trash-undo .trash-undo-link {
   display: inline-block; }
-
 .taglib-user-display {
   padding: 0.5em; }
   .taglib-user-display.display-style-1 .user-profile-image {
@@ -278,7 +264,6 @@
 .taglib-user-display .user-name {
   font-size: 1.1em;
   font-weight: bold; }
-
 .js .taglib-webdav .show-webdav {
   display: block; }
 .js .taglib-webdav table {
@@ -304,7 +289,6 @@
   background: #F0F5F7; }
 .js .taglib-webdav table {
   border-color: #828F95; }
-
 .taglib-workflow-status {
   display: inline-block;
   margin: 0.5em 0; }

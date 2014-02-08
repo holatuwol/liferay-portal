@@ -26,7 +26,7 @@ body.portlet {
       float: left;
       padding: 1px; }
     .portlet-topper .portlet-topper-toolbar .portlet-icon-back {
-      background: url(../images/arrows/12_left.png) no-repeat 0 50%;
+      background: url(@base_url@/html/themes/classic/css/../images/arrows/12_left.png) no-repeat 0 50%;
       color: #FFF;
       font-weight: bold;
       padding: 5px 5px 5px 18px; }
@@ -81,7 +81,7 @@ body.portlet {
   display: inline-block; }
 
 .portlet-borderless-bar .portlet-options .dropdown-toggle, .portlet-borderless-bar .portlet-options.open .dropdown-toggle {
-  background-image: url(../images/portlet/options_borderless.png); }
+  background-image: url(@base_url@/html/themes/classic/css/../images/portlet/options_borderless.png); }
 
 .portlet-borderless-container .lfr-icon-actions, .portlet-content .lfr-icon-actions {
   float: left;
@@ -108,13 +108,13 @@ body.portlet {
     .portlet-borderless-container .lfr-icon-actions .lfr-icon-action a img, .portlet-content .lfr-icon-actions .lfr-icon-action a img {
       visibility: hidden; }
   .portlet-borderless-container .lfr-icon-actions .lfr-icon-action-add a, .portlet-content .lfr-icon-actions .lfr-icon-action-add a {
-    background-image: url(../images/common/add_white.png); }
+    background-image: url(@base_url@/html/themes/classic/css/../images/common/add_white.png); }
   .portlet-borderless-container .lfr-icon-actions .lfr-icon-action-edit a, .portlet-content .lfr-icon-actions .lfr-icon-action-edit a {
-    background-image: url(../images/common/edit_white.png); }
+    background-image: url(@base_url@/html/themes/classic/css/../images/common/edit_white.png); }
   .portlet-borderless-container .lfr-icon-actions .lfr-icon-action-edit-template a, .portlet-content .lfr-icon-actions .lfr-icon-action-edit-template a {
-    background-image: url(../images/common/edit_template_white.png); }
+    background-image: url(@base_url@/html/themes/classic/css/../images/common/edit_template_white.png); }
   .portlet-borderless-container .lfr-icon-actions .lfr-icon-action-configuration a, .portlet-content .lfr-icon-actions .lfr-icon-action-configuration a {
-    background-image: url(../images/common/configuration_white.png); }
+    background-image: url(@base_url@/html/themes/classic/css/../images/common/configuration_white.png); }
 .portlet-borderless-container .lfr-url-error, .portlet-content .lfr-url-error {
   display: inline-block;
   white-space: normal;
@@ -160,9 +160,9 @@ body.portlet {
     text-indent: 0;
     width: auto; }
   .portlet-borderless-bar .portlet-close a {
-    background-image: url(../images/portlet/close_borderless.png); }
+    background-image: url(@base_url@/html/themes/classic/css/../images/portlet/close_borderless.png); }
   .portlet-borderless-bar .portlet-options li.lfr-trigger strong a {
-    background-image: url(../images/portlet/options_borderless.png); }
+    background-image: url(@base_url@/html/themes/classic/css/../images/portlet/options_borderless.png); }
 
 .lfr-configurator-visibility .portlet-borderless-bar {
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
@@ -187,7 +187,7 @@ body.portlet {
 .portlet-draggable .portlet-topper {
   cursor: move; }
 .portlet-draggable .portlet-title-default {
-  background: url(../images/portlet/draggable_borderless.png) no-repeat 0 50%;
+  background: url(@base_url@/html/themes/classic/css/../images/portlet/draggable_borderless.png) no-repeat 0 50%;
   cursor: move;
   padding-left: 20px; }
 
@@ -219,25 +219,25 @@ body.portlet {
   padding: 3px 3px 3px 20px; }
 
 .lfr-status-alert-label {
-  background-image: url(../images/messages/alert.png);
+  background-image: url(@base_url@/html/themes/classic/css/../images/messages/alert.png);
   color: #663; }
 
 .lfr-status-error-label {
-  background-image: url(../images/messages/error.png);
+  background-image: url(@base_url@/html/themes/classic/css/../images/messages/error.png);
   color: #900; }
 
 .lfr-status-help-label, .lfr-status-info-label, .lfr-status-progress-label {
-  background-image: url(../images/messages/info.png);
+  background-image: url(@base_url@/html/themes/classic/css/../images/messages/info.png);
   color: #34404F; }
 
 .lfr-status-help-label {
-  background-image: url(../images/portlet/help.png); }
+  background-image: url(@base_url@/html/themes/classic/css/../images/portlet/help.png); }
 
 .lfr-status-progress-label {
-  background-image: url(../images/aui/loading_indicator.gif); }
+  background-image: url(@base_url@/html/themes/classic/css/../images/aui/loading_indicator.gif); }
 
 .lfr-status-success-label {
-  background-image: url(../images/messages/success.png);
+  background-image: url(@base_url@/html/themes/classic/css/../images/messages/success.png);
   color: #384F34; }
 
 /* ---------- Liferay messages ---------- */
@@ -254,7 +254,7 @@ body.portlet {
     top: 50%;
     z-index: 10; }
   .lfr-message .lfr-message-close {
-    background-image: url(../images/portlet/close_borderless.png);
+    background-image: url(@base_url@/html/themes/classic/css/../images/portlet/close_borderless.png);
     background-position: 0 0;
     background-repeat: no-repeat; }
   .lfr-message .lfr-message-close-all {
@@ -270,7 +270,7 @@ body.portlet {
   .lfr-message .lfr-message-controls-hover .lfr-message-close-all {
     display: inline-block; }
   .lfr-message.pending {
-    background-image: url(../images/common/time.png); }
+    background-image: url(@base_url@/html/themes/classic/css/../images/common/time.png); }
 
 .lfr-message-content.alert {
   margin-bottom: 0; }
@@ -326,7 +326,7 @@ body.portlet {
   background-color: #D3BDC0; }
 
 .alt.restricted td.first, .restricted td.first {
-  background-image: url(../images/messages/error.png);
+  background-image: url(@base_url@/html/themes/classic/css/../images/messages/error.png);
   background-position: 5px 50%;
   background-repeat: no-repeat;
   padding-left: 28px; }
@@ -339,15 +339,15 @@ body.portlet {
   padding-left: 30px;
   vertical-align: middle; }
 .table-data tr.lfr-role-guest .first {
-  background-image: url(../images/common/guest_icon.png); }
+  background-image: url(@base_url@/html/themes/classic/css/../images/common/guest_icon.png); }
 .table-data tr.lfr-role-regular .first {
-  background-image: url(../images/common/user_icon.png); }
+  background-image: url(@base_url@/html/themes/classic/css/../images/common/user_icon.png); }
 .table-data tr.lfr-role-site .first {
-  background-image: url(../images/common/site_icon.png); }
+  background-image: url(@base_url@/html/themes/classic/css/../images/common/site_icon.png); }
 .table-data tr.lfr-role-organization .first {
-  background-image: url(../images/common/organization_icon.png); }
+  background-image: url(@base_url@/html/themes/classic/css/../images/common/organization_icon.png); }
 .table-data tr.lfr-role-team .first {
-  background-image: url(../images/common/team_icon.png); }
+  background-image: url(@base_url@/html/themes/classic/css/../images/common/team_icon.png); }
 
 /* ---------- Miscellaneous component styles ---------- */
 /* ---------- Add content dialog ---------- */

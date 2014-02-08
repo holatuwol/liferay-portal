@@ -665,7 +665,6 @@
   .aui body.yui3-skin-sam .yui3-widget-mask {
     filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
     opacity: 0.8; }
-
 @media (max-width: 979px) {
   .aui .dockbar .navbar-inner .container #_145_navAddControlsNavbarBtn, .aui .dockbar .navbar-inner .container #_145_navSiteNavigationNavbarBtn {
     display: none; }
@@ -821,13 +820,13 @@
       margin-bottom: 30px;
       padding-left: 47px; }
     .aui .control-panel-home-menu #control-panel-home-category-headerapps a {
-      background-image: url(../images/custom/home_apps.png); }
+      background-image: url(@base_url@/html/themes/control_panel/css/../images/custom/home_apps.png); }
     .aui .control-panel-home-menu #control-panel-home-category-headerconfiguration a {
-      background-image: url(../images/custom/home_configuration.png); }
+      background-image: url(@base_url@/html/themes/control_panel/css/../images/custom/home_configuration.png); }
     .aui .control-panel-home-menu #control-panel-home-category-headersites a {
-      background-image: url(../images/custom/home_sites.png); }
+      background-image: url(@base_url@/html/themes/control_panel/css/../images/custom/home_sites.png); }
     .aui .control-panel-home-menu #control-panel-home-category-headerusers a {
-      background-image: url(../images/custom/home_users.png); }
+      background-image: url(@base_url@/html/themes/control_panel/css/../images/custom/home_users.png); }
   .aui .dockbar {
     border-top: 1px solid #00AEFF;
     position: relative; }
@@ -964,20 +963,20 @@
             height: 26px;
             width: 29px; }
           .aui .dockbar .navbar-inner .container .nav-navigation ul.dropdown-menu li .icon-arrow-left {
-            background-image: url(../images/custom/dockbar_back.png);
+            background-image: url(@base_url@/html/themes/control_panel/css/../images/custom/dockbar_back.png);
             margin-top: 4px; }
           .aui .dockbar .navbar-inner .container .nav-navigation ul.dropdown-menu li .icon-cog {
-            background-image: url(../images/custom/dockbar_configuration.png); }
+            background-image: url(@base_url@/html/themes/control_panel/css/../images/custom/dockbar_configuration.png); }
           .aui .dockbar .navbar-inner .container .nav-navigation ul.dropdown-menu li .icon-globe {
-            background-image: url(../images/custom/dockbar_sites.png); }
+            background-image: url(@base_url@/html/themes/control_panel/css/../images/custom/dockbar_sites.png); }
           .aui .dockbar .navbar-inner .container .nav-navigation ul.dropdown-menu li .icon-list {
-            background-image: url(../images/custom/dockbar_home.png);
+            background-image: url(@base_url@/html/themes/control_panel/css/../images/custom/dockbar_home.png);
             height: 24px;
             margin-top: 3px; }
           .aui .dockbar .navbar-inner .container .nav-navigation ul.dropdown-menu li .icon-th {
-            background-image: url(../images/custom/dockbar_apps.png); }
+            background-image: url(@base_url@/html/themes/control_panel/css/../images/custom/dockbar_apps.png); }
           .aui .dockbar .navbar-inner .container .nav-navigation ul.dropdown-menu li .icon-user {
-            background-image: url(../images/custom/dockbar_users.png);
+            background-image: url(@base_url@/html/themes/control_panel/css/../images/custom/dockbar_users.png);
             width: 40px; }
       .aui .dockbar .navbar-inner .site-administration-menu li {
         list-style: none; }
@@ -1016,7 +1015,7 @@
   .aui .panel-page-menu {
     position: relative; }
     .aui .panel-page-menu .minimize-panels a {
-      background: url(../images/custom/panel_close.png) no-repeat;
+      background: url(@base_url@/html/themes/control_panel/css/../images/custom/panel_close.png) no-repeat;
       display: none;
       color: #FFF;
       font-size: 20px;
@@ -1078,7 +1077,7 @@
           .aui .panel-page-menu .search-panels .search-panels-bar .control-group .search-panels-input:focus {
             border-color: rgba(0, 172, 255, 0.8); }
       .aui .panel-page-menu .search-panels .search-panels-bar .search-panel-icon {
-        background: url(../images/custom/search_panel_icon.png) no-repeat 0 50%;
+        background: url(@base_url@/html/themes/control_panel/css/../images/custom/search_panel_icon.png) no-repeat 0 50%;
         color: #D4D4D4;
         font-size: 0;
         height: 18px;
@@ -1115,22 +1114,22 @@
       .aui .panels-minimized .panel-page-menu .control-panel-tools:hover {
         background-color: #DDD; }
     .aui .panels-minimized .panel-page-menu .minimize-panels a {
-      background-image: url(../images/custom/panel_open.png); }
+      background-image: url(@base_url@/html/themes/control_panel/css/../images/custom/panel_open.png); }
     .aui .panels-minimized .panel-page-menu .portlet-borderless-container {
       padding: 0; }
       .aui .panels-minimized .panel-page-menu .portlet-borderless-container .accordion .toggler-header .accordion-toggle {
         background: none no-repeat right; }
       .aui .panels-minimized .panel-page-menu .portlet-borderless-container .accordion #panel-manage-site_administration\.configuration .toggler-header .accordion-toggle {
-        background-image: url(../images/custom/panel_icons_white_server_bg.png);
+        background-image: url(@base_url@/html/themes/control_panel/css/../images/custom/panel_icons_white_server_bg.png);
         right: 8px; }
       .aui .panels-minimized .panel-page-menu .portlet-borderless-container .accordion #panel-manage-site_administration\.content .toggler-header .accordion-toggle {
-        background-image: url(../images/custom/panel_icons_white_portal_bg.png);
+        background-image: url(@base_url@/html/themes/control_panel/css/../images/custom/panel_icons_white_portal_bg.png);
         right: 4px; }
       .aui .panels-minimized .panel-page-menu .portlet-borderless-container .accordion #panel-manage-site_administration\.pages .toggler-header .accordion-toggle {
-        background-image: url(../images/custom/panel_icons_white_marketplace_bg.png);
+        background-image: url(@base_url@/html/themes/control_panel/css/../images/custom/panel_icons_white_marketplace_bg.png);
         right: 4px; }
       .aui .panels-minimized .panel-page-menu .portlet-borderless-container .accordion #panel-manage-site_administration\.users .toggler-header .accordion-toggle {
-        background-image: url(../images/custom/panel_icons_white_marketplace_bg.png);
+        background-image: url(@base_url@/html/themes/control_panel/css/../images/custom/panel_icons_white_marketplace_bg.png);
         right: 4px; }
       .aui .panels-minimized .panel-page-menu .portlet-borderless-container .accordion .accordion-group {
         background: #FFF;

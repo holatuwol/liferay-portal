@@ -75,7 +75,6 @@ body.html-editor {
 #skip-to-content {
   clip: rect(0 0 0 0);
   position: absolute; }
-
 /* ---------- Dragging/sorting indicators ---------- */
 .portlet-layout.dragging {
   border-collapse: separate; }
@@ -541,7 +540,6 @@ body.html-editor {
 .ios.mobile .modal-content .dialog-iframe-bd {
   overflow: auto;
   -webkit-overflow-scrolling: touch; }
-
 /* ---------- Column widths ---------- */
 .portlet-column-content.empty {
   padding: 50px; }
@@ -557,7 +555,6 @@ body.html-editor {
     #wrapper {
       padding-left: 2em;
       padding-right: 2em; } }
-
 .aui {
   /* ---------- Staging dockbar ---------- */
   /* ---------- Add content ---------- */
@@ -1246,7 +1243,6 @@ body.html-editor {
       width: 100%; } }
   .aui .dockbar .nav-collapse {
     -webkit-transform: none; }
-
 /* ---------- Add/remove page ---------- */
 .modify-pages li {
   position: relative; }
@@ -1333,7 +1329,6 @@ body.html-editor {
 
 .save-trigger img {
   background-image: url(@base_url@/html/themes/classic/css/../images/common/check.png); }
-
 /* ---------- Portlet wrapper and icons ---------- */
 .freeform .portlet {
   margin-bottom: 0; }
@@ -1761,7 +1756,6 @@ body.portlet {
 
 .ie8 .dockbar img, .ie8 .lfr-icon-action img, .ie8 .logo img {
   max-width: none; }
-
 .menu-content, .underlay-content {
   -webkit-box-shadow: 2px 4px 7px rgba(0, 0, 0, 0.5);
   -moz-box-shadow: 2px 4px 7px rgba(0, 0, 0, 0.5);
@@ -2345,7 +2339,6 @@ body:first-of-type .portlet-borderless-container:hover .lfr-icon-actions .taglib
   -ms-animation: lfr-drop-active 1s ease 0.2s infinite;
   -o-animation: lfr-drop-active 1s ease 0.2s infinite;
   animation: lfr-drop-active 1s ease 0.2s infinite; }
-
 /* ---------- Dockbar ---------- */
 @media (max-width: 979px) {
   .aui * {
@@ -3013,7 +3006,6 @@ body:first-of-type .portlet-borderless-container:hover .lfr-icon-actions .taglib
   .aui body.yui3-skin-sam .yui3-widget-mask {
     filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=80);
     opacity: 0.8; }
-
 .aui .dark, .aui .light {
   /* ---------- Breadcrumbs ---------- */
   /* ---------- Portlet ---------- */
@@ -3149,7 +3141,6 @@ body:first-of-type .portlet-borderless-container:hover .lfr-icon-actions .taglib
       -moz-transition: border-color 0.2s ease-in;
       -o-transition: border-color 0.2s ease-in;
       transition: border-color 0.2s ease-in; }
-
 .aui .dark {
   background: #363636;
   color: #E3E3E3;
@@ -3189,7 +3180,6 @@ body:first-of-type .portlet-borderless-container:hover .lfr-icon-actions .taglib
     color: #00CAFF; }
   .aui .dark .table {
     color: #555; }
-
 .aui .light {
   background: #FAFAFA;
   /* ---------- Portlet ---------- */
@@ -3204,7 +3194,6 @@ body:first-of-type .portlet-borderless-container:hover .lfr-icon-actions .taglib
     color: #29B23E; }
   .aui .light .columns-max .portlet .portlet-topper-toolbar a {
     color: #555; }
-
 /* ---------- Base styles ---------- */
 .aui {
   background-color: transparent;

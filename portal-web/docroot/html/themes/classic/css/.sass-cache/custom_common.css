@@ -495,9 +495,9 @@
   .aui.ie6 .accordion-group .accordion-heading, .aui.ie7 .accordion-group .accordion-heading {
     background: none no-repeat 0 50%; }
     .aui.ie6 .accordion-group .accordion-heading.toggler-header-collapsed, .aui.ie7 .accordion-group .accordion-heading.toggler-header-collapsed {
-      background-image: url(../images/arrows/05_right.png); }
+      background-image: url(@base_url@/html/themes/classic/css/../images/arrows/05_right.png); }
     .aui.ie6 .accordion-group .accordion-heading.toggler-header-expanded, .aui.ie7 .accordion-group .accordion-heading.toggler-header-expanded {
-      background-image: url(../images/arrows/05_down.png); }
+      background-image: url(@base_url@/html/themes/classic/css/../images/arrows/05_down.png); }
   .aui .add-content-menu .accordion, .aui .lfr-edit-layout-panel .accordion, .aui .panel-page-menu .portlet-borderless-container .accordion {
     background: #FFF;
     border: 1px solid #D3D3D3;
@@ -524,7 +524,7 @@
         -moz-user-select: none;
         user-select: none; }
         .aui .add-content-menu .accordion .accordion-group .toggler-header .accordion-toggle, .aui .lfr-edit-layout-panel .accordion .accordion-group .toggler-header .accordion-toggle, .aui .panel-page-menu .portlet-borderless-container .accordion .accordion-group .toggler-header .accordion-toggle {
-          background: #f2f2f2 url(../images/arrows/13_right.png) no-repeat 100% -20px; }
+          background: #f2f2f2 url(@base_url@/html/themes/classic/css/../images/arrows/13_right.png) no-repeat 100% -20px; }
       .aui .add-content-menu .accordion .accordion-group .toggler-header-collapsed, .aui .lfr-edit-layout-panel .accordion .accordion-group .toggler-header-collapsed, .aui .panel-page-menu .portlet-borderless-container .accordion .accordion-group .toggler-header-collapsed {
         border-bottom-width: 0; }
         .aui .add-content-menu .accordion .accordion-group .toggler-header-collapsed .accordion-toggle, .aui .lfr-edit-layout-panel .accordion .accordion-group .toggler-header-collapsed .accordion-toggle, .aui .panel-page-menu .portlet-borderless-container .accordion .accordion-group .toggler-header-collapsed .accordion-toggle {

@@ -33,7 +33,6 @@
       display: none; } }
 .aui .lfr-pagination .pagination-content {
   float: right; }
-
 .lfr-panel-content .paginator-container {
   border-bottom: 1px solid transparent;
   border-top: 1px solid transparent;
@@ -67,7 +66,6 @@
     .lfr-panel-content .paginator-page-container .paginator-page-link.paginator-current-page:hover {
       background: #5094d7 url(@theme_image_path@/application/current_page_bg.png) repeat-x 0 0;
       border-color: #31659C #396EA8 #4C8CCB; }
-
 #portlet-set-properties fieldset {
   margin-bottom: 1em; }
   #portlet-set-properties fieldset fieldset {
@@ -101,7 +99,6 @@
 /* Skin */
 #portlet-set-properties fieldset fieldset legend {
   font-size: 1.1em; }
-
 .lfr-portlet-item {
   border: 1px solid transparent;
   cursor: move;
@@ -147,11 +144,9 @@
   background-image: url(@theme_image_path@/add_content/portlet_item_instanceable.png); }
 .lfr-add-content .lfr-portlet-item.lfr-archived-setup {
   background-image: url(@theme_image_path@/add_content/portlet_item_archived_setup.png); }
-
 .lfr-position-helper {
   position: absolute;
   z-index: 10000; }
-
 .lfr-preview-file {
   position: relative; }
 
@@ -343,7 +338,6 @@
 
 .firefox .lfr-preview-video-content div.video-node {
   height: 100%; }
-
 .lfr-editor-textarea {
   padding: 0;
   width: 100%; }
@@ -361,7 +355,6 @@
 .lfr-plain-editor textarea, .lfr-rich-editor.ace_editor {
   font-family: 'Monaco', 'Menlo', 'Droid Sans Mono', 'Courier New', monospace;
   font-size: 12px; }
-
 .lfr-search-combobox {
   float: right;
   white-space: nowrap; }
@@ -382,10 +375,8 @@
 
 .ie6 .lfr-search-combobox {
   position: relative; }
-
 .separator {
   margin: 15px auto; }
-
 .lfr-tags-selector-list {
   border: 0 solid transparent;
   border-width: 0 1px 1px;
@@ -427,7 +418,6 @@
   border-bottom-color: #EEE; }
 .lfr-tag-selector-popup .no-matches {
   color: #999; }
-
 .lfr-toolbar {
   padding-top: 3px; }
   .lfr-toolbar:after {
@@ -493,7 +483,6 @@
 .lfr-emoticon-container {
   background: #E5E4E8;
   border-color: #CCC; }
-
 .lfr-translation-manager {
   border: 1px solid transparent;
   display: block;
@@ -555,7 +544,6 @@
         background-color: #FFF; }
   .lfr-translation-manager label {
     font-weight: bold; }
-
 .lfr-tree .tree-label {
   display: inline-block; }
 .lfr-tree li {
@@ -584,7 +572,6 @@
 /* Skin */
 .lfr-tree a {
   text-decoration: none; }
-
 .undomanager .lfr-undo-queue {
   margin: 10px auto; }
 
@@ -596,7 +583,6 @@
 
 .undomanager .lfr-queue-empty, .lfr-queue-single .lfr-action-clear {
   display: none; }
-
 .lfr-dynamic-uploader {
   display: table;
   table-layout: fixed;
