@@ -1690,6 +1690,11 @@ public class UserLocalServiceUtil {
 		return getService().fetchUserByScreenName(companyId, screenName);
 	}
 
+	public static long[] filterAddUserIdsToGroup(long groupId, long[] userIds)
+		throws java.lang.Exception {
+		return getService().filterAddUserIdsToGroup(groupId, userIds);
+	}
+
 	/**
 	* Returns a range of all the users belonging to the company.
 	*

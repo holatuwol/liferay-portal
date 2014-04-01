@@ -1439,6 +1439,9 @@ public interface UserLocalService extends BaseLocalService,
 		java.lang.String screenName)
 		throws com.liferay.portal.kernel.exception.SystemException;
 
+	public long[] filterAddUserIdsToGroup(long groupId, long[] userIds)
+		throws java.lang.Exception;
+
 	/**
 	* Returns a range of all the users belonging to the company.
 	*
