@@ -17,7 +17,6 @@ package com.liferay.portlet.sites.action;
 import com.liferay.portal.NoSuchGroupException;
 import com.liferay.portal.NoSuchRoleException;
 import com.liferay.portal.kernel.servlet.SessionErrors;
-import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.StringUtil;
@@ -130,27 +129,23 @@ public class EditUserRolesAction extends PortletAction {
 
 		long[] addUserIds = StringUtil.split(
 			ParamUtil.getString(actionRequest, "addUserIds"), 0L);
+		long[] filterAddUserIds = UserLocalServiceUtil.filterAddUserIdsToGroup(
+			groupId, addUserIds);
 		long[] removeUserIds = StringUtil.split(
 			ParamUtil.getString(actionRequest, "removeUserIds"), 0L);
 
-		long[] userIds = new long[] {};
-
-		for (long userId : addUserIds) {
-			if (!UserLocalServiceUtil.hasGroupUser(groupId, userId)) {
-				userIds = ArrayUtil.append(userIds, userId);
-			}
-		}
-
-		if (userIds.length > 0) {
+		if (filterAddUserIds.length > 0) {
 			ThemeDisplay themeDisplay =
 				(ThemeDisplay)actionRequest.getAttribute(WebKeys.THEME_DISPLAY);
 
 			ServiceContext serviceContext = ServiceContextFactory.getInstance(
 				actionRequest);
 
-			UserServiceUtil.addGroupUsers(groupId, userIds, serviceContext);
+			UserServiceUtil.addGroupUsers(
+				groupId, filterAddUserIds, serviceContext);
 
-			LiveUsers.joinGroup(themeDisplay.getCompanyId(), groupId, userIds);
+			LiveUsers.joinGroup(
+				themeDisplay.getCompanyId(), groupId, filterAddUserIds);
 		}
 
 		UserGroupRoleServiceUtil.addUserGroupRoles(addUserIds, groupId, roleId);
