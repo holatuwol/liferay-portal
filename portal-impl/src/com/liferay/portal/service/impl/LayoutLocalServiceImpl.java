@@ -921,9 +921,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 			Date startDate, Date endDate, String fileName)
 		throws PortalException, SystemException {
 
-		if (!DLStoreUtil.isValidName(fileName)) {
-			throw new LARFileNameException(fileName);
-		}
+		validateFileName(fileName);
 
 		Map<String, Serializable> settingsMap =
 			ExportImportConfigurationSettingsMapFactory.buildSettingsMap(
@@ -1079,9 +1077,7 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 			Date startDate, Date endDate, String fileName)
 		throws PortalException, SystemException {
 
-		if (!DLStoreUtil.isValidName(fileName)) {
-			throw new LARFileNameException(fileName);
-		}
+		validateFileName(fileName);
 
 		Map<String, Serializable> taskContextMap =
 			BackgroundTaskContextMapFactory.buildTaskContextMap(
@@ -3161,6 +3157,12 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 		}
 		finally {
 			FileUtil.delete(file);
+		}
+	}
+
+	protected void validateFileName(String fileName) throws PortalException {
+		if (!DLStoreUtil.isValidName(fileName)) {
+			throw new LARFileNameException(fileName);
 		}
 	}
 
