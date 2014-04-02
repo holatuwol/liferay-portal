@@ -1079,6 +1079,10 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 			Date startDate, Date endDate, String fileName)
 		throws PortalException, SystemException {
 
+		if (!DLStoreUtil.isValidName(fileName)) {
+			throw new LARFileNameException(fileName);
+		}
+
 		Map<String, Serializable> taskContextMap =
 			BackgroundTaskContextMapFactory.buildTaskContextMap(
 				userId, plid, groupId, portletId, parameterMap,
