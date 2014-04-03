@@ -2111,6 +2111,22 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 		return userPersistence.fetchByC_SN(companyId, screenName);
 	}
 
+	@Override
+	public long[] filterAddUserIdsToGroup(long groupId, long[] userIds)
+		throws Exception {
+
+		Set<Long> filteredUserIds = new HashSet<Long>(userIds.length);
+
+		for (long userId : userIds) {
+			if (!userLocalService.hasGroupUser(groupId, userId)) {
+				filteredUserIds.add(userId);
+			}
+		}
+
+		return ArrayUtil.toArray(
+			filteredUserIds.toArray(new Long[filteredUserIds.size()]));
+	}
+
 	/**
 	 * Returns a range of all the users belonging to the company.
 	 *

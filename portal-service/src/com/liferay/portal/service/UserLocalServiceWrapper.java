@@ -1790,6 +1790,12 @@ public class UserLocalServiceWrapper implements UserLocalService,
 		return _userLocalService.fetchUserByScreenName(companyId, screenName);
 	}
 
+	@Override
+	public long[] filterAddUserIdsToGroup(long groupId, long[] userIds)
+		throws java.lang.Exception {
+		return _userLocalService.filterAddUserIdsToGroup(groupId, userIds);
+	}
+
 	/**
 	* Returns a range of all the users belonging to the company.
 	*

@@ -138,21 +138,6 @@ public class EditGroupAssignmentsAction extends PortletAction {
 				renderRequest, "portlet.sites_admin.edit_site_assignments"));
 	}
 
-	protected long[] filterAddUserIds(long groupId, long[] userIds)
-		throws Exception {
-
-		Set<Long> filteredUserIds = new HashSet<Long>(userIds.length);
-
-		for (long userId : userIds) {
-			if (!UserLocalServiceUtil.hasGroupUser(groupId, userId)) {
-				filteredUserIds.add(userId);
-			}
-		}
-
-		return ArrayUtil.toArray(
-			filteredUserIds.toArray(new Long[filteredUserIds.size()]));
-	}
-
 	protected long[] filterRemoveUserIds(long groupId, long[] userIds)
 		throws Exception {
 
@@ -209,7 +194,8 @@ public class EditGroupAssignmentsAction extends PortletAction {
 		long[] addUserIds = StringUtil.split(
 			ParamUtil.getString(actionRequest, "addUserIds"), 0L);
 
-		addUserIds = filterAddUserIds(groupId, addUserIds);
+		addUserIds = UserLocalServiceUtil.filterAddUserIdsToGroup(
+			groupId, addUserIds);
 
 		long[] removeUserIds = StringUtil.split(
 			ParamUtil.getString(actionRequest, "removeUserIds"), 0L);
