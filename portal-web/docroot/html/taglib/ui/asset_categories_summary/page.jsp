@@ -21,8 +21,17 @@ String className = (String)request.getAttribute("liferay-ui:asset-categories-sum
 long classPK = GetterUtil.getLong((String)request.getAttribute("liferay-ui:asset-categories-summary:classPK"));
 PortletURL portletURL = (PortletURL)request.getAttribute("liferay-ui:asset-categories-summary:portletURL");
 
-List<AssetVocabulary> vocabularies = AssetVocabularyServiceUtil.getGroupVocabularies(PortalUtil.getCurrentAndAncestorSiteGroupIds(scopeGroupId));
 List<AssetCategory> categories = AssetCategoryServiceUtil.getCategories(className, classPK);
+
+Set<Long> vocabularyIds = new HashSet<Long>();
+
+for (AssetCategory category : categories) {
+	vocabularyIds.add(category.getVocabularyId());
+}
+
+List<AssetVocabulary> vocabularies = AssetVocabularyServiceUtil.getVocabularies(ArrayUtil.toLongArray(vocabularyIds));
+
+vocabularies.addAll(AssetVocabularyServiceUtil.getGroupVocabularies(PortalUtil.getCurrentAndAncestorSiteGroupIds(scopeGroupId)));
 
 for (AssetVocabulary vocabulary : vocabularies) {
 	vocabulary = vocabulary.toEscapedModel();
