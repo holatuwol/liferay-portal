@@ -26,9 +26,7 @@ List<AssetCategory> categories = AssetCategoryServiceUtil.getCategories(classNam
 Set<Long> vocabularyIds = new HashSet<Long>();
 
 for (AssetCategory category : categories) {
-	long vocabularyId = category.getVocabularyId();
-
-	vocabularyIds.add(vocabularyId);
+	vocabularyIds.add(category.getVocabularyId());
 }
 
 List<AssetVocabulary> vocabularies = AssetVocabularyServiceUtil.getVocabularies(ArrayUtil.toLongArray(vocabularyIds));
