@@ -224,7 +224,7 @@ List<String> primaryKeys = new ArrayList<String>();
 		for (int i = 0; i < resultRows.size(); i++) {
 			com.liferay.portal.kernel.dao.search.ResultRow row = (com.liferay.portal.kernel.dao.search.ResultRow)resultRows.get(i);
 
-			primaryKeys.add(HtmlUtil.escape(row.getPrimaryKey()));
+			primaryKeys.add(HtmlUtil.escapeJS(row.getPrimaryKey()));
 
 			request.setAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW, row);
 
