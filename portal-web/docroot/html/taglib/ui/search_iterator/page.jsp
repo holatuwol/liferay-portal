@@ -224,7 +224,7 @@ List<String> primaryKeys = new ArrayList<String>();
 		for (int i = 0; i < resultRows.size(); i++) {
 			com.liferay.portal.kernel.dao.search.ResultRow row = (com.liferay.portal.kernel.dao.search.ResultRow)resultRows.get(i);
 
-			primaryKeys.add(HtmlUtil.escape(row.getPrimaryKey()));
+			primaryKeys.add(HtmlUtil.escapeJS(row.getPrimaryKey()));
 
 			request.setAttribute(WebKeys.SEARCH_CONTAINER_RESULT_ROW, row);
 
@@ -345,10 +345,6 @@ List<String> primaryKeys = new ArrayList<String>();
 <c:if test="<%= Validator.isNotNull(id) %>">
 	<input id="<%= namespace + id %>PrimaryKeys" name="<%= namespace + id %>PrimaryKeys" type="hidden" value="" />
 
-	<%
-		String contentPrimaryKeys = StringUtil.merge(primaryKeys);
-	%>
-
 	<aui:script use="liferay-search-container">
 		var searchContainer = new Liferay.SearchContainer(
 			{
@@ -362,7 +358,7 @@ List<String> primaryKeys = new ArrayList<String>();
 			}
 		).render();
 
-		searchContainer.updateDataStore('<%= StringUtil.replace(contentPrimaryKeys, "\n", "") %>');
+		searchContainer.updateDataStore('<%= StringUtil.merge(primaryKeys) %>');
 	</aui:script>
 </c:if>
 
