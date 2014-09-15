@@ -1,0 +1,52 @@
+diff --git a/modules/third-party/org-quartz/src/org/quartz/impl/jdbcjobstore/JobStoreSupport.java b/modules/third-party/org-quartz/src/org/quartz/impl/jdbcjobstore/JobStoreSupport.java
+index 7ba7643..e4f0288 100644
+--- a/modules/third-party/org-quartz/src/org/quartz/impl/jdbcjobstore/JobStoreSupport.java
++++ b/modules/third-party/org-quartz/src/org/quartz/impl/jdbcjobstore/JobStoreSupport.java
+@@ -3236,12 +3236,14 @@ public abstract class JobStoreSupport implements JobStore, Constants {
+             // and is almost never necessary).  This must be done in a separate
+             // transaction to prevent a deadlock under recovery conditions.
+             List<SchedulerStateRecord> failedRecords = null;
+-            if (firstCheckIn == false) {
++			// Liferay: First checkin still needs a lock even if in another
++			// transaction.
++            //if (firstCheckIn == false) {
+                 failedRecords = clusterCheckIn(conn);
+                 commitConnection(conn);
+-            }
++            //}
+             
+-            if (firstCheckIn || (failedRecords.size() > 0)) {
++            //if (firstCheckIn || (failedRecords.size() > 0)) {
+                 getLockHandler().obtainLock(conn, LOCK_STATE_ACCESS);
+                 transStateOwner = true;
+     
+@@ -3257,7 +3259,7 @@ public abstract class JobStoreSupport implements JobStore, Constants {
+                     clusterRecover(conn, failedRecords);
+                     recovered = true;
+                 }
+-            }
++            //}
+             
+             commitConnection(conn);
+         } catch (JobPersistenceException e) {
+@@ -3377,7 +3379,9 @@ public abstract class JobStoreSupport implements JobStore, Constants {
+     protected List<SchedulerStateRecord> clusterCheckIn(Connection conn)
+         throws JobPersistenceException {
+ 
+-        List<SchedulerStateRecord> failedInstances = findFailedInstances(conn);
++        // Liferay: Update scheduler state before we find failed instances
++        // instead return null.
++        //List<SchedulerStateRecord> failedInstances = findFailedInstances(conn);
+         
+         try {
+             // TODO: handle self-failed-out
+@@ -3394,7 +3398,8 @@ public abstract class JobStoreSupport implements JobStore, Constants {
+                     + e.getMessage(), e);
+         }
+ 
+-        return failedInstances;
++        //return failedInstances;
++        return null;
+     }
+ 
+     protected void clusterRecover(Connection conn, List<SchedulerStateRecord> failedInstances)
