@@ -31,6 +31,7 @@ import java.io.PrintWriter;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.ResourceBundle;
 
 import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
@@ -52,8 +53,11 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.whiteboard.HttpWhiteboardConstants;
 
+import org.portletbridge.portlet.BridgeViewPortlet;
+import org.portletbridge.portlet.HttpClientTemplate;
 import org.portletbridge.portlet.PortletBridgePortlet;
 import org.portletbridge.portlet.PortletBridgeServlet;
+import org.portletbridge.portlet.TemplateFactory;
 
 /**
  * @author Brian Wing Shun Chan
@@ -168,6 +172,21 @@ public class WebProxyPortlet extends PortletBridgePortlet {
 	@Activate
 	protected void activate(ComponentContext componentContext) {
 		_componentContext = componentContext;
+	}
+
+	@Override
+	protected BridgeViewPortlet createViewPortlet(
+			ResourceBundle resourceBundle, TemplateFactory templateFactory)
+		throws PortletException {
+
+		BridgeViewPortlet bridgeViewPortlet = super.createViewPortlet(
+			resourceBundle, templateFactory);
+
+		HttpClientTemplate httpClientTemplate = new CachingHttpClientTemplate();
+
+		bridgeViewPortlet.setHttpClientTemplate(httpClientTemplate);
+
+		return bridgeViewPortlet;
 	}
 
 	@Deactivate
