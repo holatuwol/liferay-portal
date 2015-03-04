@@ -1037,7 +1037,7 @@ public class RoleLocalServiceImpl extends RoleLocalServiceBaseImpl {
 				PermissionCacheUtil.getUserBag(userId);
 
 			if (userPermissionCheckerBag != null) {
-				value = userPermissionCheckerBag.hasUserRole(role);
+				value = userPermissionCheckerBag.hasRole(role);
 			}
 			else {
 				int count = roleFinder.countByR_U(role.getRoleId(), userId);

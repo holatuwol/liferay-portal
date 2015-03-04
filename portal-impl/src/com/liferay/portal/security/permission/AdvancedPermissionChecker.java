@@ -159,7 +159,8 @@ public class AdvancedPermissionChecker extends BasePermissionChecker {
 			// as this implies group membership which is incorrect in the case
 			// of unauthenticated users.
 
-			bag = new PermissionCheckerBagImpl(defaultUserId, roles);
+			bag = new PermissionCheckerBagImpl(
+				defaultUserId, SetUtil.fromList(roles));
 		}
 		finally {
 			if (bag == null) {
@@ -351,7 +352,7 @@ public class AdvancedPermissionChecker extends BasePermissionChecker {
 
 			Set<Role> roles = new HashSet<>();
 
-			roles.addAll(userPermissionCheckerBag.getUserRoles());
+			roles.addAll(userPermissionCheckerBag.getRoles());
 
 			List<Role> userGroupRoles = RoleLocalServiceUtil.getUserGroupRoles(
 				userId, groupId);
@@ -590,8 +591,8 @@ public class AdvancedPermissionChecker extends BasePermissionChecker {
 		}
 
 		try {
-			Set<Group> userGroups = SetUtil.fromList(
-				GroupLocalServiceUtil.getUserGroups(user.getUserId(), true));
+			List<Group> userGroups = GroupLocalServiceUtil.getUserGroups(
+				user.getUserId(), true);
 
 			List<Organization> userOrgs = getUserOrgs(user.getUserId());
 
@@ -604,9 +605,11 @@ public class AdvancedPermissionChecker extends BasePermissionChecker {
 			List<Group> userUserGroupGroups =
 				GroupLocalServiceUtil.getUserGroupsGroups(userUserGroups);
 
+			Set<Role> userRoles = new HashSet<>();
+
 			userPermissionCheckerBag = new UserPermissionCheckerBagImpl(
-				user.getUserId(), userGroups, userOrgs, userOrgGroups,
-				userUserGroupGroups);
+				user.getUserId(), SetUtil.fromList(userGroups), userOrgs,
+				userOrgGroups, userUserGroupGroups, userRoles);
 
 			PermissionCacheUtil.putUserBag(
 				user.getUserId(), userPermissionCheckerBag);
