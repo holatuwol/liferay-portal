@@ -41,10 +41,10 @@ public interface UserPermissionCheckerBag extends Serializable {
 
 	public List<Organization> getUserOrgs();
 
-	public Set<Role> getUserRoles();
+	public Set<Role> getRoles();
 
 	public List<Group> getUserUserGroupGroups();
 
-	public boolean hasUserRole(Role role);
+	public boolean hasRole(Role role);
 
 }
