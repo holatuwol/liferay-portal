@@ -30,6 +30,7 @@ import com.liferay.portal.util.PropsValues;
 public class ReleaseVerifier extends ReleaseChecker {
 
 	public void verify() throws Exception {
+
 		// Check release
 
 		Release release = ReleaseLocalServiceUtil.fetchRelease(

@@ -28,8 +28,8 @@ import com.liferay.portal.service.ResourceActionLocalServiceUtil;
 import com.liferay.portal.tools.releasecheck.ReleaseUpgrader;
 import com.liferay.portal.tools.releasecheck.ReleaseVerifier;
 import com.liferay.portal.util.InitUtil;
-
 import com.liferay.util.dao.orm.CustomSQLUtil;
+
 import org.apache.commons.lang.time.StopWatch;
 
 /**
@@ -63,6 +63,7 @@ public class DBUpgrader {
 	}
 
 	public static void upgrade() throws Exception {
+
 		// Disable database caching before upgrade
 
 		if (_log.isDebugEnabled()) {
@@ -163,10 +164,9 @@ public class DBUpgrader {
 	private static final String _DELETE_TEMP_IMAGES_2 =
 		"delete from JournalArticleImage where tempImage = TRUE";
 
+	private static final Log _log = LogFactoryUtil.getLog(DBUpgrader.class);
 
 	private static ReleaseUpgrader _releaseUpgrader;
 	private static ReleaseVerifier _releaseVerifier;
-
-	private static final Log _log = LogFactoryUtil.getLog(DBUpgrader.class);
 
 }

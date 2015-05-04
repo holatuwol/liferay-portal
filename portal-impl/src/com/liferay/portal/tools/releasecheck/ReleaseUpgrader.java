@@ -14,22 +14,15 @@
 
 package com.liferay.portal.tools.releasecheck;
 
-import com.liferay.portal.dao.orm.common.SQLTransformer;
 import com.liferay.portal.events.StartupHelperUtil;
-import com.liferay.portal.kernel.cache.MultiVMPoolUtil;
-import com.liferay.portal.kernel.dao.db.DB;
-import com.liferay.portal.kernel.dao.db.DBFactoryUtil;
 import com.liferay.portal.kernel.dao.jdbc.DataAccess;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.ReleaseInfo;
 import com.liferay.portal.kernel.util.StringBundler;
 import com.liferay.portal.model.ReleaseConstants;
-import com.liferay.portal.service.ClassNameLocalServiceUtil;
 import com.liferay.portal.service.ReleaseLocalServiceUtil;
-import com.liferay.portal.service.ResourceActionLocalServiceUtil;
 import com.liferay.portal.util.PropsValues;
-import com.liferay.util.dao.orm.CustomSQLUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -42,6 +35,7 @@ import java.sql.ResultSet;
 public class ReleaseUpgrader extends ReleaseChecker {
 
 	public void upgrade() throws Exception {
+
 		// Check release
 
 		int buildNumber = ReleaseLocalServiceUtil.getBuildNumberOrCreate();

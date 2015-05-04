@@ -109,7 +109,7 @@ public class ReleaseChecker {
 			ServiceBeanAopCacheManager.class, "_annotations");
 
 		field.set(
-                null, new ConcurrentHashMap<MethodInvocation, Annotation[]>());
+			null, new ConcurrentHashMap<MethodInvocation, Annotation[]>());
 
 		ServiceBeanAopCacheManagerUtil.reset();
 	}
