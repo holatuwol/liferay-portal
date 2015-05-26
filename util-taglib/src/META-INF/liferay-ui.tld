@@ -2229,6 +2229,11 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		<attribute>
+			<name>includeNonListable</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 	</tag>
 	<tag>
 		<description>Creates a configurable input checkbox.</description>
@@ -3303,10 +3308,31 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+			<description>Whether to use a namespace in the tag. The default value is <![CDATA[<code>true</code>]]>.</description>
 			<name>useNamespace</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>boolean</type>
+		</attribute>
+	</tag>
+	<tag>
+		<name>layout-templates-list</name>
+		<tag-class>com.liferay.taglib.ui.LayoutTemplatesListTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>layoutTemplateId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>layoutTemplateIdPrefix</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>layoutTemplates</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
 	<tag>
