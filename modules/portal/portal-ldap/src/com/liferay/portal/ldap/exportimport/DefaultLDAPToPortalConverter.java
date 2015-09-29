@@ -167,12 +167,12 @@ public class DefaultLDAPToPortalConverter implements LDAPToPortalConverter {
 
 		contact.setSuffixId(suffixId);
 
-		String gender = LDAPUtil.getAttributeString(
-			attributes, contactMappings, ContactConverterKeys.GENDER);
+		String male = LDAPUtil.getAttributeString(
+			attributes, contactMappings, ContactConverterKeys.MALE);
 
-		gender = StringUtil.toLowerCase(gender);
+		male = StringUtil.toLowerCase(male);
 
-		if (GetterUtil.getBoolean(gender) || gender.equals("female")) {
+		if (GetterUtil.getBoolean(male) || male.equals("female")) {
 			contact.setMale(false);
 		}
 		else {
