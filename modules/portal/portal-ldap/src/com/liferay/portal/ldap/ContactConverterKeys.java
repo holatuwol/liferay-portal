@@ -25,13 +25,13 @@ public interface ContactConverterKeys {
 
 	public static final String FACEBOOK_SN = "facebookSn";
 
-	public static final String GENDER = "gender";
-
 	public static final String ICQ_SN = "icqSn";
 
 	public static final String JABBER_SN = "jabberSn";
 
 	public static final String JOB_TITLE = "jobTitle";
+
+	public static final String MALE = "male";
 
 	public static final String MSN_SN = "msnSn";
 
