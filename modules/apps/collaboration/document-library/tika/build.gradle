@@ -20,4 +20,6 @@ dependencies {
 	provided group: 'org.apache.pdfbox', name: 'jempbox', version: '1.8.12'
 	provided group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.3'
 	provided group: 'org.apache.pdfbox', name: 'fontbox', version: '2.0.3'
+	provided group: "com.liferay.portal", name: "com.liferay.util.java", version: "default"
+	provided group: "org.osgi", name: "org.osgi.core", version: "5.0.0"
 }

@@ -19,4 +19,5 @@ Import-Package: *;resolution:=optional
 	@jempbox-[0-9]*.jar,\
 	@pdfbox-[0-9]*.jar,\
 	@fontbox-[0-9]*.jar,\
+	@com.liferay.util.java-[0-9]*.jar!/com/liferay/util/log4j/Log4JUtil.class,\
 	tika=tika
