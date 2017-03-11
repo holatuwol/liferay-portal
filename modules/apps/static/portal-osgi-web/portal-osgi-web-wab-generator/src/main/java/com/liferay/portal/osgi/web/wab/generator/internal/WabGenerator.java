@@ -213,15 +213,6 @@ public class WabGenerator
 			new WabURLStreamHandlerService(classLoader, this), properties);
 	}
 
-	/**
-	 * This reference is held to force a dependency on the portal's complete
-	 * startup.
-	 */
-	@Reference(target = ModuleServiceLifecycle.PORTAL_INITIALIZED, unbind = "-")
-	protected void setModuleServiceLifecycle(
-		ModuleServiceLifecycle moduleServiceLifecycle) {
-	}
-
 	@Reference(
 		cardinality = ReferenceCardinality.OPTIONAL,
 		policy = ReferencePolicy.DYNAMIC,
@@ -232,15 +223,18 @@ public class WabGenerator
 		_portalIsReady.set(true);
 	}
 
-	protected void unsetModuleServiceLifecycle(
-		ModuleServiceLifecycle moduleServiceLifecycle) {
-	}
-
 	protected void unsetServletContext(ServletContext servletContext) {
 		_portalIsReady.set(false);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(WabGenerator.class);
+
+	/**
+	 * This reference is held to force a dependency on the portal's complete
+	 * startup.
+	 */
+	@Reference(target = ModuleServiceLifecycle.PORTAL_INITIALIZED)
+	private Map<String, Object> _moduleServiceLifecycle;
 
 	private final AtomicBoolean _portalIsReady = new AtomicBoolean();
 	private ServiceRegistration<ArtifactUrlTransformer> _serviceRegistration;

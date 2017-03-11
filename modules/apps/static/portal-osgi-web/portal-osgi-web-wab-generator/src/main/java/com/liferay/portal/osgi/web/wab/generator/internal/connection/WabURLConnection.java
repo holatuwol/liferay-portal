@@ -14,25 +14,22 @@
 
 package com.liferay.portal.osgi.web.wab.generator.internal.connection;
 
-import com.liferay.portal.kernel.util.FastDateFormatFactoryUtil;
-import com.liferay.portal.kernel.util.FileUtil;
-import com.liferay.portal.kernel.util.HttpUtil;
-import com.liferay.portal.kernel.util.StreamUtil;
-import com.liferay.portal.kernel.util.StringPool;
 import com.liferay.portal.osgi.web.wab.generator.WabGenerator;
-import com.liferay.portal.util.FastDateFormatFactoryImpl;
-import com.liferay.portal.util.FileImpl;
-import com.liferay.portal.util.HttpImpl;
+import com.liferay.portal.osgi.web.wab.generator.internal.util.URLs;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import java.net.URL;
 import java.net.URLConnection;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+
+import java.util.Comparator;
 import java.util.Map;
 
 /**
@@ -49,8 +46,6 @@ public class WabURLConnection extends URLConnection {
 
 		_classLoader = classLoader;
 		_wabGenerator = wabGenerator;
-
-		wireSpringUtils();
 	}
 
 	@Override
@@ -61,9 +56,7 @@ public class WabURLConnection extends URLConnection {
 	public InputStream getInputStream() throws IOException {
 		URL url = getURL();
 
-		String query = url.getQuery();
-
-		Map<String, String[]> parameters = HttpUtil.getParameterMap(query);
+		Map<String, String[]> parameters = URLs.parameterMap(url);
 
 		if (!parameters.containsKey("Web-ContextPath")) {
 			throw new IllegalArgumentException(
@@ -80,42 +73,26 @@ public class WabURLConnection extends URLConnection {
 			return new FileInputStream(processedFile);
 		}
 		finally {
-			FileUtil.deltree(file.getParentFile());
+			File rootPath = file.getParentFile();
+
+			Files.walk(
+				rootPath.toPath()).sorted(Comparator.reverseOrder()).map(
+				Path::toFile).forEach(File::delete);
 		}
 	}
 
 	protected File transferToTempFile(URL url) throws IOException {
 		String path = url.getPath();
 
-		String fileName = path.substring(
-			path.lastIndexOf(StringPool.SLASH) + 1);
+		String fileName = path.substring(path.lastIndexOf('/') + 1);
 
-		File file = new File(FileUtil.createTempFolder(), fileName);
+		Path file = Files.createTempFile(fileName, ".tmp");
 
-		StreamUtil.transfer(url.openStream(), new FileOutputStream(file));
-
-		return file;
-	}
-
-	protected void wireSpringUtils() {
-		if (FastDateFormatFactoryUtil.getFastDateFormatFactory() == null) {
-			FastDateFormatFactoryUtil instance =
-				new FastDateFormatFactoryUtil();
-
-			instance.setFastDateFormatFactory(new FastDateFormatFactoryImpl());
+		try (InputStream inputStream = url.openStream()) {
+			Files.copy(inputStream, file, StandardCopyOption.COPY_ATTRIBUTES);
 		}
 
-		if (FileUtil.getFile() == null) {
-			FileUtil instance = new FileUtil();
-
-			instance.setFile(new FileImpl());
-		}
-
-		if (HttpUtil.getHttp() == null) {
-			HttpUtil instance = new HttpUtil();
-
-			instance.setHttp(new HttpImpl());
-		}
+		return file.toFile();
 	}
 
 	private final ClassLoader _classLoader;
