@@ -181,7 +181,7 @@ public class SiteAdministrationPanelCategoryDisplayContext {
 					group, layout.isPrivateLayout());
 			}
 			catch (PortalException pe) {
-				_log.error(pe);
+				_log.error("Error getting live group url", pe);
 			}
 		}
 		else if (group.isStagingGroup()) {
@@ -353,9 +353,13 @@ public class SiteAdministrationPanelCategoryDisplayContext {
 	}
 
 	public boolean isShowSiteSelector() throws PortalException {
-		List<Group> mySites = getMySites();
+		HttpServletRequest request = PortalUtil.getHttpServletRequest(
+			_portletRequest);
 
-		if (mySites.isEmpty()) {
+		List<Group> mySites = getMySites();
+		List<Group> recentSites = _recentGroupManager.getRecentGroups(request);
+
+		if (mySites.isEmpty() && recentSites.isEmpty()) {
 			return false;
 		}
 

@@ -840,14 +840,15 @@ public class PortletURLImpl
 		addPortalAuthToken(sb, key);
 		addPortletAuthToken(sb, key);
 
-		visitReservedParameters((name, value) -> {
-			if (!isParameterIncludedInPath(name)) {
-				sb.append(name);
-				sb.append(StringPool.EQUAL);
-				sb.append(processValue(key, value));
-				sb.append(StringPool.AMPERSAND);
-			}
-		});
+		visitReservedParameters(
+			(name, value) -> {
+				if (!isParameterIncludedInPath(name)) {
+					sb.append(name);
+					sb.append(StringPool.EQUAL);
+					sb.append(processValue(key, value));
+					sb.append(StringPool.AMPERSAND);
+				}
+			});
 
 		if (_doAsUserId > 0) {
 			try {
@@ -858,7 +859,7 @@ public class PortletURLImpl
 				sb.append(StringPool.AMPERSAND);
 			}
 			catch (Exception e) {
-				_log.error(e);
+				_log.error("Error fetching company", e);
 			}
 		}
 		else {
@@ -1321,7 +1322,7 @@ public class PortletURLImpl
 			}
 		}
 		catch (Exception e) {
-			_log.error(e);
+			_log.error("Error fetching company key", e);
 		}
 
 		return null;
