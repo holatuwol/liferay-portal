@@ -63,7 +63,7 @@ public class PortletDataContextFactoryImpl
 		}
 
 		PortletDataContext clonePortletDataContext = new PortletDataContextImpl(
-			_lockManager);
+			_lockManager, false);
 
 		clonePortletDataContext.setCompanyId(portletDataContext.getCompanyId());
 		clonePortletDataContext.setCompanyGroupId(
@@ -154,6 +154,14 @@ public class PortletDataContextFactoryImpl
 		portletDataContext.setZipReader(zipReader);
 
 		readXML(portletDataContext);
+
+		Map<Long, Long> groupIds =
+			(Map<Long, Long>)portletDataContext.getNewPrimaryKeysMap(
+				Group.class);
+
+		groupIds.put(
+			portletDataContext.getSourceCompanyGroupId(),
+			portletDataContext.getCompanyGroupId());
 
 		return portletDataContext;
 	}
