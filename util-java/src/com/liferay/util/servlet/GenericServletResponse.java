@@ -35,7 +35,7 @@ public class GenericServletResponse extends HttpServletResponseWrapper {
 		_ubaos = new UnsyncByteArrayOutputStream();
 	}
 
-	public int getContentLength() {
+	public long getContentLength() {
 		return _contentLength;
 	}
 
@@ -73,7 +73,7 @@ public class GenericServletResponse extends HttpServletResponseWrapper {
 		_contentType = type;
 	}
 
-	private int _contentLength;
+	private long _contentLength;
 	private String _contentType;
 	private final UnsyncByteArrayOutputStream _ubaos;
 

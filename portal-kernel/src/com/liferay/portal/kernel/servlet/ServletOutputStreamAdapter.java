@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 
 /**
  * @author Shuyang Zhou
@@ -54,5 +55,17 @@ public class ServletOutputStreamAdapter extends ServletOutputStream {
 	}
 
 	protected OutputStream outputStream;
+
+	@Override
+	public boolean isReady() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void setWriteListener(WriteListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

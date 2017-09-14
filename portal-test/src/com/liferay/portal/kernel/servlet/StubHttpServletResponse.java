@@ -221,4 +221,10 @@ public class StubHttpServletResponse implements HttpServletResponse {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public void setContentLengthLong(long length) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -17,6 +17,7 @@ package com.liferay.portal.kernel.servlet;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 
 /**
@@ -74,5 +75,23 @@ public class ServletInputStreamAdapter extends ServletInputStream {
 	}
 
 	protected InputStream inputStream;
+
+	@Override
+	public boolean isFinished() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isReady() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void setReadListener(ReadListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

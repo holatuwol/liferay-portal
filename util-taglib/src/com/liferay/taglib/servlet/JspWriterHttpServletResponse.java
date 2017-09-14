@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.jsp.JspWriter;
@@ -45,6 +46,18 @@ public class JspWriterHttpServletResponse extends HttpServletResponseWrapper {
 				JspWriter jspWriter = _pageContext.getOut();
 
 				jspWriter.write(b);
+			}
+
+			@Override
+			public boolean isReady() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public void setWriteListener(WriteListener listener) {
+				// TODO Auto-generated method stub
+				
 			}
 
 		};
