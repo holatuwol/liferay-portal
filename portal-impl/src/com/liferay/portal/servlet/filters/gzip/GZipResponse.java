@@ -57,6 +57,8 @@ public class GZipResponse extends HttpServletResponseWrapper {
 	}
 
 	public void finishResponse() throws IOException {
+		getResponse().setContentLength(-1);
+
 		if (_printWriter != null) {
 			_printWriter.close();
 		}
