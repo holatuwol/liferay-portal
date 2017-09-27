@@ -317,6 +317,14 @@ public class LiferayServletContext implements ServletContext {
 	}
 
 	/**
+	* @since Servlet 3.1
+	*/
+	@Override
+	public String getVirtualServerName() {
+		return null;
+	}
+
+	/**
 	 * @deprecated As of 7.0.0
 	 */
 	@Deprecated
@@ -363,11 +371,5 @@ public class LiferayServletContext implements ServletContext {
 	}
 
 	private final ServletContext _servletContext;
-
-	@Override
-	public String getVirtualServerName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }

@@ -40,6 +40,22 @@ public class ServletInputStreamAdapter extends ServletInputStream {
 	}
 
 	@Override
+	public boolean isFinished() {
+
+		// TODO Auto-generated method stub
+
+		return false;
+	}
+
+	@Override
+	public boolean isReady() {
+
+		// TODO Auto-generated method stub
+
+		return false;
+	}
+
+	@Override
 	public void mark(int readLimit) {
 		inputStream.mark(readLimit);
 	}
@@ -70,28 +86,17 @@ public class ServletInputStreamAdapter extends ServletInputStream {
 	}
 
 	@Override
+	public void setReadListener(ReadListener listener) {
+
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
 	public long skip(long skip) throws IOException {
 		return inputStream.skip(skip);
 	}
 
 	protected InputStream inputStream;
-
-	@Override
-	public boolean isFinished() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isReady() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void setReadListener(ReadListener listener) {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

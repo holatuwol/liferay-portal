@@ -23,19 +23,22 @@ import javax.servlet.WriteListener;
 public class NullServletOutputStream extends ServletOutputStream {
 
 	@Override
-	public void write(int b) {
-	}
-
-	@Override
 	public boolean isReady() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
+	/**
+	* @since Servlet 3.1
+	*/
 	@Override
 	public void setWriteListener(WriteListener listener) {
-		// TODO Auto-generated method stub
-		
+	}
+
+	/**
+	* @since Servlet 3.1
+	*/
+	@Override
+	public void write(int b) {
 	}
 
 }

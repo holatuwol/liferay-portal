@@ -350,7 +350,7 @@ public class BufferCacheServletResponse extends MetaInfoCacheServletResponse {
 		// processing may cause length change
 
 	}
-	
+
 	@Override
 	public void setContentLengthLong(long contentLength) {
 

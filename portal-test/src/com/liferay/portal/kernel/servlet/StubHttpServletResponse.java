@@ -182,6 +182,13 @@ public class StubHttpServletResponse implements HttpServletResponse {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	* @since Servlet 3.1
+	*/
+	@Override
+	public void setContentLengthLong(long length) {
+	}
+
 	@Override
 	public void setContentType(String contentType) {
 		throw new UnsupportedOperationException();
@@ -219,12 +226,6 @@ public class StubHttpServletResponse implements HttpServletResponse {
 	@Override
 	public void setStatus(int status, String message) {
 		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public void setContentLengthLong(long length) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

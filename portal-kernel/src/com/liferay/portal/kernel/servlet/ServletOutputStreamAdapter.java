@@ -39,6 +39,21 @@ public class ServletOutputStreamAdapter extends ServletOutputStream {
 		outputStream.flush();
 	}
 
+	/**
+	* @since Servlet 3.1
+	*/
+	@Override
+	public boolean isReady() {
+		return false;
+	}
+
+	/**
+	* @since Servlet 3.1
+	*/
+	@Override
+	public void setWriteListener(WriteListener listener) {
+	}
+
 	@Override
 	public void write(byte[] bytes) throws IOException {
 		outputStream.write(bytes, 0, bytes.length);
@@ -55,17 +70,5 @@ public class ServletOutputStreamAdapter extends ServletOutputStream {
 	}
 
 	protected OutputStream outputStream;
-
-	@Override
-	public boolean isReady() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public void setWriteListener(WriteListener listener) {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

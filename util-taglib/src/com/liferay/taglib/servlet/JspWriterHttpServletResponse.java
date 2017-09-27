@@ -42,22 +42,25 @@ public class JspWriterHttpServletResponse extends HttpServletResponseWrapper {
 		return new ServletOutputStream() {
 
 			@Override
+			public boolean isReady() {
+				return false;
+			}
+
+			/**
+			* @since Servlet 3.1
+			*/
+			@Override
+			public void setWriteListener(WriteListener listener) {
+			}
+
+			/**
+			* @since Servlet 3.1
+			*/
+			@Override
 			public void write(int b) throws IOException {
 				JspWriter jspWriter = _pageContext.getOut();
 
 				jspWriter.write(b);
-			}
-
-			@Override
-			public boolean isReady() {
-				// TODO Auto-generated method stub
-				return false;
-			}
-
-			@Override
-			public void setWriteListener(WriteListener listener) {
-				// TODO Auto-generated method stub
-				
 			}
 
 		};
