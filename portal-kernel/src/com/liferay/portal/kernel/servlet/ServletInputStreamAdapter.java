@@ -39,20 +39,28 @@ public class ServletInputStreamAdapter extends ServletInputStream {
 		inputStream.close();
 	}
 
+	/**
+	* @since Servlet 3.1
+	*/
 	@Override
 	public boolean isFinished() {
-
-		// TODO Auto-generated method stub
-
 		return false;
 	}
 
+	/**
+	* @since Servlet 3.1
+	*/
 	@Override
 	public boolean isReady() {
-
-		// TODO Auto-generated method stub
-
 		return false;
+	}
+	
+
+	/**
+	* @since Servlet 3.1
+	*/
+	@Override
+	public void setReadListener(ReadListener listener) {
 	}
 
 	@Override
@@ -84,14 +92,7 @@ public class ServletInputStreamAdapter extends ServletInputStream {
 	public void reset() throws IOException {
 		inputStream.reset();
 	}
-
-	@Override
-	public void setReadListener(ReadListener listener) {
-
-		// TODO Auto-generated method stub
-
-	}
-
+	
 	@Override
 	public long skip(long skip) throws IOException {
 		return inputStream.skip(skip);
