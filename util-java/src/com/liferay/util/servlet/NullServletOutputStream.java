@@ -24,7 +24,7 @@ public class NullServletOutputStream extends ServletOutputStream {
 
 	@Override
 	public boolean isReady() {
-		return false;
+		return true;
 	}
 
 	/**

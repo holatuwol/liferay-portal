@@ -321,7 +321,7 @@ public class LiferayServletContext implements ServletContext {
 	*/
 	@Override
 	public String getVirtualServerName() {
-		return null;
+		return _servletContext.getVirtualServerName();
 	}
 
 	/**

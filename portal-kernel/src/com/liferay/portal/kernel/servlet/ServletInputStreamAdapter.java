@@ -52,7 +52,7 @@ public class ServletInputStreamAdapter extends ServletInputStream {
 	*/
 	@Override
 	public boolean isReady() {
-		return false;
+		return true;
 	}
 	
 
