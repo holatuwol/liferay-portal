@@ -2599,6 +2599,35 @@ to version 2.3.2.
 - [LPS-74544]: Update the [Liferay Source Formatter] dependency to version
 1.0.473.
 
+## 3.5.6 - 2017-10-10
+
+### Changed
+- [LPS-75164]: Update the [Liferay Gradle Plugins Source Formatter] dependency
+to version 2.3.3.
+- [LPS-75164]: Update the [Liferay Source Formatter] dependency to version
+1.0.474.
+- [LPS-75175]: Update the [Liferay Gradle Plugins Gulp] dependency to version
+2.0.21.
+- [LPS-75175]: Update the [Liferay Gradle Plugins JS Module Config Generator]
+dependency to version 2.1.21.
+- [LPS-75175]: Update the [Liferay Gradle Plugins JS Transpiler] dependency to
+version 2.3.21.
+
+## 3.5.7 - 2017-10-11
+
+### Changed
+- [LPS-75096]: Update the [Liferay Gradle Plugins Service Builder] dependency
+to version 1.0.56.
+- [LPS-75096]: Update the [Liferay Portal Tools Service Builder] dependency to
+version 1.0.172.
+
+## 3.5.8 - 2017-10-11
+
+### Changed
+- [LPS-74449]: Update the [Liferay CSS Builder] dependency to version 2.0.0.
+- [LPS-74449]: Update the [Liferay Gradle Plugins CSS Builder] dependency to
+version 2.1.5.
+
 [Gradle Bundle Plugin]: https://github.com/TomDmitriev/gradle-bundle-plugin
 [Liferay Alloy Taglib]: https://github.com/liferay/alloy-taglibs
 [Liferay Ant BND]: https://github.com/liferay/liferay-portal/tree/master/modules/sdk/ant-bnd
@@ -2812,6 +2841,7 @@ to version 2.3.2.
 [LPS-74373]: https://issues.liferay.com/browse/LPS-74373
 [LPS-74426]: https://issues.liferay.com/browse/LPS-74426
 [LPS-74433]: https://issues.liferay.com/browse/LPS-74433
+[LPS-74449]: https://issues.liferay.com/browse/LPS-74449
 [LPS-74475]: https://issues.liferay.com/browse/LPS-74475
 [LPS-74490]: https://issues.liferay.com/browse/LPS-74490
 [LPS-74503]: https://issues.liferay.com/browse/LPS-74503
@@ -2831,4 +2861,7 @@ to version 2.3.2.
 [LPS-74933]: https://issues.liferay.com/browse/LPS-74933
 [LPS-75009]: https://issues.liferay.com/browse/LPS-75009
 [LPS-75047]: https://issues.liferay.com/browse/LPS-75047
+[LPS-75096]: https://issues.liferay.com/browse/LPS-75096
+[LPS-75164]: https://issues.liferay.com/browse/LPS-75164
+[LPS-75175]: https://issues.liferay.com/browse/LPS-75175
 [LRDOCS-3023]: https://issues.liferay.com/browse/LRDOCS-3023

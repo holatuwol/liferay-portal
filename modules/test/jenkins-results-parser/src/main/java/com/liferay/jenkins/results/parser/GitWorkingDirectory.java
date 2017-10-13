@@ -144,25 +144,6 @@ public class GitWorkingDirectory {
 	}
 
 	public void checkoutBranch(Branch branch, String options) {
-		if (!branchExists(branch.getName(), null)) {
-			throw new IllegalArgumentException(
-				JenkinsResultsParserUtil.combine(
-					"The branch ", branch.getName(), " could not be found"));
-		}
-
-		Branch currentBranch = getCurrentBranch();
-
-		if (currentBranch != null) {
-			String currentBranchName = currentBranch.getName();
-
-			if (currentBranchName.equals(branch.getName())) {
-				System.out.println(
-					currentBranchName + " is already checked out");
-
-				return;
-			}
-		}
-
 		waitForIndexLock();
 
 		StringBuilder sb = new StringBuilder();
@@ -222,7 +203,7 @@ public class GitWorkingDirectory {
 			timeout++;
 
 			if (timeout >= 59) {
-				currentBranch = getCurrentBranch();
+				Branch currentBranch = getCurrentBranch();
 
 				if ((currentBranch != null) &&
 					branchName.equals(currentBranch.getName())) {
@@ -586,7 +567,19 @@ public class GitWorkingDirectory {
 	public Remote getRemote(String name) {
 		Map<String, Remote> remotes = getRemotes();
 
-		return remotes.get(name);
+		name = name.trim();
+
+		Remote remote = remotes.get(name);
+
+		if ((remote == null) && name.equals("upstream")) {
+			JenkinsResultsParserUtil.sleep(1000);
+
+			remotes = getRemotes();
+
+			return remotes.get(name);
+		}
+
+		return remote;
 	}
 
 	public Set<String> getRemoteNames() {
@@ -657,12 +650,24 @@ public class GitWorkingDirectory {
 		lines = Arrays.copyOfRange(lines, x, lines.length);
 
 		try {
+			StringBuilder sb = new StringBuilder();
+
+			sb.append("Found remotes: ");
+
 			for (int i = 0; i < lines.length; i = i + 2) {
 				Remote remote = new Remote(
 					this, Arrays.copyOfRange(lines, i, i + 2));
 
+				if (i > 0) {
+					sb.append(", ");
+				}
+
+				sb.append(remote.getName());
+
 				remotes.put(remote.getName(), remote);
 			}
+
+			System.out.println(sb);
 		}
 		catch (Throwable t) {
 			System.out.println("Unable to parse remotes\n" + standardOut);
@@ -1308,7 +1313,8 @@ public class GitWorkingDirectory {
 	private static final List<String> _publicOnlyRepositoryNames =
 		Arrays.asList(
 			new String[] {
-				"liferay-blade-samples", "liferay-plugins", "liferay-portal"
+				"liferay-binaries-cache-2017", "liferay-blade-samples",
+				"liferay-plugins", "liferay-portal", "portals-pluto"
 			});
 
 	private File _gitDirectory;
