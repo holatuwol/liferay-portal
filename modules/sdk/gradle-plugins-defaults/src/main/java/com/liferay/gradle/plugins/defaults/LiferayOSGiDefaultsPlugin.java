@@ -3538,6 +3538,8 @@ public class LiferayOSGiDefaultsPlugin implements Plugin<Project> {
 		Configuration configuration =
 			configurationContainer.detachedConfiguration(dependency);
 
+		configuration.setTransitive(false);
+
 		_configureConfigurationNoCache(configuration);
 
 		File file = CollectionUtils.single(configuration.resolve());
@@ -3723,7 +3725,7 @@ public class LiferayOSGiDefaultsPlugin implements Plugin<Project> {
 	}
 
 	private File _getSuiteBndFile(File appBndFile, File portalRootDir) {
-		if (appBndFile == null) {
+		if (portalRootDir == null) {
 			return null;
 		}
 

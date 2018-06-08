@@ -139,22 +139,12 @@ public class CheckstyleUtil {
 		}
 
 		configuration = _addAttribute(
-			configuration, "baseDirName", sourceFormatterArgs.getBaseDirName(),
-			"com.liferay.source.formatter.checkstyle.checks." +
-				"GetterMethodCallCheck");
-		configuration = _addAttribute(
 			configuration, "maxLineLength",
 			String.valueOf(sourceFormatterArgs.getMaxLineLength()),
 			"com.liferay.source.formatter.checkstyle.checks.AppendCheck",
 			"com.liferay.source.formatter.checkstyle.checks.ConcatCheck",
 			"com.liferay.source.formatter.checkstyle.checks." +
 				"PlusStatementCheck");
-		configuration = _addAttribute(
-			configuration, "portalBranchName",
-			SourceFormatterUtil.getPropertyValue(
-				SourceFormatterUtil.GIT_LIFERAY_PORTAL_BRANCH, propertiesMap),
-			"com.liferay.source.formatter.checkstyle.checks." +
-				"GetterMethodCallCheck");
 		configuration = _addAttribute(
 			configuration, "runOutsidePortalExcludes",
 			SourceFormatterUtil.getPropertyValue(

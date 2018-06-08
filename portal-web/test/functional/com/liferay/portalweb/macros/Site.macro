@@ -82,7 +82,7 @@
 					<var name="name" value="${siteName}" />
 				</execute>
 
-				<execute macro="Modal#submit" />
+				<execute macro="Modal#save" />
 			</then>
 		</if>
 
@@ -387,7 +387,7 @@
 
 		<execute macro="UserNavigator#gotoMemberships" />
 
-		<execute function="AssertClick" locator1="UsersAndOrganizationsEditUser#SITES_SELECT_LINK" value1="Select" />
+		<execute function="AssertClick" locator1="UsersAndOrganizationsEditUser#SITES_SELECT_LINK" value1="SELECT" />
 
 		<execute function="SelectFrame" locator1="IFrame#SELECT_USER_SITES" />
 
@@ -1044,7 +1044,7 @@
 			<var name="name" value="${siteName}" />
 		</execute>
 
-		<execute macro="Button#clickModalSubmit" />
+		<execute macro="Button#clickSave" />
 
 		<if>
 			<equals arg1="${siteNameInvalid}" arg2="Duplicate" />
