@@ -27,7 +27,9 @@ import com.liferay.journal.model.JournalFolderConstants;
 import com.liferay.journal.service.JournalFolderLocalService;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.WorkflowDefinitionLink;
 import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.WorkflowDefinitionLinkLocalService;
 import com.liferay.portal.kernel.trash.TrashHandler;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -136,38 +138,49 @@ public class JournalFolderStagedModelDataHandler
 
 		long groupId = portletDataContext.getScopeGroupId();
 
+		JournalFolder existingFolder = null;
+
 		if (portletDataContext.isDataStrategyMirror()) {
-			JournalFolder existingFolder = fetchStagedModelByUuidAndGroupId(
+			existingFolder = fetchStagedModelByUuidAndGroupId(
 				folder.getUuid(), groupId);
 
-			if (existingFolder == null) {
-				String name = _journalFolderLocalService.getUniqueFolderName(
-					null, groupId, parentFolderId, folder.getName(), 2);
-
-				serviceContext.setUuid(folder.getUuid());
-
-				importedFolder = _journalFolderLocalService.addFolder(
-					userId, groupId, parentFolderId, name,
-					folder.getDescription(), serviceContext);
-			}
-			else {
-				String name = _journalFolderLocalService.getUniqueFolderName(
-					folder.getUuid(), groupId, parentFolderId, folder.getName(),
-					2);
-
-				importedFolder = _journalFolderLocalService.updateFolder(
-					userId, serviceContext.getScopeGroupId(),
-					existingFolder.getFolderId(), parentFolderId, name,
-					folder.getDescription(), false, serviceContext);
-			}
+			serviceContext.setUuid(folder.getUuid());
 		}
-		else {
+
+		if (existingFolder == null) {
 			String name = _journalFolderLocalService.getUniqueFolderName(
 				null, groupId, parentFolderId, folder.getName(), 2);
 
 			importedFolder = _journalFolderLocalService.addFolder(
 				userId, groupId, parentFolderId, name, folder.getDescription(),
 				serviceContext);
+
+			WorkflowDefinitionLink workflowDefinitionLink =
+				_workflowDefinitionLinkLocalService.fetchWorkflowDefinitionLink(
+					folder.getCompanyId(), groupId,
+					JournalFolder.class.getName(), folder.getFolderId(), -1);
+
+			if (workflowDefinitionLink != null) {
+				importedFolder.setRestrictionType(folder.getRestrictionType());
+
+				_journalFolderLocalService.updateJournalFolder(importedFolder);
+
+				_workflowDefinitionLinkLocalService.addWorkflowDefinitionLink(
+					userId, importedFolder.getCompanyId(), groupId,
+					JournalFolder.class.getName(), importedFolder.getFolderId(),
+					workflowDefinitionLink.getTypePK(),
+					workflowDefinitionLink.getWorkflowDefinitionName(),
+					workflowDefinitionLink.getWorkflowDefinitionVersion());
+			}
+		}
+		else {
+			String name = _journalFolderLocalService.getUniqueFolderName(
+				folder.getUuid(), groupId, parentFolderId, folder.getName(), 2);
+
+			importedFolder = _journalFolderLocalService.updateFolder(
+				userId, serviceContext.getScopeGroupId(),
+				existingFolder.getFolderId(), parentFolderId, name,
+				folder.getDescription(), false, serviceContext);
 		}
 
 		importFolderDDMStructures(portletDataContext, folder, importedFolder);
@@ -278,7 +291,17 @@ public class JournalFolderStagedModelDataHandler
 		_journalFolderLocalService = journalFolderLocalService;
 	}
 
+	@Reference(unbind = "-")
+	protected void setWorkflowDefinitionLinkLocalService(
+		WorkflowDefinitionLinkLocalService workflowDefinitionLinkLocalService) {
+
+		_workflowDefinitionLinkLocalService =
+			workflowDefinitionLinkLocalService;
+	}
+
 	private DDMStructureLocalService _ddmStructureLocalService;
 	private JournalFolderLocalService _journalFolderLocalService;
+	private WorkflowDefinitionLinkLocalService
+		_workflowDefinitionLinkLocalService;
 
 }

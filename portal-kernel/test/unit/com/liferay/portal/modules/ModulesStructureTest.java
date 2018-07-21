@@ -196,12 +196,14 @@ public class ModulesStructureTest {
 											"plugin\""));
 						}
 
-						Path buildExtGradlePath = dirPath.resolve(
-							"build-ext.gradle");
+						if (!liferaySpringBootDefaultsPlugin) {
+							Path buildExtGradlePath = dirPath.resolve(
+								"build-ext.gradle");
 
-						Assert.assertFalse(
-							"Forbidden " + buildExtGradlePath,
-							Files.deleteIfExists(buildExtGradlePath));
+							Assert.assertFalse(
+								"Forbidden " + buildExtGradlePath,
+								Files.deleteIfExists(buildExtGradlePath));
+						}
 					}
 
 					if (Files.exists(dirPath.resolve("package.json"))) {
@@ -378,7 +380,7 @@ public class ModulesStructureTest {
 						_testAntPluginIgnoreFiles(dirPath);
 					}
 					else if (StringUtil.startsWith(
-								dirName, "frontend-theme-") &&
+								 dirName, "frontend-theme-") &&
 							 Files.exists(dirPath.resolve("gulpfile.js"))) {
 
 						_testThemeIgnoreFiles(
