@@ -4088,6 +4088,60 @@ the `buildChangeLog` task.
 - [LPS-74544]: Update the [Liferay Gradle Plugins] dependency to version
 3.12.74.
 
+## 5.4.80 - 2018-07-16
+
+### Changed
+- [LPS-74544]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.75.
+
+## 5.4.81 - 2018-07-16
+
+### Changed
+- [LPS-74544]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.76.
+
+## 5.4.82 - 2018-07-16
+
+### Changed
+- [LPS-74544]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.77.
+
+## 5.4.83 - 2018-07-17
+
+### Changed
+- [LPS-74544]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.78.
+
+## 5.4.84 - 2018-07-17
+
+### Changed
+- [LPS-74544]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.79.
+
+## 5.4.85 - 2018-07-17
+
+### Changed
+- [LPS-83520]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.80.
+
+## 5.4.86 - 2018-07-18
+
+### Changed
+- [LPS-83576]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.81.
+
+## 5.4.87 - 2018-07-18
+
+### Changed
+- [LPS-83483]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.82.
+
+## 5.4.88 - 2018-07-18
+
+### Changed
+- [LPS-74544]: Update the [Liferay Gradle Plugins] dependency to version
+3.12.83.
+
 [Find Security Bugs]: https://github.com/liferay/liferay-portal/tree/master/modules/third-party/com-h3xstream-findsecbugs
 [Gradle License Report]: https://github.com/jk1/Gradle-License-Report
 [Liferay CDN]: https://repository-cdn.liferay.com/nexus/content/groups/public
@@ -4528,6 +4582,9 @@ the `buildChangeLog` task.
 [LPS-83104]: https://issues.liferay.com/browse/LPS-83104
 [LPS-83220]: https://issues.liferay.com/browse/LPS-83220
 [LPS-83300]: https://issues.liferay.com/browse/LPS-83300
+[LPS-83483]: https://issues.liferay.com/browse/LPS-83483
+[LPS-83520]: https://issues.liferay.com/browse/LPS-83520
+[LPS-83576]: https://issues.liferay.com/browse/LPS-83576
 [LRDOCS-2594]: https://issues.liferay.com/browse/LRDOCS-2594
 [LRDOCS-2841]: https://issues.liferay.com/browse/LRDOCS-2841
 [LRDOCS-2981]: https://issues.liferay.com/browse/LRDOCS-2981
