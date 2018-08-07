@@ -307,11 +307,11 @@ public abstract class BaseUpgradePortletPreferences extends UpgradeProcess {
 
 						ps3.addBatch();
 					}
-
-					ps2.executeBatch();
-
-					ps3.executeBatch();
 				}
+
+				ps2.executeBatch();
+
+				ps3.executeBatch();
 			}
 		}
 	}
