@@ -32,8 +32,20 @@ public class DeleteOperation implements Operation {
 	}
 
 	public DeleteOperation(String resourceName, String uri) {
+		this(resourceName, uri, null);
+	}
+
+	public DeleteOperation(
+		String resourceName, String uri, String customRoute) {
+
 		_resourceName = resourceName;
 		_uri = uri;
+		_customRoute = customRoute;
+	}
+
+	@Override
+	public String getCustomRoute() {
+		return _customRoute;
 	}
 
 	@Override
@@ -48,7 +60,7 @@ public class DeleteOperation implements Operation {
 
 	@Override
 	public String getName() {
-		return _resourceName + "/delete";
+		return _resourceName + "/" + (isCustom() ? _customRoute : "delete");
 	}
 
 	@Override
@@ -61,6 +73,16 @@ public class DeleteOperation implements Operation {
 		return false;
 	}
 
+	@Override
+	public boolean isCustom() {
+		if (_customRoute != null) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private final String _customRoute;
 	private final String _resourceName;
 	private final String _uri;
 

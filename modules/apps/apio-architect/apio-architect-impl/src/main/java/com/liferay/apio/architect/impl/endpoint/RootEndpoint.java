@@ -15,6 +15,7 @@
 package com.liferay.apio.architect.impl.endpoint;
 
 import com.liferay.apio.architect.impl.documentation.Documentation;
+import com.liferay.apio.architect.impl.entrypoint.CustomOperationsEndpoint;
 import com.liferay.apio.architect.impl.entrypoint.EntryPoint;
 
 import javax.ws.rs.GET;
@@ -46,6 +47,15 @@ public interface RootEndpoint {
 	 */
 	@Path("/b/")
 	public BinaryEndpoint binaryEndpoint();
+
+	/**
+	 * Returns the endpoint for custom operations.
+	 *
+	 * @return the endpoint
+	 */
+	@Path("/c/{name}")
+	public CustomOperationsEndpoint customOperationsEndpoint(
+		@PathParam("name") String name);
 
 	/**
 	 * Returns the application profile.

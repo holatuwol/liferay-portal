@@ -81,7 +81,7 @@
 	</category>
 
 	<category name="com.liferay.portal.bootstrap.ModuleFrameworkImpl">
-		<priority value="WARN" />
+		<priority value="INFO" />
 	</category>
 
 	<category name="com.liferay.portal.captcha.CaptchaImpl">
@@ -980,6 +980,10 @@
 		<priority value="ERROR" />
 	</category>
 
+	<category name="com.zaxxer.hikari">
+		<priority value="WARN" />
+	</category>
+
 	<category name="de.hunsicker">
 		<priority value="ERROR" />
 	</category>
@@ -1014,6 +1018,10 @@
 
 	<category name="net.sf.hibernate">
 		<priority value="ERROR" />
+	</category>
+
+	<category name="org.apache.aries.jax.rs.whiteboard.activator.CxfJaxrsBundleActivator">
+		<priority value="WARN" />
 	</category>
 
 	<category name="org.apache.axis">

@@ -645,6 +645,12 @@ public interface PropsKeys {
 
 	public static final String DISCUSSION_MAX_COMMENTS = "discussion.max.comments";
 
+	public static final String DISCUSSION_SUBSCRIBE = "discussion.subscribe";
+
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public static final String DISCUSSION_SUBSCRIBE_BY_DEFAULT = "discussion.subscribe.by.default";
 
 	public static final String DL_ACTIONS_VISIBLE = "dl.actions.visible";
@@ -926,6 +932,10 @@ public interface PropsKeys {
 	public static final String FIELD_ENABLE_COM_LIFERAY_PORTAL_KERNEL_MODEL_CONTACT_BIRTHDAY = "field.enable.com.liferay.portal.kernel.model.Contact.birthday";
 
 	public static final String FIELD_ENABLE_COM_LIFERAY_PORTAL_KERNEL_MODEL_CONTACT_MALE = "field.enable.com.liferay.portal.kernel.model.Contact.male";
+
+	public static final String FIELD_ENABLE_COM_LIFERAY_PORTAL_KERNEL_MODEL_LAYOUT_JAVASCRIPT = "field.enable.com.liferay.portal.kernel.model.Layout.javascript";
+
+	public static final String FIELD_ENABLE_COM_LIFERAY_PORTAL_KERNEL_MODEL_LAYOUTSET_JAVASCRIPT = "field.enable.com.liferay.portal.kernel.model.LayoutSet.javascript";
 
 	public static final String FIELD_ENABLE_COM_LIFERAY_PORTAL_KERNEL_MODEL_ORGANIZATION_STATUS = "field.enable.com.liferay.portal.kernel.model.Organization.status";
 
@@ -2325,10 +2335,18 @@ public interface PropsKeys {
 
 	public static final String SPRING_HIBERNATE_CONFIGURATION_PROXY_FACTORY_PRELOAD_CLASSLOADER_CLASSES = "spring.hibernate.configuration.proxy.factory.preload.classloader.classes";
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public static final String SPRING_HIBERNATE_DATA_SOURCE = "spring.hibernate.data.source";
 
 	public static final String SPRING_HIBERNATE_SESSION_DELEGATED = "spring.hibernate.session.delegated";
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public static final String SPRING_HIBERNATE_SESSION_FACTORY = "spring.hibernate.session.factory";
 
 	public static final String SPRING_HIBERNATE_SESSION_FACTORY_PRELOAD_CLASSLOADER_CLASSES = "spring.hibernate.session.factory.preload.classloader.classes";

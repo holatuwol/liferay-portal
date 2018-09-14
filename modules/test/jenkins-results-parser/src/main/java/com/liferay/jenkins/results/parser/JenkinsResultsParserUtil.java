@@ -58,7 +58,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
@@ -781,9 +780,9 @@ public class JenkinsResultsParserUtil {
 		List<JenkinsMaster> jenkinsMasters = new ArrayList<>();
 
 		for (int i = 1;
-				buildProperties.containsKey(
-					"master.slaves(" + prefix + "-" + i + ")");
-				i++) {
+			 buildProperties.containsKey(
+				 "master.slaves(" + prefix + "-" + i + ")");
+			 i++) {
 
 			jenkinsMasters.add(new JenkinsMaster(prefix + "-" + i));
 		}
@@ -1049,7 +1048,7 @@ public class JenkinsResultsParserUtil {
 			String item = null;
 
 			while (true) {
-				item = list.get(getRandomValue(0, list.size() - 1));
+				item = getRandomString(list);
 
 				if (randomList.contains(item)) {
 					continue;
@@ -1062,6 +1061,10 @@ public class JenkinsResultsParserUtil {
 		}
 
 		return randomList;
+	}
+
+	public static String getRandomString(List<String> list) {
+		return list.get(getRandomValue(0, list.size() - 1));
 	}
 
 	public static int getRandomValue(int start, int end) {
@@ -1133,50 +1136,6 @@ public class JenkinsResultsParserUtil {
 		throws Exception {
 
 		return getSlaves(getBuildProperties(), jenkinsMasterPatternString);
-	}
-
-	public static void invokeJob(
-		String cohortName, String jobName,
-		Map<String, String> invocationParameters) {
-
-		Properties buildProperties;
-
-		try {
-			buildProperties = getBuildProperties();
-		}
-		catch (IOException ioe) {
-			throw new RuntimeException(ioe);
-		}
-
-		List<JenkinsMaster> jenkinsMasters = getJenkinsMasters(
-			buildProperties, cohortName);
-
-		String randomJenkinsURL = getMostAvailableMasterURL(
-			"http://" + cohortName + ".liferay.com", jenkinsMasters.size());
-
-		StringBuilder sb = new StringBuilder();
-
-		sb.append(randomJenkinsURL);
-		sb.append("/job/");
-		sb.append(jobName);
-		sb.append("/buildWithParameters?token=");
-		sb.append(buildProperties.getProperty("jenkins.authentication.token"));
-
-		for (Map.Entry<String, String> invocationParameter :
-				invocationParameters.entrySet()) {
-
-			sb.append("&");
-			sb.append(fixURL(invocationParameter.getKey()));
-			sb.append("=");
-			sb.append(fixURL(invocationParameter.getValue()));
-		}
-
-		try {
-			toString(sb.toString());
-		}
-		catch (IOException ioe) {
-			throw new RuntimeException(ioe);
-		}
 	}
 
 	public static boolean isCINode() {
@@ -1289,7 +1248,7 @@ public class JenkinsResultsParserUtil {
 			}
 
 			for (int i = 1; properties.containsKey(_getRedactTokenKey(i));
-					i++) {
+				 i++) {
 
 				String key = properties.getProperty(_getRedactTokenKey(i));
 

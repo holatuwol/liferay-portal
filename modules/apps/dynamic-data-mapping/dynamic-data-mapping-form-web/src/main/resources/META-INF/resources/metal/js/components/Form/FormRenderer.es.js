@@ -1,10 +1,8 @@
 import '../Page/PageRenderer.es';
 import 'clay-button';
-import 'clay-dropdown';
 import {Config} from 'metal-state';
 import {DragDrop} from 'metal-drag-drop';
 import {pageStructure} from '../../util/config.es';
-import {setLocalizedValue} from '../../util/i18n.es';
 import Component from 'metal-component';
 import FormSupport from './FormSupport.es';
 import Soy from 'metal-soy';
@@ -25,7 +23,7 @@ class FormRenderer extends Component {
 		 * @type {?number}
 		 */
 
-		activePage: Config.number().internal().value(0),
+		activePage: Config.number().value(0),
 
 		/**
 		 * @default false
@@ -55,6 +53,15 @@ class FormRenderer extends Component {
 		defaultPageTitle: Config.string().value(Liferay.Language.get('untitled-page')),
 
 		/**
+		 * @default false
+		 * @instance
+		 * @memberof FormRenderer
+		 * @type {boolean}
+		 */
+
+		dropdownExpanded: Config.bool().value(false).internal(),
+
+		/**
 		 * @default grid
 		 * @instance
 		 * @memberof FormRenderer
@@ -62,25 +69,6 @@ class FormRenderer extends Component {
 		 */
 
 		modeRenderer: Config.oneOf(['grid', 'list']).value('grid'),
-
-		/**
-		 * @default array
-		 * @memberof FormRenderer
-		 * @type {?array<object>}
-		 */
-
-		pageSettingsItem: Config.array().value(
-			[
-				{
-					'label': Liferay.Language.get('add-new-page'),
-					'settingsItem': 'add-page'
-				},
-				{
-					'label': Liferay.Language.get('reset-page'),
-					'settingsItem': 'reset-page'
-				}
-			]
-		).internal(),
 
 		/**
 		 * @default []
@@ -109,6 +97,16 @@ class FormRenderer extends Component {
 		if (this.editable && !this.dragAndDropDisabled) {
 			this._startDrag();
 		}
+
+		if (this.refs.dropdown) {
+			this.refs.dropdown.refs.dropdown.on('expandedChanged', this._handleExpandedChanged.bind(this));
+		}
+	}
+
+	disposeInternal() {
+		if (this._dragAndDrop) {
+			this._dragAndDrop.dispose();
+		}
 	}
 
 	/**
@@ -116,15 +114,67 @@ class FormRenderer extends Component {
 	 */
 
 	willReceiveState(nextState) {
-		if (
-			typeof nextState.pages !== 'undefined' &&
-			nextState.pages.newVal.length &&
-			this.editable &&
-			!this.dragAndDropDisabled
-		) {
-			this._dragAndDrop.disposeInternal();
-			this._startDrag();
+		if (nextState.pages) {
+			if (this.editable && !this.dragAndDropDisabled) {
+				if (this._dragAndDrop) {
+					this._dragAndDrop.disposeInternal();
+				}
+				this._startDrag();
+			}
 		}
+		return nextState;
+	}
+
+	_getPageSettingsItems() {
+		const pageSettingsItems = [
+			{
+				'label': Liferay.Language.get('add-new-page'),
+				'settingsItem': 'add-page'
+			}
+		];
+
+		if (this.pages.length === 1) {
+			pageSettingsItems.push(
+				{
+					'label': Liferay.Language.get('reset-page'),
+					'settingsItem': 'reset-page'
+				}
+			);
+		}
+		else {
+			pageSettingsItems.push(
+				{
+					'label': Liferay.Language.get('delete-current-page'),
+					'settingsItem': 'delete-page'
+				}
+			);
+
+			let label = Liferay.Language.get('switch-pagination-to-top');
+
+			if (this.paginationMode == 'wizard') {
+				label = Liferay.Language.get('switch-pagination-to-bottom');
+			}
+
+			pageSettingsItems.push(
+				{
+					label,
+					settingsItem: 'switch-pagination-mode'
+				}
+			);
+		}
+
+		return pageSettingsItems;
+	}
+
+	prepareStateForRender(state) {
+		return {
+			...state,
+			pageSettingsItems: this._getPageSettingsItems()
+		};
+	}
+
+	_handleExpandedChanged({newVal}) {
+		this.dropdownExpanded = newVal;
 	}
 
 	/**
@@ -133,122 +183,50 @@ class FormRenderer extends Component {
 	 */
 
 	_addPage() {
-		const {activePage, pages} = this;
-		const newPage = this.createNewPage();
-		const newPageIndex = pages.length;
-
-		pages[activePage].enabled = false;
-
-		const newPages = [
-			...pages,
-			newPage
-		];
-
-		this.pageSettingsItem = this._changeRemoveLabel(newPages);
-		this.activePage = newPageIndex;
-
-		this.emit('pageAdded', newPages);
+		this.emit('pageAdded');
 	}
 
-	/**
-	 * Update the page settings depending on the number of pages
-	 * @private
-	 */
-
-	_changeRemoveLabel(pages) {
-		let label = Liferay.Language.get('delete-current-page');
-
-		if (pages.length == 1) {
-			label = Liferay.Language.get('reset-page');
-		}
-
-		return this.pageSettingsItem.map(
-			item => {
-				let mappedItem = item;
-
-				if (item.settingsItem == 'reset-page') {
-					mappedItem = {
-						...item,
-						label
-					};
-				}
-
-				return mappedItem;
-			}
-		);
-	}
-
-	/**
+	/*
 	 * @param {Object} data
 	 * @private
 	 */
 
-	_handleSettingsPageClicked({data}) {
+	_handlePageSettingsClicked({data}) {
 		const {settingsItem} = data.item;
+
+		this.dropdownExpanded = false;
 
 		if (settingsItem == 'add-page') {
 			this._addPage();
 		}
-
-		if (settingsItem == 'reset-page') {
+		else if (settingsItem === 'reset-page') {
 			this._resetPage();
 		}
+		else if (settingsItem === 'delete-page') {
+			this._deletePage();
+		}
+		else if (settingsItem == 'switch-pagination-mode') {
+			this._switchPaginationMode();
+		}
+	}
+
+	_switchPaginationMode() {
+		this.emit('paginationModeUpdated');
+	}
+
+	_deletePage() {
+		this.emit('pageDeleted', this.activePage);
 	}
 
 	_resetPage() {
-		const {activePage, pages} = this;
-		let newPages;
-
-		if (pages.length == 1) {
-			newPages = [{
-				...pages[0],
-				rows: []
-			}];
-		}
-		else {
-			newPages = pages
-				.filter(
-					(page, index) => index != activePage
-				)
-				.map(
-					(page, index) => (
-						{
-							...page,
-							enabled: index === activePage - 1
-						}
-					)
-				);
-
-			this.activePage = activePage ? activePage - 1 : activePage;
-			this.pageSettingsItem = this._changeRemoveLabel(newPages);
-		}
-
-		this.emit('pagesUpdated', newPages);
+		this.emit('pageReset');
 	}
 
 	_handleChangePage({delegateTarget: {dataset}}) {
-		const {pages} = this;
 		const {pageId} = dataset;
-		let mode;
-
-		const openSidebar = !pages[pageId].rows.some(
-			({columns}) => columns.some(
-				({fields}) => fields.length
-			)
-		);
 
 		this.activePage = parseInt(pageId, 10);
-
-		if (openSidebar) {
-			mode = 'add';
-		}
-
-		this.emit(
-			'activePageUpdated',
-			{
-				mode
-			}
-		);
+		this.emit('activePageUpdated', this.activePage);
 	}
 
 	/**
@@ -257,23 +235,47 @@ class FormRenderer extends Component {
 	 */
 
 	_handleDragAndDropEnd(data) {
-		if (!data.target) {
-			return;
+		if (data.target) {
+			const sourceIndex = FormSupport.getIndexes(
+				data.source.parentElement.parentElement
+			);
+			const targetIndex = FormSupport.getIndexes(data.target.parentElement);
+
+			data.source.innerHTML = '';
+
+			this._handleFieldMoved(
+				{
+					data,
+					source: sourceIndex,
+					target: targetIndex
+				}
+			);
 		}
+	}
 
-		const sourceIndex = FormSupport.getIndexes(
-			data.source.parentElement.parentElement
+	/**
+	 * @private
+	 */
+
+	_handlePaginationLeftClicked() {
+		const index = this.activePage - 1;
+
+		this.emit(
+			'activePageUpdated',
+			index
 		);
-		const targetIndex = FormSupport.getIndexes(data.target.parentElement);
+	}
 
-		data.source.innerHTML = '';
+	/**
+	 * @private
+	 */
 
-		this._handleFieldMoved(
-			{
-				data,
-				source: sourceIndex,
-				target: targetIndex
-			}
+	_handlePaginationRightClicked() {
+		const index = this.activePage + 1;
+
+		this.emit(
+			'activePageUpdated',
+			index
 		);
 	}
 
@@ -282,15 +284,17 @@ class FormRenderer extends Component {
 	 * @private
 	 */
 
-	_handleFieldMoved({data, target, source}) {
-		this.emit(
-			'fieldMoved',
-			{
-				data,
-				source,
-				target
-			}
-		);
+	_handleFieldEdited(event) {
+		this.emit('fieldEdited', event);
+	}
+
+	/**
+	 * @param {!Object} payload
+	 * @private
+	 */
+
+	_handleFieldMoved(event) {
+		this.emit('fieldMoved', event);
 	}
 
 	/**
@@ -299,7 +303,7 @@ class FormRenderer extends Component {
 	 */
 
 	_handleDeleteButtonClicked(data) {
-		this.emit('deleteButtonClicked', data);
+		this.emit('fieldDeleted', data);
 	}
 
 	/**
@@ -308,7 +312,7 @@ class FormRenderer extends Component {
      */
 
 	_handleDuplicateButtonClicked(data) {
-		this.emit('duplicateButtonClicked', data);
+		this.emit('fieldDuplicated', data);
 	}
 
 	/**
@@ -338,28 +342,6 @@ class FormRenderer extends Component {
 			DragDrop.Events.END,
 			this._handleDragAndDropEnd.bind(this)
 		);
-	}
-
-	/**
-	 * Return a new page object
-	 * @private
-	 * @returns {object}
-	 */
-
-	createNewPage() {
-		const languageId = Liferay.ThemeDisplay.getLanguageId();
-		const page = {
-			description: '',
-			enabled: true,
-			rows: [],
-			showRequiredFieldsWarning: true,
-			title: ''
-		};
-
-		setLocalizedValue(page, languageId, 'title', '');
-		setLocalizedValue(page, languageId, 'description', '');
-
-		return page;
 	}
 }
 

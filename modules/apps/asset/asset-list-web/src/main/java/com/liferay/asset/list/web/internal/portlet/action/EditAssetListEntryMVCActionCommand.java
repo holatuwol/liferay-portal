@@ -15,15 +15,20 @@
 package com.liferay.asset.list.web.internal.portlet.action;
 
 import com.liferay.asset.list.constants.AssetListPortletKeys;
+import com.liferay.asset.list.model.AssetListEntry;
 import com.liferay.asset.list.service.AssetListEntryService;
+import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.service.ServiceContextFactory;
+import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.util.ParamUtil;
+import com.liferay.portal.kernel.util.Portal;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletURL;
 
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -55,17 +60,53 @@ public class EditAssetListEntryMVCActionCommand extends BaseMVCActionCommand {
 		ServiceContext serviceContext = ServiceContextFactory.getInstance(
 			actionRequest);
 
-		if (assetListEntryId <= 0) {
-			_assetListEntryService.addAssetListEntry(
-				serviceContext.getScopeGroupId(), title, type, serviceContext);
+		AssetListEntry assetListEntry = null;
+
+		try {
+			if (assetListEntryId <= 0) {
+				assetListEntry = _assetListEntryService.addAssetListEntry(
+					serviceContext.getScopeGroupId(), title, type,
+					serviceContext);
+			}
+			else {
+				assetListEntry = _assetListEntryService.updateAssetListEntry(
+					assetListEntryId, title);
+			}
 		}
-		else {
-			_assetListEntryService.updateAssetListEntry(
-				assetListEntryId, title);
+		catch (Exception e) {
+			SessionErrors.add(actionRequest, e.getClass());
+
+			hideDefaultErrorMessage(actionRequest);
 		}
+
+		String redirect = _getRedirectURL(actionResponse, assetListEntry);
+
+		sendRedirect(actionRequest, actionResponse, redirect);
+	}
+
+	private String _getRedirectURL(
+		ActionResponse actionResponse, AssetListEntry assetListEntry) {
+
+		LiferayPortletResponse liferayPortletResponse =
+			_portal.getLiferayPortletResponse(actionResponse);
+
+		PortletURL portletURL = liferayPortletResponse.createRenderURL();
+
+		portletURL.setParameter("mvcPath", "/edit_asset_list_entry.jsp");
+
+		if (assetListEntry != null) {
+			portletURL.setParameter(
+				"assetListEntryId",
+				String.valueOf(assetListEntry.getAssetListEntryId()));
+		}
+
+		return portletURL.toString();
 	}
 
 	@Reference
 	private AssetListEntryService _assetListEntryService;
+
+	@Reference
+	private Portal _portal;
 
 }

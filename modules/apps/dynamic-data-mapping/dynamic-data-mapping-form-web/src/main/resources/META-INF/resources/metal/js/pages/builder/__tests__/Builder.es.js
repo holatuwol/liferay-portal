@@ -1,27 +1,123 @@
 import Builder from '../Builder.es';
 import {dom as MetalTestUtil} from 'metal-dom';
+import Pages from './__mock__/mockPages.es';
 
-let component;
 const spritemap = 'icons.svg';
+
 let addButton;
+let basicInfo;
+let component;
+let pages;
+let translationManager;
+
+const mockFieldType = {
+	description: 'Single line or multiline text area.',
+	icon: 'text',
+	label: 'Text Field',
+	name: 'text',
+	settingsContext: {
+		pages: [
+			{
+				rows: [
+					{
+						columns: [
+							{
+								fields: [
+									{
+										fieldName: 'label',
+										localizable: true
+									},
+									{
+										fieldName: 'name'
+									},
+									{
+										fieldName: 'required'
+									},
+									{
+										fieldName: 'type'
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		]
+	},
+	type: 'text'
+};
+
+const fieldTypes = [
+	{
+		description: 'Select date from a Datepicker.',
+		icon: 'calendar',
+		label: 'Date',
+		name: 'date',
+		settingsContext: {
+			pages: []
+		}
+	},
+	mockFieldType,
+	{
+		description: 'Select only one item with a radio button.',
+		icon: 'radio-button',
+		label: 'Single Selection',
+		name: 'radio',
+		settingsContext: {
+			pages: []
+		}
+	},
+	{
+		description: 'Choose an or more options from a list.',
+		icon: 'list',
+		label: 'Select from list',
+		name: 'select',
+		settingsContext: {
+			pages: []
+		}
+	},
+	{
+		description: 'Select options from a matrix.',
+		icon: 'grid',
+		label: 'Grid',
+		name: 'grid',
+		settingsContext: {
+			pages: []
+		}
+	},
+	{
+		description: 'Select multiple options using a checkbox.',
+		icon: 'select-from-list',
+		label: 'Multiple Selection',
+		name: 'checkbox',
+		settingsContext: {
+			pages: []
+		}
+	}
+];
 
 describe(
 	'Builder',
 	() => {
 		beforeEach(
 			() => {
+				pages = JSON.parse(JSON.stringify(Pages));
+
 				jest.useFakeTimers();
 
 				MetalTestUtil.enterDocument('<button id="addFieldButton"></button>');
-
 				MetalTestUtil.enterDocument('<div class="ddm-translation-manager"></div>');
-
 				MetalTestUtil.enterDocument('<div class="ddm-form-basic-info"></div>');
 
 				addButton = document.querySelector('#addFieldButton');
+				basicInfo = document.querySelector('.ddm-form-basic-info');
+				translationManager = document.querySelector('.ddm-translation-manager');
 
 				component = new Builder(
 					{
+						fieldTypes,
+						pages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
@@ -31,9 +127,14 @@ describe(
 		afterEach(
 			() => {
 				MetalTestUtil.exitDocument(addButton);
+				MetalTestUtil.exitDocument(basicInfo);
+				MetalTestUtil.exitDocument(translationManager);
+
 				if (component) {
 					component.dispose();
 				}
+
+				jest.clearAllTimers();
 			}
 		);
 
@@ -47,27 +148,140 @@ describe(
 		it(
 			'should continue to propagate the fieldAdded event',
 			() => {
-				const spy = jest.spyOn(component, 'emit');
 				const {sidebar} = component.refs;
-				const mockEvent = jest.fn();
+				const spy = jest.spyOn(component, 'emit');
 
-				sidebar.emit('fieldAdded', mockEvent);
+				sidebar.emit(
+					'fieldAdded',
+					{
+						fieldType: mockFieldType
+					}
+				);
 
-				expect(spy).toHaveBeenCalled();
+				jest.runAllTimers();
+
 				expect(spy).toHaveBeenCalledWith('fieldAdded', expect.anything());
+			}
+		);
+
+		it(
+			'should continue to propagate the fieldBlurred event',
+			() => {
+				const {sidebar} = component.refs;
+				const spy = jest.spyOn(component, 'emit');
+
+				sidebar.emit('fieldBlurred');
+
+				jest.runAllTimers();
+
+				expect(spy).toHaveBeenCalledWith('fieldBlurred');
+			}
+		);
+
+		it(
+			'should continue to propagate the fieldClicked event',
+			() => {
+				const {FormRenderer} = component.refs;
+				const spy = jest.spyOn(component, 'emit');
+
+				FormRenderer.emit('fieldClicked', 1);
+
+				jest.runAllTimers();
+
+				expect(spy).toHaveBeenCalledWith('fieldClicked', 1);
+			}
+		);
+
+		it(
+			'should continue to propagate the pageAdded event',
+			() => {
+				const {FormRenderer} = component.refs;
+				const spy = jest.spyOn(component, 'emit');
+
+				FormRenderer.emit('pageAdded');
+
+				jest.runAllTimers();
+
+				expect(spy).toHaveBeenCalledWith('pageAdded');
+			}
+		);
+
+		it(
+			'should continue to propagate the pageDeleted event',
+			() => {
+				const {FormRenderer} = component.refs;
+				const spy = jest.spyOn(component, 'emit');
+
+				FormRenderer.emit('pageDeleted');
+
+				jest.runAllTimers();
+
+				expect(spy).toHaveBeenCalledWith('pageDeleted', expect.anything());
+			}
+		);
+
+		it(
+			'should continue to propagate the pagesUpdated event',
+			() => {
+				const {FormRenderer} = component.refs;
+				const spy = jest.spyOn(component, 'emit');
+
+				FormRenderer.emit('pagesUpdated');
+
+				jest.runAllTimers();
+
+				expect(spy).toHaveBeenCalledWith('pagesUpdated', expect.anything());
+			}
+		);
+
+		it(
+			'should continue to propagate the activePageUpdated event',
+			() => {
+				const {FormRenderer} = component.refs;
+				const spy = jest.spyOn(component, 'emit');
+
+				FormRenderer.emit('activePageUpdated');
+
+				jest.runAllTimers();
+
+				expect(spy).toHaveBeenCalledWith('activePageUpdated', expect.anything());
+			}
+		);
+
+		it(
+			'should continue to propagate the fieldDuplicated event',
+			() => {
+				const {FormRenderer} = component.refs;
+				const spy = jest.spyOn(component, 'emit');
+
+				FormRenderer.emit('fieldDuplicated');
+
+				jest.runAllTimers();
+
+				expect(spy).toHaveBeenCalledWith('fieldDuplicated', expect.anything());
 			}
 		);
 
 		it(
 			'should continue to propagate the fieldEdited event',
 			() => {
-				const spy = jest.spyOn(component, 'emit');
 				const {sidebar} = component.refs;
-				const mockEvent = jest.fn();
+				const spy = jest.spyOn(component, 'emit');
 
-				sidebar.emit('fieldEdited', mockEvent);
+				component.props.focusedField = mockFieldType;
 
-				expect(spy).toHaveBeenCalled();
+				sidebar.emit(
+					'fieldEdited',
+					{
+						fieldInstance: {
+							...mockFieldType,
+							fieldName: 'label'
+						}
+					}
+				);
+
+				jest.runAllTimers();
+
 				expect(spy).toHaveBeenCalledWith('fieldEdited', expect.anything());
 			}
 		);
@@ -87,107 +301,127 @@ describe(
 		);
 
 		it(
-			'should continue to propagate the deleteField event',
+			'should open sidebar when the "pageReset" event is received',
 			() => {
-				const spy = jest.spyOn(component, 'emit');
-				const {FormRenderer} = component.refs;
-				const mockEvent = jest.fn();
-
-				FormRenderer.emit('deleteButtonClicked', mockEvent);
-
-				expect(spy).toHaveBeenCalled();
-				expect(spy).toHaveBeenCalledWith('deleteField', expect.anything());
-			}
-		);
-
-		it(
-			'should continue to propagate pagesUpdated event',
-			() => {
-				const spy = jest.spyOn(component, 'emit');
-				const {FormRenderer} = component.refs;
-				const mockEvent = jest.fn();
-
-				FormRenderer.emit('pagesUpdated', mockEvent);
-
-				expect(spy).toHaveBeenCalled();
-				expect(spy).toHaveBeenCalledWith('pagesUpdated', expect.anything());
-			}
-		);
-
-		it(
-			'should continue to propagate pageAdded event',
-			() => {
-				const spy = jest.spyOn(component, 'emit');
-				const {FormRenderer} = component.refs;
-				const mockEvent = jest.fn();
-
-				FormRenderer.emit('pageAdded', mockEvent);
-
-				jest.runAllTimers();
-
-				expect(spy).toHaveBeenCalled();
-				expect(spy).toHaveBeenCalledWith('pagesUpdated', expect.anything());
-			}
-		);
-
-		it(
-			'should continue to propagate the fieldClicked event and open the sidebar',
-			() => {
-				const spy = jest.spyOn(component, 'emit');
 				const {FormRenderer, sidebar} = component.refs;
-				const mockEvent = jest.fn();
 
-				FormRenderer.emit('fieldClicked', mockEvent);
+				FormRenderer.emit('pageReset');
 
 				jest.runAllTimers();
 
-				expect(spy).toHaveBeenCalled();
-				expect(spy).toHaveBeenCalledWith('fieldClicked', expect.anything());
-				expect(sidebar.state.show).toBeTruthy();
+				expect(sidebar.state.open).toBeTruthy();
 			}
 		);
 
 		it(
-			'should continue to propagate the duplicateField event',
+			'should open sidebar when activePage changes and new page has no fields',
+			() => {
+				const spy = jest.spyOn(component, 'openSidebar');
+
+				component.props.pages = [
+					...pages,
+					{
+						rows: []
+					}
+				];
+				component.props.activePage = 1;
+
+				jest.runAllTimers();
+
+				expect(spy).toHaveBeenCalled();
+			}
+		);
+
+		it(
+			'should not open sidebar when activePage changes and new page has fields',
+			() => {
+				const spy = jest.spyOn(component, 'openSidebar');
+
+				component.props.pages = [
+					...pages,
+					...pages
+				];
+				component.props.activePage = 1;
+
+				jest.runAllTimers();
+
+				expect(spy).not.toHaveBeenCalled();
+			}
+		);
+
+		it(
+			'should show modal when trash button gets clicked',
+			() => {
+				const {FormRenderer} = component.refs;
+
+				FormRenderer.emit(
+					'fieldDeleted',
+					{
+						columnIndex: 0,
+						pageIndex: 1,
+						rowIndex: 0
+					}
+				);
+
+				jest.runAllTimers();
+
+				const modal = document.querySelector('.modal');
+
+				expect(modal.classList.contains('show')).toEqual(true);
+
+				expect(component).toMatchSnapshot();
+			}
+		);
+
+		it(
+			'should emit deleteField event when yes is clicked in the modal',
 			() => {
 				const spy = jest.spyOn(component, 'emit');
 				const {FormRenderer} = component.refs;
 				const mockEvent = jest.fn();
 
-				FormRenderer.emit('duplicateButtonClicked', mockEvent);
+				FormRenderer.emit('deleteFieldClicked', mockEvent);
+
+				component.element.querySelectorAll('.modal-content .btn-group .btn-group-item button')[1].click();
 
 				jest.runAllTimers();
 
 				expect(spy).toHaveBeenCalled();
-				expect(spy).toHaveBeenCalledWith('duplicateField', expect.anything());
+				expect(spy).toHaveBeenCalledWith('fieldDeleted', expect.anything());
 			}
 		);
 
 		it(
-			'should open sidebar when active page is changed and mode is "add"',
+			'should not open sidebar when the delete current page option item is clicked',
 			() => {
-				const {FormRenderer} = component.refs;
-				const mode = 'add';
+				const spy = jest.spyOn(component, 'openSidebar');
 
-				FormRenderer.emit('activePageUpdated', {mode});
+				const componentPages = [...pages, ...pages];
+
+				const builderComponent = new Builder(
+					{
+						fieldTypes,
+						pages: componentPages,
+						paginationMode: 'wizard',
+						spritemap
+					}
+				);
+				const data = {
+					item: {
+						settingsItem: 'reset-page'
+					}
+				};
+				const {FormRenderer} = builderComponent.refs;
+
+				FormRenderer._handlePageSettingsClicked(
+					{
+						data
+					}
+				);
 
 				jest.runAllTimers();
 
-				expect(component).toMatchSnapshot();
-			}
-		);
-
-		it(
-			'should not open sidebar when the active page is changed and mode is not "add"',
-			() => {
-				const {FormRenderer} = component.refs;
-				const mockEvent = jest.fn();
-
-				FormRenderer.emit('activePageUpdated', mockEvent);
-
-				jest.runAllTimers();
-
-				expect(component).toMatchSnapshot();
+				expect(spy).not.toHaveBeenCalled();
 			}
 		);
 	}

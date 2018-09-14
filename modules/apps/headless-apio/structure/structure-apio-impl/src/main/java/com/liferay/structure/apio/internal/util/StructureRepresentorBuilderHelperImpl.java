@@ -141,10 +141,6 @@ public class StructureRepresentorBuilderHelperImpl
 			"description", DDMStructure::getDescription
 		).addLocalizedStringByLocale(
 			"name", DDMStructure::getName
-		).addNestedList(
-			"formPages", this::getFormLayoutPages,
-			formLayoutPageBuilder ->
-				buildFormLayoutPageFirstStep(formLayoutPageBuilder).build()
 		).addStringList(
 			"availableLanguages",
 			ddmStructure -> Arrays.asList(
@@ -163,10 +159,6 @@ public class StructureRepresentorBuilderHelperImpl
 			"headline", FormLayoutPage::getTitle
 		).addLocalizedStringByLocale(
 			"text", FormLayoutPage::getDescription
-		).addNestedList(
-			"fields", FormLayoutPage::getFields,
-			ddmFormFieldBuilder -> buildDDMFormFieldFirstStep(
-				ddmFormFieldBuilder).build()
 		);
 	}
 
@@ -305,7 +297,7 @@ public class StructureRepresentorBuilderHelperImpl
 	private static List<String> _getNestedFieldNames(
 		List<String> ddmFormFieldNames, DDMStructure ddmStructure) {
 
-		List<DDMFormField> ddmFormFields = ddmStructure.getDDMFormFields(false);
+		List<DDMFormField> ddmFormFields = ddmStructure.getDDMFormFields(true);
 
 		Stream<DDMFormField> ddmFormFieldStream = ddmFormFields.stream();
 

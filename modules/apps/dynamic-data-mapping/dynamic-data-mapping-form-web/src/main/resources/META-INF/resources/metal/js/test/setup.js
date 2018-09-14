@@ -1,8 +1,1 @@
-window.Liferay = {
-	Language: {
-		get: key => key,
-	},
-	ThemeDisplay: {
-		getLanguageId: () => 'en_US',
-	},
-}
+global.fetch = require('jest-fetch-mock')

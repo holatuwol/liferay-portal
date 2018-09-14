@@ -69,6 +69,32 @@ public class FormEndpoint {
 	}
 
 	/**
+	 * Returns the custom {@link Form} for the specified resource.
+	 *
+	 * @param  name the resource's name, extracted from the URL
+	 * @param  nestedName the form's name, extracted from the URL
+	 * @return the {@link Form} for the specified resource, or an exception if
+	 *         an error occurred
+	 */
+	@GET
+	@Path("p/{name}/{nestedName}")
+	public Try<Form<?>> customForm(
+		@PathParam("name") String name,
+		@PathParam("nestedName") String nestedName) {
+
+		return Try.fromFallible(
+			() -> _itemRoutesFunction.apply(name)
+		).map(
+			ItemRoutes::getCustomRoutes
+		).map(
+			stringCustomRouteMap -> stringCustomRouteMap.get(nestedName)
+		).flatMap(
+			customRoute -> Try.fromOptional(
+				customRoute::getFormOptional, notFound(name, nestedName))
+		);
+	}
+
+	/**
 	 * Returns the nested creator {@link Form} for the specified resource.
 	 *
 	 * @param  name the parent resource's name, extracted from the URL

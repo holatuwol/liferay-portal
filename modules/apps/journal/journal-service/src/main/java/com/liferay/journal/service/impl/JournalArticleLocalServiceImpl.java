@@ -1026,7 +1026,9 @@ public class JournalArticleLocalServiceImpl
 
 		// Resources
 
-		addArticleResources(newArticle, true, true);
+		resourceLocalService.copyModelResources(
+			oldArticle.getCompanyId(), JournalArticle.class.getName(),
+			oldArticle.getResourcePrimKey(), resourcePrimKey);
 
 		// Small image
 
@@ -3900,9 +3902,9 @@ public class JournalArticleLocalServiceImpl
 
 		if (oldStatus == WorkflowConstants.STATUS_PENDING) {
 			article.setStatus(WorkflowConstants.STATUS_DRAFT);
-		}
 
-		journalArticlePersistence.update(article);
+			journalArticlePersistence.update(article);
+		}
 
 		List<JournalArticle> articleVersions =
 			journalArticlePersistence.findByG_A(

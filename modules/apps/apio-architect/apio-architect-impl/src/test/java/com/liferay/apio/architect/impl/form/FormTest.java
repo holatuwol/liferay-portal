@@ -75,13 +75,7 @@ public class FormTest {
 	public void testEmptyCreatesEmptyPathBuilder() {
 		Builder<Object> builder = BuilderImpl.empty();
 
-		Form<Object> form = builder.title(
-			__ -> ""
-		).description(
-			__ -> ""
-		).constructor(
-			Object::new
-		).build();
+		Form<Object> form = _getEmptyObjectForm(builder);
 
 		assertThat(form.getId(), is(emptyString()));
 	}
@@ -350,7 +344,7 @@ public class FormTest {
 	private static Form<Map<String, Object>> _mapForm(
 		Function
 			<Builder.FieldStep<Map<String, Object>>,
-				Builder.FieldStep<Map<String, Object>>> function) {
+			Builder.FieldStep<Map<String, Object>>> function) {
 
 		Builder<Map<String, Object>> builder = new BuilderImpl<>(
 			Collections.emptyList(), __ -> null);
@@ -397,6 +391,16 @@ public class FormTest {
 
 		assertThat(_readBinaryFile(binaryFile2), is("Input Stream 2"));
 		assertThat(binaryFile2.getMimeType(), is("mimetype2"));
+	}
+
+	private Form<Object> _getEmptyObjectForm(Builder<Object> builder) {
+		return builder.title(
+			__ -> ""
+		).description(
+			__ -> ""
+		).constructor(
+			Object::new
+		).build();
 	}
 
 	private Form<Map<String, Object>> _getForm() {

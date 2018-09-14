@@ -1,4 +1,5 @@
 import 'clay-button';
+import 'clay-dropdown';
 import 'clay-modal';
 import {Config} from 'metal-state';
 import {dom} from 'metal-dom';
@@ -6,6 +7,7 @@ import {pageStructure} from '../../util/config.es';
 import {setLocalizedValue} from '../../util/i18n.es';
 import {sub} from '../../util/strings.es';
 import Component from 'metal-component';
+import core from 'metal';
 import FormSupport from '../Form/FormSupport.es';
 import Soy from 'metal-soy';
 import templates from './PageRenderer.soy.js';
@@ -27,8 +29,40 @@ class PageRenderer extends Component {
 		 * @type {?string}
 		 */
 
-		descriptionPlaceholder: Config.string()
-			.value(Liferay.Language.get('add-a-short-description-for-this-page')),
+		descriptionPlaceholder: Config.string().value(Liferay.Language.get('add-a-short-description-for-this-page')),
+
+		/**
+		 * @instance
+		 * @memberof FormPage
+		 * @type {?object}
+		 */
+
+		localizedTitle: Config.object().value(
+			{
+				en_US: ''
+			}
+		),
+
+		/**
+		 * @instance
+		 * @memberof FormPage
+		 * @type {?object}
+		 */
+
+		localizedDescription: Config.object().value(
+			{
+				en_US: ''
+			}
+		),
+
+		/**
+		 * @default []
+		 * @instance
+		 * @memberof FormRenderer
+		 * @type {?array<object>}
+		 */
+
+		page: pageStructure.setter('_setPage'),
 
 		/**
 		 * @default 1
@@ -40,15 +74,6 @@ class PageRenderer extends Component {
 		pageId: Config.number().value(0),
 
 		/**
-		 * @default []
-		 * @instance
-		 * @memberof FormRenderer
-		 * @type {?array<object>}
-		 */
-
-		page: pageStructure,
-
-		/**
 		 * @default undefined
 		 * @instance
 		 * @memberof FormRenderer
@@ -58,20 +83,12 @@ class PageRenderer extends Component {
 		spritemap: Config.string().required(),
 
 		/**
-		 * @default []
 		 * @instance
-		 * @memberof FormRenderer
-		 * @type {?array<object>}
+		 * @memberof FormPage
+		 * @type {?string}
 		 */
 
-		strings: Config.object().value(
-			{
-				delete: Liferay.Language.get('delete'),
-				deleteFieldDialogQuestion: Liferay.Language.get('are-you-sure-you-want-to-delete-this-field'),
-				deleteFieldDialogTitle: Liferay.Language.get('delete-field-dialog-title'),
-				dismiss: Liferay.Language.get('dismiss')
-			}
-		),
+		titlePlaceholder: Config.string(),
 
 		/**
 		 * @default 1
@@ -80,15 +97,7 @@ class PageRenderer extends Component {
 		 * @type {?number}
 		 */
 
-		total: Config.number().value(1),
-
-		/**
-		 * @instance
-		 * @memberof FormPage
-		 * @type {?string}
-		 */
-
-		titlePlaceholder: Config.string()
+		total: Config.number().value(1)
 	}
 
 	prepareStateForRender(states) {
@@ -115,7 +124,7 @@ class PageRenderer extends Component {
 	_changePageForm({delegateTarget}, pageProperty) {
 		const {value} = delegateTarget;
 
-		const languageId = Liferay.ThemeDisplay.getLanguageId();
+		const languageId = themeDisplay.getLanguageId();
 		const page = {...this.page};
 
 		setLocalizedValue(page, languageId, pageProperty, value);
@@ -199,43 +208,25 @@ class PageRenderer extends Component {
 	}
 
 	/**
-	 * @param {!Object} data
-	 * @private
-	 */
-
-	_handleFieldChanged(data) {
-		this.emit('fieldEdited', data);
-	}
-
-	/**
 	 * @param {!Event} event
 	 * @private
 	 */
 
-	_handleDeleteButtonClicked(event) {
-		const {modal} = this.refs;
+	_handleModal(event) {
+		event.stopPropagation();
 		const index = FormSupport.getIndexes(
 			dom.closest(event.target, '.col-ddm')
 		);
+		this.emit('deleteFieldClicked', index);
+	}
 
-		event.stopPropagation();
+	/**
+	 * @param {!Object} data
+	 * @private
+	 */
 
-		modal.show();
-
-		modal.on(
-			'clickButton',
-			event => {
-				event.stopPropagation();
-				modal.emit('hide');
-
-				if (!event.target.classList.contains('close-modal')) {
-					this.emit(
-						'deleteButtonClicked',
-						{...index}
-					);
-				}
-			}
-		);
+	_handleFieldEdited(event) {
+		this.emit('fieldEdited', event);
 	}
 
 	/**
@@ -295,6 +286,22 @@ class PageRenderer extends Component {
 			);
 		}
 		return empty;
+	}
+
+	_setPage(page) {
+		if (core.isObject(page.description)) {
+			page = {
+				...page,
+				description: page.description[themeDisplay.getLanguageId()]
+			};
+		}
+		if (core.isObject(page.title)) {
+			page = {
+				...page,
+				title: page.title[themeDisplay.getLanguageId()]
+			};
+		}
+		return page;
 	}
 }
 

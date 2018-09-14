@@ -32,9 +32,21 @@ public class UpdateOperation implements Operation {
 	}
 
 	public UpdateOperation(Form form, String resourceName, String uri) {
+		this(form, resourceName, uri, null);
+	}
+
+	public UpdateOperation(
+		Form form, String resourceName, String uri, String customRoute) {
+
 		_form = form;
 		_resourceName = resourceName;
 		_uri = uri;
+		_customRoute = customRoute;
+	}
+
+	@Override
+	public String getCustomRoute() {
+		return _customRoute;
 	}
 
 	@Override
@@ -49,7 +61,7 @@ public class UpdateOperation implements Operation {
 
 	@Override
 	public String getName() {
-		return _resourceName + "/update";
+		return _resourceName + "/" + (isCustom() ? _customRoute : "update");
 	}
 
 	@Override
@@ -62,6 +74,16 @@ public class UpdateOperation implements Operation {
 		return false;
 	}
 
+	@Override
+	public boolean isCustom() {
+		if (_customRoute != null) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private final String _customRoute;
 	private final Form _form;
 	private final String _resourceName;
 	private final String _uri;

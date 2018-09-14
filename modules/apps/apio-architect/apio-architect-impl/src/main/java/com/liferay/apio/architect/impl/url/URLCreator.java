@@ -162,6 +162,10 @@ public final class URLCreator {
 					return "batch/" + uri;
 				}
 
+				if (operation.isCustom()) {
+					return _createCustomOperationURL(operation, uri);
+				}
+
 				if (operation instanceof CreateOperation) {
 					return "p/" + uri;
 				}
@@ -234,6 +238,19 @@ public final class URLCreator {
 		}
 
 		return join("/", baseUrl, relativeURL);
+	}
+
+	private static String _createCustomOperationURL(
+		Operation operation, String uri) {
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("c/");
+		sb.append(uri);
+		sb.append("/");
+		sb.append(operation.getCustomRoute());
+
+		return sb.toString();
 	}
 
 	private URLCreator() {

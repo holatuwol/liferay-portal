@@ -3332,6 +3332,20 @@ public class LayoutLocalServiceImpl extends LayoutLocalServiceBaseImpl {
 				throw new SitemapPagePriorityException(nfe);
 			}
 		}
+
+		boolean enableJavaScript =
+			PropsValues.
+				FIELD_ENABLE_COM_LIFERAY_PORTAL_KERNEL_MODEL_LAYOUT_JAVASCRIPT;
+
+		if (!enableJavaScript) {
+			UnicodeProperties layoutTypeSettingsProperties =
+				layout.getTypeSettingsProperties();
+
+			String javaScript = layoutTypeSettingsProperties.getProperty(
+				"javascript");
+
+			typeSettingsProperties.setProperty("javascript", javaScript);
+		}
 	}
 
 	@BeanReference(type = LayoutLocalServiceHelper.class)

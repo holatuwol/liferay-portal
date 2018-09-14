@@ -1,11 +1,10 @@
 import {dom as MetalTestUtil} from 'metal-dom';
-
-import Context from './__mock__/mockContext.es';
 import FormRenderer from '../FormRenderer.es';
 import FormSupport from '../FormSupport.es';
+import mockPages from './__mock__/mockPages.es';
 
 let component;
-let context = null;
+let pages = null;
 const spritemap = 'icons.svg';
 
 describe(
@@ -13,7 +12,7 @@ describe(
 	() => {
 		beforeEach(
 			() => {
-				context = JSON.parse(JSON.stringify(Context));
+				pages = JSON.parse(JSON.stringify(mockPages));
 
 				jest.useFakeTimers();
 			}
@@ -25,7 +24,7 @@ describe(
 					component.dispose();
 				}
 
-				context = null;
+				pages = null;
 			}
 		);
 
@@ -43,11 +42,27 @@ describe(
 		);
 
 		it(
-			'should render a layout with pages',
+			'should render a layout in wizard mode',
 			() => {
 				component = new FormRenderer(
 					{
-						pages: context,
+						pages,
+						paginationMode: 'wizard',
+						spritemap
+					}
+				);
+
+				expect(component).toMatchSnapshot();
+			}
+		);
+
+		it(
+			'should render a layout in pagination mode',
+			() => {
+				component = new FormRenderer(
+					{
+						pages,
+						paginationMode: 'pagination',
 						spritemap
 					}
 				);
@@ -62,7 +77,7 @@ describe(
 				component = new FormRenderer(
 					{
 						modeRenderer: 'list',
-						pages: context,
+						pages,
 						spritemap
 					}
 				);
@@ -77,7 +92,8 @@ describe(
 				component = new FormRenderer(
 					{
 						editable: true,
-						pages: context,
+						pages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
@@ -93,7 +109,8 @@ describe(
 					{
 						dragAndDropDisabled: true,
 						editable: true,
-						pages: context,
+						pages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
@@ -109,7 +126,8 @@ describe(
 					{
 						dragAndDropDisabled: true,
 						editable: true,
-						pages: context,
+						pages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
@@ -118,7 +136,7 @@ describe(
 
 				jest.runAllTimers();
 
-				component._handleUpdatePage(context[0], 0);
+				component._handleUpdatePage(pages[0], 0);
 
 				expect(spy).toHaveBeenCalled();
 				expect(spy).toHaveBeenCalledWith('pagesUpdated', expect.any(Object));
@@ -134,7 +152,8 @@ describe(
 					{
 						dragAndDropDisabled: true,
 						editable: true,
-						pages: context,
+						pages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
@@ -143,10 +162,10 @@ describe(
 
 				jest.runAllTimers();
 
-				component._handleDeleteButtonClicked(context);
+				component._handleDeleteButtonClicked(pages);
 
 				expect(spy).toHaveBeenCalled();
-				expect(spy).toHaveBeenCalledWith('deleteButtonClicked', expect.any(Object));
+				expect(spy).toHaveBeenCalledWith('fieldDeleted', expect.any(Object));
 
 				expect(component).toMatchSnapshot();
 			}
@@ -159,7 +178,8 @@ describe(
 					{
 						dragAndDropDisabled: true,
 						editable: true,
-						pages: context,
+						pages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
@@ -168,10 +188,10 @@ describe(
 
 				jest.runAllTimers();
 
-				component._handleDuplicateButtonClicked(context);
+				component._handleDuplicateButtonClicked(pages);
 
 				expect(spy).toHaveBeenCalled();
-				expect(spy).toHaveBeenCalledWith('duplicateButtonClicked', expect.any(Object));
+				expect(spy).toHaveBeenCalledWith('fieldDuplicated', expect.any(Object));
 
 				expect(component).toMatchSnapshot();
 			}
@@ -180,15 +200,14 @@ describe(
 		it(
 			'should change the active page',
 			() => {
-				const pages = [...context];
-
-				pages.push(pages[0]);
+				const newPages = [...pages, ...pages];
 
 				component = new FormRenderer(
 					{
 						dragAndDropDisabled: true,
 						editable: true,
-						pages,
+						pages: newPages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
@@ -204,12 +223,93 @@ describe(
 		);
 
 		it(
+			'should change the pagination mode when switch pagination mode is clicked',
+			() => {
+				const newPages = [...pages, ...pages];
+
+				component = new FormRenderer(
+					{
+						dragAndDropDisabled: true,
+						editable: true,
+						pages: newPages,
+						paginationMode: 'wizard',
+						spritemap
+					}
+				);
+				const spy = jest.spyOn(component, 'emit');
+
+				component._handlePageSettingsClicked(
+					{
+						data: {
+							item: {
+								settingsItem: 'switch-pagination-mode'
+							}
+						}
+					}
+				);
+
+				jest.runAllTimers();
+
+				expect(spy).toHaveBeenCalledWith('paginationModeUpdated');
+				expect(component).toMatchSnapshot();
+			}
+		);
+
+		it(
+			'should back the pagination mode to wizard mode when user clicks in switch page on the settings menu',
+			() => {
+				const newPages = [...pages, ...pages];
+
+				component = new FormRenderer(
+					{
+						dragAndDropDisabled: true,
+						editable: true,
+						pages: newPages,
+						paginationMode: 'wizard',
+						spritemap
+					}
+				);
+				const spy = jest.spyOn(component, 'emit');
+
+				component._handlePageSettingsClicked(
+					{
+						data: {
+							item: {
+								settingsItem: 'switch-pagination-mode'
+							}
+						}
+					}
+				);
+
+				jest.runAllTimers();
+
+				expect(spy).toHaveBeenCalled();
+
+				jest.useFakeTimers();
+
+				component._handlePageSettingsClicked(
+					{
+						data: {
+							item: {
+								settingsItem: 'switch-pagination-mode'
+							}
+						}
+					}
+				);
+
+				jest.runAllTimers();
+
+				expect(spy).toHaveBeenCalledWith('paginationModeUpdated');
+				expect(component).toMatchSnapshot();
+			}
+		);
+
+		it(
 			'should change the active page for a empty page',
 			() => {
-				const pages = [...context];
+				const newPages = [...pages, ...pages];
 
-				pages.push(pages[0]);
-				pages[1].rows = [{
+				newPages[1].rows = [{
 					columns: [{
 						fields: [],
 						size: 12
@@ -220,7 +320,8 @@ describe(
 					{
 						dragAndDropDisabled: true,
 						editable: true,
-						pages,
+						pages: newPages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
@@ -236,12 +337,120 @@ describe(
 		);
 
 		it(
+			'should change the active by clicking on the pagination when the page mode is in pagination mode',
+			() => {
+				const newPages = [...pages, ...pages];
+
+				component = new FormRenderer(
+					{
+						dragAndDropDisabled: true,
+						editable: true,
+						pages: newPages,
+						paginationMode: 'pagination',
+						spritemap
+					}
+				);
+
+				jest.runAllTimers();
+
+				jest.useFakeTimers();
+
+				const paginatorItem = component.element.querySelector('.ddm-pagination .page-item[data-page-id="1"]');
+
+				MetalTestUtil.triggerEvent(paginatorItem, 'click', {});
+
+				jest.runAllTimers();
+
+				expect(component).toMatchSnapshot();
+			}
+		);
+
+		it(
+			'should change the active by clicking on the arrow right icon in the pagination button',
+			() => {
+				const newPages = [...pages, ...pages];
+
+				component = new FormRenderer(
+					{
+						activePage: 0,
+						dragAndDropDisabled: true,
+						editable: true,
+						pages: newPages,
+						paginationMode: 'pagination',
+						spritemap
+					}
+				);
+
+				jest.runAllTimers();
+
+				const spy = jest.spyOn(component, 'emit');
+
+				component._handlePaginationRightClicked();
+
+				expect(spy).toHaveBeenCalledWith(
+					'activePageUpdated',
+					1
+				);
+			}
+		);
+
+		it(
+			'should change the active by clicking on the arrow left icon in the pagination button',
+			() => {
+				const newPages = [...pages, ...pages];
+
+				component = new FormRenderer(
+					{
+						activePage: 1,
+						dragAndDropDisabled: true,
+						editable: true,
+						pages: newPages,
+						paginationMode: 'pagination',
+						spritemap
+					}
+				);
+
+				jest.runAllTimers();
+
+				const spy = jest.spyOn(component, 'emit');
+
+				component._handlePaginationLeftClicked();
+
+				expect(spy).toHaveBeenCalledWith(
+					'activePageUpdated',
+					0
+				);
+			}
+		);
+
+		it(
+			'should propagate field edit event',
+			() => {
+				component = new FormRenderer(
+					{
+						editable: true,
+						pages,
+						paginationMode: 'wizard',
+						spritemap
+					}
+				);
+
+				const spy = jest.spyOn(component, 'emit');
+
+				component._handleFieldEdited();
+
+				expect(spy).toHaveBeenCalled();
+			}
+		);
+
+		it(
 			'should render a layout and emit the field move event',
 			() => {
 				component = new FormRenderer(
 					{
 						editable: true,
-						pages: context,
+						pages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
@@ -269,7 +478,7 @@ describe(
 							rowIndex: 1
 						},
 						target: {
-							columnIndex: false,
+							columnIndex: 0,
 							pageIndex: 0,
 							rowIndex: 0
 						}
@@ -284,7 +493,8 @@ describe(
 				component = new FormRenderer(
 					{
 						editable: true,
-						pages: context,
+						pages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
@@ -311,7 +521,8 @@ describe(
 				component = new FormRenderer(
 					{
 						editable: true,
-						pages: context,
+						pages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
@@ -322,11 +533,12 @@ describe(
 					'disposeInternal'
 				);
 
-				const newContext = FormSupport.removeFields(context, 0, 1, 0);
+				const newmockPages = FormSupport.removeFields(pages, 0, 1, 0);
 
 				component.setState(
 					{
-						pages: newContext
+						pages: newmockPages,
+						paginationMode: 'wizard'
 					}
 				);
 
@@ -343,18 +555,20 @@ describe(
 				component = new FormRenderer(
 					{
 						editable: false,
-						pages: context,
+						pages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
 
 				const spy = jest.spyOn(component, '_startDrag');
 
-				const newContext = FormSupport.removeFields(context, 0, 1, 0);
+				const newmockPages = FormSupport.removeFields(pages, 0, 1, 0);
 
 				component.setState(
 					{
-						pages: newContext
+						pages: newmockPages,
+						paginationMode: 'wizard'
 					}
 				);
 
@@ -371,18 +585,20 @@ describe(
 					{
 						dragAndDropDisabled: true,
 						editable: true,
-						pages: context,
+						pages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
 
 				const spy = jest.spyOn(component, '_startDrag');
 
-				const newContext = FormSupport.removeFields(context, 0, 1, 0);
+				const newmockPages = FormSupport.removeFields(pages, 0, 1, 0);
 
 				component.setState(
 					{
-						pages: newContext
+						pages: newmockPages,
+						paginationMode: 'wizard'
 					}
 				);
 
@@ -405,8 +621,8 @@ describe(
 				const pageIndex = 0;
 				const rowIndex = 1;
 
-				const newContext = FormSupport.setColumnFields(
-					context,
+				const newmockPages = FormSupport.setColumnFields(
+					pages,
 					pageIndex,
 					rowIndex,
 					columnIndex,
@@ -416,7 +632,8 @@ describe(
 				component = new FormRenderer(
 					{
 						editable: true,
-						pages: newContext,
+						pages: newmockPages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
@@ -438,8 +655,8 @@ describe(
 				const pageIndex = 0;
 				const rowIndex = 1;
 
-				const newContext = FormSupport.setColumnFields(
-					context,
+				const newmockPages = FormSupport.setColumnFields(
+					pages,
 					pageIndex,
 					rowIndex,
 					columnIndex,
@@ -449,7 +666,8 @@ describe(
 				component = new FormRenderer(
 					{
 						editable: false,
-						pages: newContext,
+						pages: newmockPages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
@@ -464,7 +682,8 @@ describe(
 				component = new FormRenderer(
 					{
 						editable: true,
-						pages: context,
+						pages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
@@ -493,7 +712,8 @@ describe(
 				component = new FormRenderer(
 					{
 						editable: true,
-						pages: context,
+						pages,
+						paginationMode: 'wizard',
 						spritemap
 					}
 				);
@@ -525,12 +745,13 @@ describe(
 						component = new FormRenderer(
 							{
 								editable: true,
-								pages: context,
+								pages,
+								paginationMode: 'wizard',
 								spritemap
 							}
 						);
 
-						component._handleSettingsPageClicked(
+						component._handlePageSettingsClicked(
 							{
 								data: {
 									item: {
@@ -552,12 +773,13 @@ describe(
 						component = new FormRenderer(
 							{
 								editable: true,
-								pages: context,
+								pages,
+								paginationMode: 'wizard',
 								spritemap
 							}
 						);
 
-						component._handleSettingsPageClicked(
+						component._handlePageSettingsClicked(
 							{
 								data: {
 									item: {
@@ -574,25 +796,94 @@ describe(
 				);
 
 				it(
-					'should delete the current page on layout render',
+					'should show delete-field option, when the form builder has more than one page',
 					() => {
-						const pages = [...context];
-
-						pages.push(pages[0]);
+						const pagesTemp = [...pages, ...pages];
 
 						component = new FormRenderer(
 							{
 								editable: true,
-								pages,
+								pages: pagesTemp,
+								paginationMode: 'wizard',
 								spritemap
 							}
 						);
 
-						component._handleSettingsPageClicked(
+						jest.runAllTimers();
+
+						expect(
+							component.prepareStateForRender(component).pageSettingsItems
+						).toEqual(
+							[
+								{
+									'label': Liferay.Language.get('add-new-page'),
+									'settingsItem': 'add-page'
+								},
+								{
+									'label': Liferay.Language.get('delete-current-page'),
+									'settingsItem': 'delete-page'
+								},
+								{
+									'label': 'switch-pagination-to-bottom',
+									'settingsItem': 'switch-pagination-mode'
+								}
+							]
+						);
+						expect(component).toMatchSnapshot();
+					}
+				);
+
+				it(
+					'should show reset-field option, when the form builder has only one page',
+					() => {
+						component = new FormRenderer(
+							{
+								editable: true,
+								pages,
+								paginationMode: 'wizard',
+								spritemap
+							}
+						);
+
+						jest.runAllTimers();
+
+						expect(
+							component.prepareStateForRender(component).pageSettingsItems
+						).toEqual(
+							[
+								{
+									'label': Liferay.Language.get('add-new-page'),
+									'settingsItem': 'add-page'
+								},
+								{
+									'label': Liferay.Language.get('reset-page'),
+									'settingsItem': 'reset-page'
+								}
+							]
+						);
+						expect(component).toMatchSnapshot();
+					}
+				);
+
+				it(
+					'should delete the current page on layout render',
+					() => {
+						const newPages = [...pages, ...pages];
+
+						component = new FormRenderer(
+							{
+								editable: true,
+								pages: newPages,
+								paginationMode: 'wizard',
+								spritemap
+							}
+						);
+
+						component._handlePageSettingsClicked(
 							{
 								data: {
 									item: {
-										settingsItem: 'reset-page'
+										settingsItem: 'delete-page'
 									}
 								}
 							}

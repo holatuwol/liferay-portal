@@ -251,6 +251,26 @@ public class AssetPublisherDisplayContext {
 		return _allAssetTagNames;
 	}
 
+	public List<AssetEntry> getAssetEntries() throws Exception {
+		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		AssetListEntry assetListEntry = fetchAssetListEntry();
+
+		if (isSelectionStyleManual()) {
+			return AssetPublisherUtil.getAssetEntries(
+				_portletRequest, _portletPreferences,
+				themeDisplay.getPermissionChecker(), getGroupIds(),
+				getAllAssetCategoryIds(), getAllAssetTagNames(), false,
+				isEnablePermissions());
+		}
+		else if (isSelectionStyleAssetList() && (assetListEntry != null)) {
+			return assetListEntry.getAssetEntries();
+		}
+
+		return Collections.emptyList();
+	}
+
 	public List<AssetEntryAction> getAssetEntryActions(String className) {
 		return _assetEntryActionRegistry.getAssetEntryActions(className);
 	}
@@ -266,7 +286,12 @@ public class AssetPublisherDisplayContext {
 			WebKeys.THEME_DISPLAY);
 
 		if (isSelectionStyleAssetList() && (assetListEntry != null)) {
-			_assetEntryQuery = assetListEntry.getAssetEntryQuery();
+			long[] groupIds = AssetPublisherUtil.getGroupIds(
+				_portletPreferences, themeDisplay.getScopeGroupId(),
+				themeDisplay.getLayout());
+
+			_assetEntryQuery = assetListEntry.getAssetEntryQuery(
+				groupIds, themeDisplay.getLayout());
 		}
 		else {
 			_assetEntryQuery = AssetPublisherUtil.getAssetEntryQuery(
@@ -510,13 +535,20 @@ public class AssetPublisherDisplayContext {
 		return null;
 	}
 
-	public long[] getClassNameIds() {
+	public long[] getClassNameIds() throws Exception {
 		if (_classNameIds != null) {
 			return _classNameIds;
 		}
 
-		_classNameIds = AssetPublisherUtil.getClassNameIds(
-			_portletPreferences, getAvailableClassNameIds());
+		if (isSelectionStyleAssetList()) {
+			AssetEntryQuery assetEntryQuery = getAssetEntryQuery();
+
+			_classNameIds = assetEntryQuery.getClassNameIds();
+		}
+		else {
+			_classNameIds = AssetPublisherUtil.getClassNameIds(
+				_portletPreferences, getAvailableClassNameIds());
+		}
 
 		return _classNameIds;
 	}

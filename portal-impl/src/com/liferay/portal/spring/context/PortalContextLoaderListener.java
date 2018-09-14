@@ -49,7 +49,7 @@ import com.liferay.portal.kernel.util.ClearThreadLocalUtil;
 import com.liferay.portal.kernel.util.ClearTimerThreadUtil;
 import com.liferay.portal.kernel.util.InstancePool;
 import com.liferay.portal.kernel.util.JavaConstants;
-import com.liferay.portal.kernel.util.MethodCache;
+import com.liferay.portal.kernel.util.MethodKey;
 import com.liferay.portal.kernel.util.PortalLifecycleUtil;
 import com.liferay.portal.kernel.util.PropsKeys;
 import com.liferay.portal.kernel.util.ReferenceRegistry;
@@ -177,14 +177,17 @@ public class PortalContextLoaderListener extends ContextLoaderListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent servletContextEvent) {
-		Thread currentThread = Thread.currentThread();
-
-		SystemProperties.load(currentThread.getContextClassLoader());
+		try {
+			Class.forName(SystemProperties.class.getName());
+		}
+		catch (ClassNotFoundException cnfe) {
+			throw new RuntimeException(cnfe);
+		}
 
 		DBManagerUtil.reset();
 		DeployManagerUtil.reset();
 		InstancePool.reset();
-		MethodCache.reset();
+		MethodKey.resetCache();
 		PortalBeanLocatorUtil.reset();
 		PortletBagPool.reset();
 

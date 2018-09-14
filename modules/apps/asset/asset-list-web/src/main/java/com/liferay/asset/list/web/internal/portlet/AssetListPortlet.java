@@ -16,6 +16,8 @@ package com.liferay.asset.list.web.internal.portlet;
 
 import com.liferay.asset.list.constants.AssetListPortletKeys;
 import com.liferay.asset.list.constants.AssetListWebKeys;
+import com.liferay.asset.list.exception.AssetListEntryTitleException;
+import com.liferay.asset.list.exception.DuplicateAssetListEntryTitleException;
 import com.liferay.frontend.taglib.servlet.taglib.ScreenNavigationRegistry;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 
@@ -37,6 +39,7 @@ import org.osgi.service.component.annotations.Reference;
 		"com.liferay.portlet.add-default-resource=true",
 		"com.liferay.portlet.css-class-wrapper=portlet-asset-list-web",
 		"com.liferay.portlet.display-category=category.hidden",
+		"com.liferay.portlet.header-portlet-css=/css/main.css",
 		"com.liferay.portlet.preferences-owned-by-group=true",
 		"com.liferay.portlet.private-request-attributes=false",
 		"com.liferay.portlet.private-session-attributes=false",
@@ -64,6 +67,17 @@ public class AssetListPortlet extends MVCPortlet {
 			_screenNavigationRegistry);
 
 		super.doDispatch(renderRequest, renderResponse);
+	}
+
+	@Override
+	protected boolean isSessionErrorException(Throwable cause) {
+		if (cause instanceof AssetListEntryTitleException ||
+			cause instanceof DuplicateAssetListEntryTitleException) {
+
+			return true;
+		}
+
+		return super.isSessionErrorException(cause);
 	}
 
 	@Reference

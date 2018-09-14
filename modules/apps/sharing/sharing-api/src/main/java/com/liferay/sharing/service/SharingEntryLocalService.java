@@ -42,6 +42,7 @@ import com.liferay.sharing.model.SharingEntry;
 import java.io.Serializable;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -66,10 +67,17 @@ public interface SharingEntryLocalService extends BaseLocalService,
 	 *
 	 * Never modify or reference this interface directly. Always use {@link SharingEntryLocalServiceUtil} to access the sharing entry local service. Add custom service methods to {@link com.liferay.sharing.service.impl.SharingEntryLocalServiceImpl} and rerun ServiceBuilder to automatically copy the method declarations to this interface.
 	 */
+	public SharingEntry addOrUpdateSharingEntry(long fromUserId, long toUserId,
+		long classNameId, long classPK, long groupId, boolean shareable,
+		Collection<SharingEntryActionKey> sharingEntryActionKeys,
+		Date expirationDate, ServiceContext serviceContext)
+		throws PortalException;
+
 	public SharingEntry addSharingEntry(long fromUserId, long toUserId,
 		long classNameId, long classPK, long groupId, boolean shareable,
 		Collection<SharingEntryActionKey> sharingEntryActionKeys,
-		ServiceContext serviceContext) throws PortalException;
+		Date expirationDate, ServiceContext serviceContext)
+		throws PortalException;
 
 	/**
 	* Adds the sharing entry to the database. Also notifies the appropriate model listeners.
@@ -95,6 +103,8 @@ public interface SharingEntryLocalService extends BaseLocalService,
 	*/
 	@Transactional(enabled = false)
 	public SharingEntry createSharingEntry(long sharingEntryId);
+
+	public void deleteExpiredEntries();
 
 	public void deleteGroupSharingEntries(long groupId);
 
@@ -260,7 +270,7 @@ public interface SharingEntryLocalService extends BaseLocalService,
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public List<SharingEntry> getSharingEntries(long toUserId,
-		long classNameId, long classPK) throws PortalException;
+		long classNameId, long classPK);
 
 	/**
 	* Returns all the sharing entries matching the UUID and company.
@@ -335,9 +345,13 @@ public interface SharingEntryLocalService extends BaseLocalService,
 	public boolean hasSharingPermission(long toUserId, long classNameId,
 		long classPK, SharingEntryActionKey sharingEntryActionKey);
 
+	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	public boolean hasSharingPermission(SharingEntry sharingEntry,
+		SharingEntryActionKey sharingEntryActionKey);
+
 	public SharingEntry updateSharingEntry(long sharingEntryId,
-		Collection<SharingEntryActionKey> sharingEntryActionKeys)
-		throws PortalException;
+		Collection<SharingEntryActionKey> sharingEntryActionKeys,
+		boolean shareable, Date expirationDate) throws PortalException;
 
 	/**
 	* Updates the sharing entry in the database or adds it if it does not yet exist. Also notifies the appropriate model listeners.

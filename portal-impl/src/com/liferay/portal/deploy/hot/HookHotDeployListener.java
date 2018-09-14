@@ -1141,8 +1141,8 @@ public class HookHotDeployListener
 			Locale locale = getLocale(languagePropertiesLocation);
 
 			if (locale == null) {
-				if (_log.isInfoEnabled()) {
-					_log.info("Ignoring " + languagePropertiesLocation);
+				if (_log.isDebugEnabled()) {
+					_log.debug("Ignoring " + languagePropertiesLocation);
 				}
 
 				continue;

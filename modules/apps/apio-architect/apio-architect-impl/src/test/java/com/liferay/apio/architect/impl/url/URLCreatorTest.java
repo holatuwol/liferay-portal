@@ -187,6 +187,11 @@ public class URLCreatorTest {
 		Operation operation = new Operation() {
 
 			@Override
+			public String getCustomRoute() {
+				return null;
+			}
+
+			@Override
 			public Optional<Form> getFormOptional() {
 				return Optional.empty();
 			}
@@ -208,6 +213,11 @@ public class URLCreatorTest {
 
 			@Override
 			public boolean isCollection() {
+				return false;
+			}
+
+			@Override
+			public boolean isCustom() {
 				return false;
 			}
 

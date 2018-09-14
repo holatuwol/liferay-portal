@@ -73,14 +73,6 @@ public interface PoshiNode<A extends Node, B extends PoshiNode<A, B>>
 
 		int line = parentPoshiElement.getPoshiScriptLineNumber();
 
-		if (!(parentPoshiElement instanceof AndPoshiElement) &&
-			!(parentPoshiElement instanceof IfPoshiElement) &&
-			!(parentPoshiElement instanceof NotPoshiElement) &&
-			!(parentPoshiElement instanceof OrPoshiElement)) {
-
-			line++;
-		}
-
 		String parentPoshiScript = parentPoshiElement.getPoshiScript();
 
 		if (parentPoshiElement.isValidPoshiScriptBlock(
@@ -89,7 +81,9 @@ public interface PoshiNode<A extends Node, B extends PoshiNode<A, B>>
 			String blockName = parentPoshiElement.getBlockName(
 				parentPoshiScript);
 
-			line = line + StringUtil.count(blockName, "\n");
+			line =
+				line + StringUtil.count(blockName, "\n") +
+					StringUtil.countStartingNewLines(getPoshiScript());
 		}
 
 		return line;
