@@ -264,10 +264,6 @@ public class VerifyProperties extends VerifyProcess {
 	private static final String[][] _MIGRATED_PORTAL_KEYS = {
 		{"cookie.http.only.names.excludes", "cookie.http.only.names.excludes"},
 		{
-			"finalize.manager.thread.enabled",
-			"com.liferay.portal.kernel.memory.FinalizeManager.thread.enabled"
-		},
-		{
 			"http.header.secure.x.content.type.options",
 			"http.header.secure.x.content.type.options"
 		},
@@ -1820,6 +1816,8 @@ public class VerifyProperties extends VerifyProcess {
 		"social.activity.sets.bundling.enabled", "social.activity.sets.enabled",
 		"social.bookmark.display.styles", "social.bookmark.types",
 		"spring.hibernate.data.source", "spring.hibernate.session.factory",
+		"struts.portlet.ignored.parameters.regexp",
+		"struts.portlet.request.processor",
 		"table.mapper.cache.mapping.table.names", "tck.url",
 		"user.groups.indexer.enabled", "users.form.add.identification",
 		"users.indexer.enabled", "users.form.add.main",
@@ -1838,8 +1836,11 @@ public class VerifyProperties extends VerifyProcess {
 	};
 
 	private static final String[] _OBSOLETE_SYSTEM_KEYS = {
+		"com.liferay.petra.memory.FinalizeManager.thread.enabled",
+		"com.liferay.portal.kernel.memory.FinalizeManager.thread.enabled",
 		"com.liferay.util.Http.proxy.host", "com.liferay.util.Http.proxy.port",
-		"com.liferay.util.XSSUtil.regexp.pattern"
+		"com.liferay.util.XSSUtil.regexp.pattern",
+		"finalize.manager.thread.enabled"
 	};
 
 	private static final String[][] _RENAMED_PORTAL_KEYS = {

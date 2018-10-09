@@ -26,6 +26,7 @@ import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.xml.QName;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +55,7 @@ public class BundlePortletApp implements PortletApp {
 
 	@Override
 	public void addEventDefinition(EventDefinition eventDefinition) {
-		_portletApp.addEventDefinition(eventDefinition);
+		_eventDefinitions.add(eventDefinition);
 	}
 
 	@Override
@@ -119,7 +120,7 @@ public class BundlePortletApp implements PortletApp {
 
 	@Override
 	public Set<EventDefinition> getEventDefinitions() {
-		return _portletApp.getEventDefinitions();
+		return _eventDefinitions;
 	}
 
 	public BundlePluginPackage getPluginPackage() {
@@ -232,6 +233,7 @@ public class BundlePortletApp implements PortletApp {
 	public void setSpriteImages(String spriteFileName, Properties properties) {
 		for (Map.Entry<Object, Object> entry : properties.entrySet()) {
 			String key = (String)entry.getKey();
+
 			String value = (String)entry.getValue();
 
 			int[] values = StringUtil.split(value, 0);
@@ -253,6 +255,7 @@ public class BundlePortletApp implements PortletApp {
 	}
 
 	private String _defaultNamespace;
+	private final Set<EventDefinition> _eventDefinitions = new HashSet<>();
 	private final BundlePluginPackage _pluginPackage;
 	private final Portlet _portalPortletModel;
 	private final PortletApp _portletApp;

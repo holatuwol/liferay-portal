@@ -129,7 +129,7 @@ class ManagementToolbar extends ClayComponent {
 
 	_handleSelectPageCheckboxChanged(event) {
 		if (this._searchContainer) {
-			let checkboxStatus = event.target.checked;
+			let checkboxStatus = event.data.checked;
 
 			if (checkboxStatus) {
 				this._searchContainer.select.toggleAllRows(true);
@@ -326,7 +326,7 @@ ManagementToolbar.STATE = {
 	 * List of filter label items.
 	 * @default undefined
 	 * @instance
-	 * @memberof ClayManagementToolbar
+	 * @memberof ManagementToolbar
 	 * @type {?(array|undefined)}
 	 */
 

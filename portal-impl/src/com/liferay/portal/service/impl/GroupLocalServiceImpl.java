@@ -1459,6 +1459,83 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	}
 
 	/**
+	 * Returns the active or inactive groups associated with the company.
+	 *
+	 * @param  companyId the primary key of the company
+	 * @param  active whether to return only active groups, or only inactive
+	 *         groups
+	 * @param  site whether the group is to be associated with a main site
+	 * @param  start the lower bound of the range of groups to return
+	 * @param  end the upper bound of the range of groups to return (not
+	 *         inclusive)
+	 * @param  obc the comparator to order the groups (optionally
+	 *         <code>null</code>)
+	 * @return the active or inactive groups associated with the company
+	 * @review
+	 */
+	@Override
+	public List<Group> getActiveGroups(
+		long companyId, boolean site, boolean active, int start, int end,
+		OrderByComparator<Group> obc) {
+
+		return groupPersistence.findByC_S_A(
+			companyId, site, active, start, end, obc);
+	}
+
+	/**
+	 * Returns the active or inactive groups associated with the company.
+	 *
+	 * @param  companyId the primary key of the company
+	 * @param  active whether to return only active groups, or only inactive
+	 *         groups
+	 * @param  start the lower bound of the range of groups to return
+	 * @param  end the upper bound of the range of groups to return (not
+	 *         inclusive)
+	 * @param  obc the comparator to order the groups (optionally
+	 *         <code>null</code>)
+	 * @return the active or inactive groups associated with the company
+	 * @review
+	 */
+	@Override
+	public List<Group> getActiveGroups(
+		long companyId, boolean active, int start, int end,
+		OrderByComparator<Group> obc) {
+
+		return groupPersistence.findByC_A(companyId, active, start, end, obc);
+	}
+
+	/**
+	 * Returns the number of active or inactive groups associated with the company.
+	 *
+	 * @param  companyId the primary key of the company
+	 * @param  active whether to count only active groups, or only inactive
+	 *         groups
+	 * @return the number of active or inactive groups associated with the company
+	 * @review
+	 */
+	@Override
+	public int getActiveGroupsCount(long companyId, boolean active) {
+		return groupPersistence.countByC_A(companyId, active);
+	}
+
+	/**
+	 * Returns the number of active or inactive groups associated with the company.
+	 *
+	 * @param  companyId the primary key of the company
+	 * @param  active whether to count only active groups, or only inactive
+	 *         groups
+	 * @param  site whether the group is to be associated with a main site
+	 * @return the number of active or inactive groups associated with the company
+	 * @review
+	 */
+	@Override
+	public int getActiveGroupsCount(
+		long companyId, boolean active, boolean site) {
+
+		return groupPersistence.countByC_S_A(companyId, active, site);
+	}
+
+	/**
 	 * Returns the company group.
 	 *
 	 * @param  companyId the primary key of the company
@@ -1643,6 +1720,10 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 		long companyId, long parentGroupId, String name, boolean site,
 		int start, int end) {
 
+		if (Validator.isNull(name)) {
+			name = "%";
+		}
+
 		return groupPersistence.findByC_P_LikeN_S(
 			companyId, parentGroupId, name, site, start, end);
 	}
@@ -1739,6 +1820,10 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 	@Override
 	public int getGroupsCount(
 		long companyId, long parentGroupId, String name, boolean site) {
+
+		if (Validator.isNull(name)) {
+			name = "%";
+		}
 
 		return groupPersistence.countByC_P_LikeN_S(
 			companyId, parentGroupId, name, site);

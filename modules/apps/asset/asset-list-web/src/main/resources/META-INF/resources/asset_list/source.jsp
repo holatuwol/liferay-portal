@@ -26,17 +26,20 @@ List<AssetRendererFactory<?>> classTypesAssetRendererFactories = new ArrayList()
 	action="<%= editAssetListEntrySettingsURL %>"
 	method="post"
 	name="fm"
+	onSubmit="event.preventDefault();"
 >
 	<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 	<aui:input name="assetListEntryId" type="hidden" value="<%= assetListDisplayContext.getAssetListEntryId() %>" />
 
 	<liferay-frontend:edit-form-body>
+		<h1 class="sheet-title">
+			<liferay-ui:message key="source" />
+		</h1>
+
 		<liferay-frontend:fieldset-group>
 			<liferay-frontend:fieldset
 				cssClass="source-container"
-				label="source"
 			>
-				<p><liferay-ui:message key="asset-entry-type" /></p>
 
 				<%
 				Set<Long> availableClassNameIdsSet = SetUtil.fromArray(editAssetListDisplayContext.getAvailableClassNameIds());
@@ -60,7 +63,7 @@ List<AssetRendererFactory<?>> classTypesAssetRendererFactories = new ArrayList()
 				Arrays.sort(classNameIds);
 				%>
 
-				<aui:select label="" name="TypeSettingsProperties--anyAssetType--" title="asset-type">
+				<aui:select label="asset-entry-type" name="TypeSettingsProperties--anyAssetType--" title="asset-type">
 					<aui:option label="any" selected="<%= editAssetListDisplayContext.isAnyAssetType() %>" value="<%= true %>" />
 					<aui:option label='<%= LanguageUtil.get(request, "select-more-than-one") + StringPool.TRIPLE_PERIOD %>' selected="<%= !editAssetListDisplayContext.isAnyAssetType() && (classNameIds.length > 1) %>" value="<%= false %>" />
 
@@ -246,13 +249,13 @@ List<AssetRendererFactory<?>> classTypesAssetRendererFactories = new ArrayList()
 	</liferay-frontend:edit-form-body>
 
 	<liferay-frontend:edit-form-footer>
-		<aui:button type="submit" />
+		<aui:button onClick='<%= renderResponse.getNamespace() + "saveSelectBoxes();" %>' type="submit" />
 
 		<aui:button href="<%= editAssetListDisplayContext.getRedirectURL() %>" type="cancel" />
 	</liferay-frontend:edit-form-footer>
 </liferay-frontend:edit-form>
 
-<aui:script sandbox="<%= true %>">
+<aui:script>
 	var Util = Liferay.Util;
 
 	var assetMultipleSelector = $('#<portlet:namespace />currentClassNameIds');
@@ -421,8 +424,27 @@ List<AssetRendererFactory<?>> classTypesAssetRendererFactories = new ArrayList()
 		$('#<portlet:namespace />ddmStructureFieldValue').val(value);
 		$('#<portlet:namespace />ddmStructureDisplayFieldValue').val(displayValue);
 
-		$('#<portlet:namespace />' + className + 'ddmStructureFieldMessage').html(_.escape(message));
+		$('#<portlet:namespace />' + className + 'ddmStructureFieldMessage').html(Liferay.Util.escape(message));
 	}
 
 	Liferay.Util.toggleSelectBox('<portlet:namespace />anyAssetType', 'false', '<portlet:namespace />classNamesBoxes');
+
+	function <portlet:namespace />saveSelectBoxes() {
+		var form = $(document.<portlet:namespace />fm);
+
+		form.fm('classNameIds').val(Util.listSelect(form.fm('currentClassNameIds')));
+
+		<%
+		for (AssetRendererFactory<?> curRendererFactory : classTypesAssetRendererFactories) {
+			String className = editAssetListDisplayContext.getClassName(curRendererFactory);
+		%>
+
+			form.fm('classTypeIds<%= className %>').val(Util.listSelect(form.fm('<%= className %>currentClassTypeIds')));
+
+		<%
+		}
+		%>
+
+		submitForm(form);
+	}
 </aui:script>

@@ -63,6 +63,17 @@ public class AssetListEntryImpl extends AssetListEntryBaseImpl {
 		return _getDynamicAssetEntries(start, end);
 	}
 
+	public int getAssetEntriesCount() {
+		if (Objects.equals(
+				getType(), AssetListEntryTypeConstants.TYPE_MANUAL)) {
+
+			return AssetListEntryAssetEntryRelLocalServiceUtil.
+				getAssetListEntryAssetEntryRelsCount(getAssetListEntryId());
+		}
+
+		return AssetEntryLocalServiceUtil.getEntriesCount(getAssetEntryQuery());
+	}
+
 	public AssetEntryQuery getAssetEntryQuery() {
 		AssetEntryQuery assetEntryQuery = new AssetEntryQuery();
 
@@ -74,7 +85,14 @@ public class AssetListEntryImpl extends AssetListEntryBaseImpl {
 			assetEntryQuery, properties, _getAssetCategoryIds(properties),
 			_getAssetTagNames(properties));
 
-		assetEntryQuery.setGroupIds(new long[] {getGroupId()});
+		long[] groupIds = GetterUtil.getLongValues(
+			StringUtil.split(properties.getProperty("groupIds", "")));
+
+		if (ArrayUtil.isEmpty(groupIds)) {
+			groupIds = new long[] {getGroupId()};
+		}
+
+		assetEntryQuery.setGroupIds(groupIds);
 
 		boolean anyAssetType = GetterUtil.getBoolean(
 			properties.getProperty("anyAssetType", null), true);

@@ -14,6 +14,7 @@
 
 package com.liferay.structured.content.apio.internal.architect.filter.expression;
 
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.structured.content.apio.architect.filter.expression.BinaryExpression;
 import com.liferay.structured.content.apio.architect.filter.expression.Expression;
 import com.liferay.structured.content.apio.architect.filter.expression.LiteralExpression;
@@ -25,6 +26,8 @@ import java.util.stream.Stream;
 
 import org.apache.olingo.commons.api.edm.EdmEnumType;
 import org.apache.olingo.commons.api.edm.EdmType;
+import org.apache.olingo.commons.core.edm.primitivetype.EdmDate;
+import org.apache.olingo.commons.core.edm.primitivetype.EdmDateTimeOffset;
 import org.apache.olingo.commons.core.edm.primitivetype.EdmString;
 import org.apache.olingo.server.api.uri.UriInfoResource;
 import org.apache.olingo.server.api.uri.UriResource;
@@ -42,8 +45,7 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<Expression> {
 
 	@Override
 	public Expression visitAlias(String alias) {
-		throw new UnsupportedOperationException(
-			"Unsupported method visitAlias");
+		throw new UnsupportedOperationException("Alias: " + alias);
 	}
 
 	@Override
@@ -61,14 +63,14 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<Expression> {
 				rightBinaryOperationExpression)
 		).orElseThrow(
 			() -> new UnsupportedOperationException(
-				"Unsupported method visitBinaryOperator with operation " +
-					binaryOperatorKind)
+				"Binary operator: " + binaryOperatorKind)
 		);
 	}
 
 	@Override
 	public Expression visitEnum(EdmEnumType edmEnumType, List<String> list) {
-		throw new UnsupportedOperationException("Unsupported method visitEnum");
+		throw new UnsupportedOperationException(
+			"Enum: " + StringUtil.merge(edmEnumType.getMemberNames()));
 	}
 
 	@Override
@@ -78,26 +80,32 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<Expression> {
 			expression) {
 
 		throw new UnsupportedOperationException(
-			"Unsupported method visitLambdaExpression");
+			"Lambda expression: " + lambdaFunction);
 	}
 
 	@Override
 	public Expression visitLambdaReference(String lambdaReference) {
 		throw new UnsupportedOperationException(
-			"Unsupported method visitLambdaReference");
+			"Lambda reference: " + lambdaReference);
 	}
 
 	@Override
 	public Expression visitLiteral(Literal literal) {
 		EdmType edmType = literal.getType();
 
-		if (edmType instanceof EdmString) {
+		if (edmType instanceof EdmDate ||
+			edmType instanceof EdmDateTimeOffset) {
+
+			return new LiteralExpressionImpl(
+				literal.getText(), LiteralExpression.Type.DATE);
+		}
+		else if (edmType instanceof EdmString) {
 			return new LiteralExpressionImpl(
 				literal.getText(), LiteralExpression.Type.STRING);
 		}
 
 		throw new UnsupportedOperationException(
-			"Unsupported method visitLiteral");
+			"Liferal: " + edmType.getKind());
 	}
 
 	@Override
@@ -121,14 +129,13 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<Expression> {
 	public Expression visitMethodCall(
 		MethodKind methodKind, List<Expression> expressions) {
 
-		throw new UnsupportedOperationException(
-			"Unsupported method visitMethodCall");
+		throw new UnsupportedOperationException("Method call: " + methodKind);
 	}
 
 	@Override
 	public Expression visitTypeLiteral(EdmType edmType) {
 		throw new UnsupportedOperationException(
-			"Unsupported method visitTypeLiteral");
+			"Type literal: " + edmType.getKind());
 	}
 
 	@Override
@@ -136,7 +143,7 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<Expression> {
 		UnaryOperatorKind unaryOperatorKind, Expression expression) {
 
 		throw new UnsupportedOperationException(
-			"Unsupported method visitUnaryOperator");
+			"Unary operator: " + unaryOperatorKind);
 	}
 
 	private Optional<BinaryExpression.Operation> _getOperationOptional(
@@ -151,8 +158,14 @@ public class ExpressionVisitorImpl implements ExpressionVisitor<Expression> {
 		else if (binaryOperatorKind == BinaryOperatorKind.GE) {
 			return Optional.of(BinaryExpression.Operation.GE);
 		}
+		else if (binaryOperatorKind == BinaryOperatorKind.GT) {
+			return Optional.of(BinaryExpression.Operation.GT);
+		}
 		else if (binaryOperatorKind == BinaryOperatorKind.LE) {
 			return Optional.of(BinaryExpression.Operation.LE);
+		}
+		else if (binaryOperatorKind == BinaryOperatorKind.LT) {
+			return Optional.of(BinaryExpression.Operation.LT);
 		}
 		else if (binaryOperatorKind == BinaryOperatorKind.OR) {
 			return Optional.of(BinaryExpression.Operation.OR);

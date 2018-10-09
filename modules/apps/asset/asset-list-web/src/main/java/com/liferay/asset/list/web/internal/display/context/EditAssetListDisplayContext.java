@@ -27,21 +27,27 @@ import com.liferay.asset.kernel.service.AssetTagLocalServiceUtil;
 import com.liferay.asset.kernel.service.AssetVocabularyServiceUtil;
 import com.liferay.asset.list.constants.AssetListFormConstants;
 import com.liferay.asset.list.constants.AssetListPortletKeys;
+import com.liferay.asset.list.constants.AssetListWebKeys;
 import com.liferay.asset.list.service.AssetListEntryAssetEntryRelLocalServiceUtil;
 import com.liferay.asset.util.comparator.AssetRendererFactoryTypeNameComparator;
+import com.liferay.item.selector.ItemSelector;
+import com.liferay.item.selector.ItemSelectorReturnType;
 import com.liferay.petra.string.StringPool;
-import com.liferay.portal.kernel.dao.search.EmptyOnClickRowChecker;
 import com.liferay.portal.kernel.dao.search.SearchContainer;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.language.LanguageUtil;
+import com.liferay.portal.kernel.model.Company;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.portlet.LiferayPortletResponse;
 import com.liferay.portal.kernel.portlet.LiferayWindowState;
 import com.liferay.portal.kernel.portlet.PortletProvider;
 import com.liferay.portal.kernel.portlet.PortletProviderUtil;
 import com.liferay.portal.kernel.portlet.PortletURLFactoryUtil;
+import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
+import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -53,12 +59,17 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.site.item.selector.criteria.SiteItemSelectorReturnType;
+import com.liferay.site.item.selector.criterion.SiteItemSelectorCriterion;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.portlet.PortletMode;
 import javax.portlet.PortletRequest;
@@ -185,6 +196,15 @@ public class EditAssetListDisplayContext {
 			rulesJSONArray.put(ruleJSONObject);
 		}
 
+		if (rulesJSONArray.length() == 0) {
+			JSONObject defaultRule = JSONFactoryUtil.createJSONObject();
+
+			defaultRule.put("queryContains", true);
+			defaultRule.put("type", "assetTags");
+
+			rulesJSONArray.put(defaultRule);
+		}
+
 		return rulesJSONArray;
 	}
 
@@ -201,6 +221,21 @@ public class EditAssetListDisplayContext {
 				themeDisplay.getCompanyId(), true);
 
 		return _availableClassNameIds;
+	}
+
+	public Set<Group> getAvailableGroups() throws PortalException {
+		Set<Group> availableGroups = new HashSet<>();
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		Company company = themeDisplay.getCompany();
+
+		availableGroups.add(company.getGroup());
+
+		availableGroups.add(themeDisplay.getScopeGroup());
+
+		return availableGroups;
 	}
 
 	public String getCategorySelectorURL() {
@@ -349,6 +384,31 @@ public class EditAssetListDisplayContext {
 		return _ddmStructureFieldValue;
 	}
 
+	public String getGroupItemSelectorURL() {
+		ItemSelector itemSelector = (ItemSelector)_request.getAttribute(
+			AssetListWebKeys.ITEM_SELECTOR);
+
+		SiteItemSelectorCriterion siteItemSelectorCriterion =
+			new SiteItemSelectorCriterion();
+
+		List<ItemSelectorReturnType> desiredItemSelectorReturnTypes =
+			new ArrayList<>();
+
+		desiredItemSelectorReturnTypes.add(new SiteItemSelectorReturnType());
+
+		siteItemSelectorCriterion.setDesiredItemSelectorReturnTypes(
+			desiredItemSelectorReturnTypes);
+
+		PortletURL itemSelectorURL = itemSelector.getItemSelectorURL(
+			RequestBackedPortletURLFactoryUtil.create(_request),
+			getSelectGroupEventName(), siteItemSelectorCriterion);
+
+		itemSelectorURL.setParameter(
+			"portletResource", AssetListPortletKeys.ASSET_LIST);
+
+		return itemSelectorURL.toString();
+	}
+
 	public Map<String, Map<String, Object>> getManualAddIconDataMap()
 		throws Exception {
 
@@ -380,6 +440,8 @@ public class EditAssetListDisplayContext {
 
 			assetBrowserURL.setParameter(
 				"groupId", String.valueOf(themeDisplay.getScopeGroupId()));
+			assetBrowserURL.setParameter(
+				"multipleSelection", String.valueOf(Boolean.TRUE));
 			assetBrowserURL.setParameter(
 				"selectedGroupIds",
 				String.valueOf(themeDisplay.getScopeGroupId()));
@@ -495,6 +557,32 @@ public class EditAssetListDisplayContext {
 		return _orderByType2;
 	}
 
+	public PortletURL getPortletURL() {
+		PortletURL portletURL = PortletURLFactoryUtil.create(
+			_portletRequest, AssetListPortletKeys.ASSET_LIST,
+			PortletRequest.RENDER_PHASE);
+
+		portletURL.setParameter("mvcPath", "/edit_asset_list_entry.jsp");
+		portletURL.setParameter(
+			"assetListEntryId", String.valueOf(getAssetListEntryId()));
+
+		String screenNavigationCategoryKey = ParamUtil.getString(
+			_request, "screenNavigationCategoryKey",
+			AssetListFormConstants.CATEGORY_KEY_GENERAL);
+
+		portletURL.setParameter(
+			"screenNavigationCategoryKey", screenNavigationCategoryKey);
+
+		String screenNavigationEntryKey = ParamUtil.getString(
+			_request, "screenNavigationCategoryKey",
+			AssetListFormConstants.ENTRY_KEY_ASSET_ENTRIES);
+
+		portletURL.setParameter(
+			"screenNavigationEntryKey", screenNavigationEntryKey);
+
+		return portletURL;
+	}
+
 	public String getRedirectURL() {
 		if (Validator.isNotNull(_redirect)) {
 			return _redirect;
@@ -536,17 +624,15 @@ public class EditAssetListDisplayContext {
 		return _referencedModelsGroupIds;
 	}
 
-	public SearchContainer getSearchContainer() throws PortalException {
+	public SearchContainer getSearchContainer() {
 		if (_searchContainer != null) {
 			return _searchContainer;
 		}
 
 		SearchContainer searchContainer = new SearchContainer(
-			_portletRequest, _getPortletURL(), null,
+			_portletRequest, getPortletURL(), null,
 			"there-are-no-asset-entries");
 
-		searchContainer.setRowChecker(
-			new EmptyOnClickRowChecker(_portletResponse));
 		searchContainer.setTotal(
 			AssetListEntryAssetEntryRelLocalServiceUtil.
 				getAssetListEntryAssetEntryRelsCount(getAssetListEntryId()));
@@ -560,6 +646,26 @@ public class EditAssetListDisplayContext {
 		_searchContainer = searchContainer;
 
 		return _searchContainer;
+	}
+
+	public List<Group> getSelectedGroups() throws PortalException {
+		long[] groupIds = GetterUtil.getLongValues(
+			StringUtil.split(
+				PropertiesParamUtil.getString(
+					_properties, _request, "groupIds")));
+
+		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
+			WebKeys.THEME_DISPLAY);
+
+		if (ArrayUtil.isEmpty(groupIds)) {
+			return Collections.singletonList(themeDisplay.getScopeGroup());
+		}
+
+		return GroupLocalServiceUtil.getGroups(groupIds);
+	}
+
+	public String getSelectGroupEventName() {
+		return _portletResponse.getNamespace() + "_selectSite";
 	}
 
 	public String getTagSelectorURL() {
@@ -591,7 +697,7 @@ public class EditAssetListDisplayContext {
 		return null;
 	}
 
-	public String getVocabularyIds() throws Exception {
+	public String getVocabularyIds() {
 		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
 			WebKeys.THEME_DISPLAY);
 
@@ -631,9 +737,6 @@ public class EditAssetListDisplayContext {
 	}
 
 	protected void setDDMStructure() throws Exception {
-		ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
-			WebKeys.THEME_DISPLAY);
-
 		_ddmStructureDisplayFieldValue = StringPool.BLANK;
 		_ddmStructureFieldLabel = StringPool.BLANK;
 		_ddmStructureFieldName = StringPool.BLANK;
@@ -662,6 +765,9 @@ public class EditAssetListDisplayContext {
 
 		if (Validator.isNotNull(_ddmStructureFieldName) &&
 			Validator.isNotNull(_ddmStructureFieldValue)) {
+
+			ThemeDisplay themeDisplay = (ThemeDisplay)_request.getAttribute(
+				WebKeys.THEME_DISPLAY);
 
 			AssetRendererFactory<?> assetRendererFactory =
 				AssetRendererFactoryRegistryUtil.
@@ -745,24 +851,6 @@ public class EditAssetListDisplayContext {
 		}
 
 		return availableClassTypeIds;
-	}
-
-	private PortletURL _getPortletURL() {
-		PortletURL portletURL = PortletURLFactoryUtil.create(
-			_portletRequest, AssetListPortletKeys.ASSET_LIST,
-			PortletRequest.RENDER_PHASE);
-
-		portletURL.setParameter("mvcPath", "/edit_asset_list_entry.jsp");
-		portletURL.setParameter(
-			"assetListEntryId", String.valueOf(getAssetListEntryId()));
-		portletURL.setParameter(
-			"screenNavigationCategoryKey",
-			AssetListFormConstants.CATEGORY_KEY_GENERAL);
-		portletURL.setParameter(
-			"screenNavigationEntryKey",
-			AssetListFormConstants.ENTRY_KEY_ASSET_ENTRIES);
-
-		return portletURL;
 	}
 
 	private Boolean _anyAssetType;

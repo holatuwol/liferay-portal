@@ -15,7 +15,7 @@
 package com.liferay.structured.content.apio.internal.architect.filter;
 
 import com.liferay.structured.content.apio.architect.entity.EntityField;
-import com.liferay.structured.content.apio.architect.filter.InvalidFilterException;
+import com.liferay.structured.content.apio.architect.entity.EntityModel;
 import com.liferay.structured.content.apio.architect.filter.expression.BinaryExpression;
 import com.liferay.structured.content.apio.architect.filter.expression.Expression;
 import com.liferay.structured.content.apio.architect.filter.expression.ExpressionVisitException;
@@ -29,24 +29,12 @@ import org.assertj.core.api.AbstractThrowableAssert;
 import org.assertj.core.api.Assertions;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 /**
  * @author David Arques
  */
 public class FilterParserImplTest {
-
-	@Before
-	public void setUp() {
-		_filterParserImpl = new FilterParserImpl();
-
-		_filterParserImpl.
-			setStructuredContentSingleEntitySchemaBasedEdmProvider(
-				_structuredContentSingleEntitySchemaBasedEdmProvider);
-
-		_filterParserImpl.activate();
-	}
 
 	@Test
 	public void testParseNonexistingField() {
@@ -55,13 +43,23 @@ public class FilterParserImplTest {
 		AbstractThrowableAssert exception = Assertions.assertThatThrownBy(
 			() -> _filterParserImpl.parse(filterString)
 		).isInstanceOf(
-			InvalidFilterException.class
+			ExpressionVisitException.class
 		);
 
-		exception.hasMessageStartingWith(
-			String.format(
-				"Invalid query computed from filter '%s': 'Unknown property.'",
-				filterString));
+		exception.hasMessage("Unknown property.");
+	}
+
+	@Test
+	public void testParseUnsupportedMethod() {
+		String filterString = "(contains(fieldExternal, 'b'))";
+
+		AbstractThrowableAssert exception = Assertions.assertThatThrownBy(
+			() -> _filterParserImpl.parse(filterString)
+		).isInstanceOf(
+			ExpressionVisitException.class
+		);
+
+		exception.hasMessageStartingWith("Method call: contains");
 	}
 
 	@Test
@@ -69,10 +67,42 @@ public class FilterParserImplTest {
 		AbstractThrowableAssert exception = Assertions.assertThatThrownBy(
 			() -> _filterParserImpl.parse("")
 		).isInstanceOf(
-			InvalidFilterException.class
+			ExpressionVisitException.class
 		);
 
 		exception.hasMessage("Filter is null");
+	}
+
+	@Test
+	public void testParseWithEqBinaryExpressionWithDate() {
+		AbstractThrowableAssert exception = Assertions.assertThatThrownBy(
+			() -> _filterParserImpl.parse("dateExternal ge 2012-05-29")
+		).isInstanceOf(
+			ExpressionVisitException.class
+		);
+
+		exception.hasMessageContaining("Incompatible types");
+	}
+
+	@Test
+	public void testParseWithEqBinaryExpressionWithDateTimeOffset()
+		throws ExpressionVisitException {
+
+		Expression expression = _filterParserImpl.parse(
+			"dateExternal ge 2012-05-29T09:13:28Z");
+
+		Assert.assertNotNull(expression);
+
+		BinaryExpression binaryExpression = (BinaryExpression)expression;
+
+		Assert.assertEquals(
+			BinaryExpression.Operation.GE, binaryExpression.getOperation());
+		Assert.assertEquals(
+			"[dateExternal]",
+			binaryExpression.getLeftOperationExpression().toString());
+		Assert.assertEquals(
+			"2012-05-29T09:13:28Z",
+			binaryExpression.getRightOperationExpression().toString());
 	}
 
 	@Test
@@ -82,13 +112,10 @@ public class FilterParserImplTest {
 		AbstractThrowableAssert exception = Assertions.assertThatThrownBy(
 			() -> _filterParserImpl.parse(filterString)
 		).isInstanceOf(
-			InvalidFilterException.class
+			ExpressionVisitException.class
 		);
 
-		exception.hasMessageStartingWith(
-			String.format(
-				"Invalid query computed from filter '%s': 'Unknown property.'",
-				filterString));
+		exception.hasMessage("Unknown property.");
 	}
 
 	@Test
@@ -180,22 +207,25 @@ public class FilterParserImplTest {
 		AbstractThrowableAssert exception = Assertions.assertThatThrownBy(
 			() -> _filterParserImpl.parse(null)
 		).isInstanceOf(
-			InvalidFilterException.class
+			ExpressionVisitException.class
 		);
 
 		exception.hasMessage("Filter is null");
 	}
 
-	private static final StructuredContentSingleEntitySchemaBasedEdmProvider
-		_structuredContentSingleEntitySchemaBasedEdmProvider =
-			new StructuredContentSingleEntitySchemaBasedEdmProvider() {
+	private static final FilterParserImpl _filterParserImpl =
+		new FilterParserImpl(
+			new EntityModel() {
 
 				@Override
 				public Map<String, EntityField> getEntityFieldsMap() {
 					return Stream.of(
 						new EntityField(
 							"fieldExternal", EntityField.Type.STRING,
-							locale -> "fieldInternal")
+							locale -> "fieldInternal"),
+						new EntityField(
+							"dateExternal", EntityField.Type.DATE,
+							locale -> "dateInternal")
 					).collect(
 						Collectors.toMap(
 							EntityField::getName, Function.identity())
@@ -207,8 +237,6 @@ public class FilterParserImplTest {
 					return "SomeEntityName";
 				}
 
-			};
-
-	private FilterParserImpl _filterParserImpl;
+			});
 
 }

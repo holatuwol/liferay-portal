@@ -315,6 +315,7 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 		User user = userLocalService.getUser(userId);
 		long groupId = serviceContext.getScopeGroupId();
+
 		int status = WorkflowConstants.STATUS_DRAFT;
 
 		validate(title, urlTitle, content, status);
@@ -1857,12 +1858,12 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 			Map<String, Serializable> workflowContext)
 		throws PortalException {
 
-		String entryURL = (String)workflowContext.get(
-			WorkflowConstants.CONTEXT_URL);
-
 		if (!entry.isApproved()) {
 			return;
 		}
+
+		String entryURL = (String)workflowContext.get(
+			WorkflowConstants.CONTEXT_URL);
 
 		if (Validator.isNull(entryURL)) {
 			String layoutFullURL = serviceContext.getLayoutFullURL();
