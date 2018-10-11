@@ -14,32 +14,50 @@
 
 package com.liferay.users.admin.web.internal.portlet.action;
 
+import com.liferay.portal.kernel.exception.AddressCityException;
+import com.liferay.portal.kernel.exception.AddressStreetException;
+import com.liferay.portal.kernel.exception.AddressZipException;
 import com.liferay.portal.kernel.exception.EmailAddressException;
+import com.liferay.portal.kernel.exception.NoSuchCountryException;
 import com.liferay.portal.kernel.exception.NoSuchListTypeException;
+import com.liferay.portal.kernel.exception.NoSuchOrgLaborException;
 import com.liferay.portal.kernel.exception.NoSuchOrganizationException;
+import com.liferay.portal.kernel.exception.NoSuchRegionException;
 import com.liferay.portal.kernel.exception.PhoneNumberException;
 import com.liferay.portal.kernel.exception.PhoneNumberExtensionException;
 import com.liferay.portal.kernel.exception.WebsiteURLException;
-import com.liferay.portal.kernel.model.EmailAddress;
+import com.liferay.portal.kernel.model.ListTypeConstants;
 import com.liferay.portal.kernel.model.Organization;
-import com.liferay.portal.kernel.model.Phone;
-import com.liferay.portal.kernel.model.Website;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.service.AddressLocalService;
+import com.liferay.portal.kernel.service.AddressService;
+import com.liferay.portal.kernel.service.EmailAddressLocalService;
+import com.liferay.portal.kernel.service.EmailAddressService;
+import com.liferay.portal.kernel.service.OrgLaborLocalService;
+import com.liferay.portal.kernel.service.OrgLaborService;
 import com.liferay.portal.kernel.service.OrganizationService;
+import com.liferay.portal.kernel.service.PhoneLocalService;
+import com.liferay.portal.kernel.service.PhoneService;
+import com.liferay.portal.kernel.service.WebsiteLocalService;
+import com.liferay.portal.kernel.service.WebsiteService;
 import com.liferay.portal.kernel.service.permission.OrganizationPermissionUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.Constants;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.users.admin.constants.UsersAdminPortletKeys;
 import com.liferay.users.admin.kernel.util.UsersAdmin;
-import com.liferay.users.admin.kernel.util.UsersAdminUtil;
-
-import java.util.List;
+import com.liferay.users.admin.web.internal.manager.AddressContactInfoManager;
+import com.liferay.users.admin.web.internal.manager.ContactInfoManager;
+import com.liferay.users.admin.web.internal.manager.EmailAddressContactInfoManager;
+import com.liferay.users.admin.web.internal.manager.OrgLaborContactInfoManager;
+import com.liferay.users.admin.web.internal.manager.PhoneContactInfoManager;
+import com.liferay.users.admin.web.internal.manager.WebsiteContactInfoManager;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -78,8 +96,14 @@ public class UpdateOrganizationContactInformationMVCActionCommand
 
 				actionResponse.setRenderParameter("mvcPath", "/error.jsp");
 			}
-			else if (e instanceof EmailAddressException ||
+			else if (e instanceof AddressCityException ||
+					 e instanceof AddressStreetException ||
+					 e instanceof AddressZipException ||
+					 e instanceof EmailAddressException ||
+					 e instanceof NoSuchCountryException ||
 					 e instanceof NoSuchListTypeException ||
+					 e instanceof NoSuchOrgLaborException ||
+					 e instanceof NoSuchRegionException ||
 					 e instanceof PhoneNumberException ||
 					 e instanceof PhoneNumberExtensionException ||
 					 e instanceof WebsiteURLException) {
@@ -93,6 +117,41 @@ public class UpdateOrganizationContactInformationMVCActionCommand
 				throw e;
 			}
 		}
+	}
+
+	protected ContactInfoManager getContactInformationHelper(
+		ActionRequest actionRequest) {
+
+		String listType = ParamUtil.getString(actionRequest, "listType");
+		long organizationId = ParamUtil.getLong(
+			actionRequest, "organizationId");
+
+		if (listType.equals(ListTypeConstants.ADDRESS)) {
+			return new AddressContactInfoManager(
+				Organization.class, organizationId, _addressLocalService,
+				_addressService);
+		}
+		else if (listType.equals(ListTypeConstants.EMAIL_ADDRESS)) {
+			return new EmailAddressContactInfoManager(
+				Organization.class, organizationId, _emailAddressLocalService,
+				_emailAddressService, _usersAdmin);
+		}
+		else if (listType.equals(ListTypeConstants.PHONE)) {
+			return new PhoneContactInfoManager(
+				Organization.class, organizationId, _phoneLocalService,
+				_phoneService, _usersAdmin);
+		}
+		else if (listType.equals(ListTypeConstants.ORGANIZATION_SERVICE)) {
+			return new OrgLaborContactInfoManager(
+				organizationId, _orgLaborLocalService, _orgLaborService);
+		}
+		else if (listType.equals(ListTypeConstants.WEBSITE)) {
+			return new WebsiteContactInfoManager(
+				Organization.class, organizationId, _websiteLocalService,
+				_websiteService, _usersAdmin);
+		}
+
+		return null;
 	}
 
 	protected void updateContactInformation(ActionRequest actionRequest)
@@ -111,36 +170,65 @@ public class UpdateOrganizationContactInformationMVCActionCommand
 			themeDisplay.getPermissionChecker(), organization,
 			ActionKeys.UPDATE);
 
-		List<EmailAddress> emailAddresses = UsersAdminUtil.getEmailAddresses(
-			actionRequest);
+		ContactInfoManager contactInformationHelper =
+			getContactInformationHelper(actionRequest);
 
-		if (emailAddresses != null) {
-			_usersAdmin.updateEmailAddresses(
-				Organization.class.getName(), organizationId, emailAddresses);
+		if (contactInformationHelper == null) {
+			throw new NoSuchListTypeException();
 		}
 
-		List<Phone> phones = UsersAdminUtil.getPhones(actionRequest);
+		String cmd = ParamUtil.getString(actionRequest, Constants.CMD);
 
-		if (phones != null) {
-			_usersAdmin.updatePhones(
-				Organization.class.getName(), organizationId, phones);
+		long primaryKey = ParamUtil.getLong(actionRequest, "primaryKey");
+
+		if (cmd.equals(Constants.DELETE)) {
+			contactInformationHelper.delete(primaryKey);
 		}
-
-		List<Website> websites = UsersAdminUtil.getWebsites(actionRequest);
-
-		if (websites != null) {
-			_usersAdmin.updateWebsites(
-				Organization.class.getName(), organizationId, websites);
+		else if (cmd.equals(Constants.EDIT)) {
+			contactInformationHelper.edit(actionRequest);
+		}
+		else if (cmd.equals("makePrimary")) {
+			contactInformationHelper.makePrimary(primaryKey);
 		}
 	}
 
 	@Reference
+	private AddressLocalService _addressLocalService;
+
+	@Reference
+	private AddressService _addressService;
+
+	@Reference
+	private EmailAddressLocalService _emailAddressLocalService;
+
+	@Reference
+	private EmailAddressService _emailAddressService;
+
+	@Reference
 	private OrganizationService _organizationService;
+
+	@Reference
+	private OrgLaborLocalService _orgLaborLocalService;
+
+	@Reference
+	private OrgLaborService _orgLaborService;
+
+	@Reference
+	private PhoneLocalService _phoneLocalService;
+
+	@Reference
+	private PhoneService _phoneService;
 
 	@Reference
 	private Portal _portal;
 
 	@Reference
 	private UsersAdmin _usersAdmin;
+
+	@Reference
+	private WebsiteLocalService _websiteLocalService;
+
+	@Reference
+	private WebsiteService _websiteService;
 
 }

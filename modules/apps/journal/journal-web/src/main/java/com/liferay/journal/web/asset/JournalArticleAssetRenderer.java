@@ -140,6 +140,11 @@ public class JournalArticleAssetRenderer
 	}
 
 	@Override
+	public String getDefaultLanguageId() throws Exception {
+		return _article.getDefaultLanguageId();
+	}
+
+	@Override
 	public String getDiscussionPath() {
 		if (_journalServiceConfiguration == null) {
 			try {
@@ -329,16 +334,16 @@ public class JournalArticleAssetRenderer
 			LiferayPortletResponse liferayPortletResponse)
 		throws Exception {
 
-		PortletURL portletURL = PortalUtil.getControlPanelPortletURL(
-			liferayPortletRequest, JournalPortletKeys.JOURNAL,
-			PortletRequest.RENDER_PHASE);
-
 		JournalArticle previousApprovedArticle =
 			JournalArticleLocalServiceUtil.getPreviousApprovedArticle(_article);
 
 		if (previousApprovedArticle.getVersion() == _article.getVersion()) {
 			return null;
 		}
+
+		PortletURL portletURL = PortalUtil.getControlPanelPortletURL(
+			liferayPortletRequest, JournalPortletKeys.JOURNAL,
+			PortletRequest.RENDER_PHASE);
 
 		portletURL.setParameter("mvcPath", "/compare_versions.jsp");
 		portletURL.setParameter(

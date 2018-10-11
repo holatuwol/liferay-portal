@@ -254,6 +254,7 @@ public class JournalArticleStagedModelDataHandler
 		groupId = MapUtil.getLong(groupIds, groupId);
 
 		String articleArticleId = referenceElement.attributeValue("article-id");
+
 		boolean preloaded = GetterUtil.getBoolean(
 			referenceElement.attributeValue("preloaded"));
 
@@ -1012,8 +1013,6 @@ public class JournalArticleStagedModelDataHandler
 		String articleResourceUuid, long groupId, String articleId,
 		String newArticleId, boolean preloaded) {
 
-		JournalArticle existingArticle = null;
-
 		JournalArticleResource journalArticleResource =
 			_journalArticleResourceLocalService.
 				fetchJournalArticleResourceByUuidAndGroupId(
@@ -1027,6 +1026,8 @@ public class JournalArticleStagedModelDataHandler
 		if (!preloaded) {
 			return null;
 		}
+
+		JournalArticle existingArticle = null;
 
 		if (Validator.isNotNull(newArticleId)) {
 			existingArticle = _journalArticleLocalService.fetchArticle(

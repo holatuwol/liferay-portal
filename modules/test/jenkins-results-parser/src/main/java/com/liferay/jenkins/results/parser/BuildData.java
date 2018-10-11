@@ -27,8 +27,7 @@ public interface BuildData {
 
 	public static final String DIST_ROOT_PATH = "/tmp/dist";
 
-	public static final String JENKINS_BUILD_DATA_FILE_NAME =
-		"jenkins-build-data.json";
+	public String getBuildDescription();
 
 	public Integer getBuildNumber();
 
@@ -46,12 +45,20 @@ public interface BuildData {
 
 	public String getJobName();
 
+	public JSONObject getJSONObject();
+
 	public String getMasterHostname();
 
 	public String getRunID();
 
-	public File getWorkspaceDir();
+	public Integer getTopLevelBuildNumber();
 
-	public JSONObject toJSONObject();
+	public String getTopLevelJobName();
+
+	public String getTopLevelMasterHostname();
+
+	public String getUserContentRelativePath();
+
+	public File getWorkspaceDir();
 
 }

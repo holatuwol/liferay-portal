@@ -41,12 +41,11 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Provides the information necessary to expose a WorkflowTask resource through
- * a web API. The resources are mapped from the internal model {@link
+ * Provides the information necessary to expose a {@code WorkflowTask} resource
+ * through a web API. The resources are mapped from the internal model {@code
  * WorkflowTask}.
  *
  * @author Sarai Díaz
- * @review
  */
 @Component(immediate = true, service = ItemResource.class)
 public class WorkflowTaskItemResource
@@ -90,7 +89,7 @@ public class WorkflowTaskItemResource
 		).addLinkedModel(
 			"comment", CommentIdentifier.class, this::_getLinkedModelId
 		).addLinkedModel(
-			"mediaObject", MediaObjectIdentifier.class, this::_getLinkedModelId
+			"document", MediaObjectIdentifier.class, this::_getLinkedModelId
 		).addRelatedCollection(
 			"logs", WorkflowLogIdentifier.class
 		).addString(

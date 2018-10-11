@@ -191,14 +191,14 @@ public class PingbackMethodImpl implements Method {
 
 		serviceContext.setAttribute("pingbackUserName", pingbackUserName);
 
-		StringBundler sb = new StringBundler(5);
-
 		String portletId = PortletProviderUtil.getPortletId(
 			BlogsEntry.class.getName(), PortletProvider.Action.VIEW);
 
 		if (Validator.isNull(portletId)) {
 			return serviceContext;
 		}
+
+		StringBundler sb = new StringBundler(5);
 
 		String layoutFullURL = _portal.getLayoutFullURL(groupId, portletId);
 
@@ -357,11 +357,11 @@ public class PingbackMethodImpl implements Method {
 	}
 
 	protected Response validateSource() throws Exception {
-		Source source = null;
-
 		if (_isSourceURILocalNetwork()) {
 			return XmlRpcUtil.createFault(ACCESS_DENIED, "Access Denied");
 		}
+
+		Source source = null;
 
 		try {
 			String html = _http.URLtoString(_sourceURI);

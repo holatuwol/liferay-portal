@@ -682,6 +682,11 @@ public class OrganizationLocalServiceImpl
 		long companyId, long parentOrganizationId, String name, int start,
 		int end) {
 
+		if (Validator.isNull(name)) {
+			return organizationPersistence.findByC_P(
+				companyId, parentOrganizationId, start, end);
+		}
+
 		return organizationPersistence.findByC_P_LikeN(
 			companyId, parentOrganizationId, name, start, end);
 	}
@@ -791,6 +796,11 @@ public class OrganizationLocalServiceImpl
 
 	public int getOrganizationsCount(
 		long companyId, long parentOrganizationId, String name) {
+
+		if (Validator.isNull(name)) {
+			return organizationPersistence.countByC_P(
+				companyId, parentOrganizationId);
+		}
 
 		return organizationPersistence.countByC_P_LikeN(
 			companyId, parentOrganizationId, name);

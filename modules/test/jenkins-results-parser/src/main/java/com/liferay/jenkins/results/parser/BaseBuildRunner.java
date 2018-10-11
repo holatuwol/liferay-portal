@@ -14,9 +14,6 @@
 
 package com.liferay.jenkins.results.parser;
 
-import java.io.File;
-import java.io.IOException;
-
 /**
  * @author Michael Hashimoto
  */
@@ -29,33 +26,22 @@ public abstract class BaseBuildRunner<T extends BuildData>
 
 	@Override
 	public void run() {
-		initWorkspace();
+		updateBuildDescription();
 
 		setUpWorkspace();
 	}
 
 	@Override
 	public void setUp() {
-		writeJenkinsJSONObjectToFile();
 	}
 
 	@Override
 	public void tearDown() {
-		initWorkspace();
-
 		tearDownWorkspace();
 	}
 
 	protected BaseBuildRunner(T buildData) {
 		_buildData = buildData;
-
-		_jenkinsJSONObjectFile = new File(
-			buildData.getWorkspaceDir(),
-			BuildData.JENKINS_BUILD_DATA_FILE_NAME);
-
-		_jenkinsJSONObject = _getJenkinsJSONObjectFromFile();
-
-		_jenkinsJSONObject.addBuildData(_buildData);
 
 		_job = JobFactory.newJob(_buildData);
 
@@ -70,7 +56,7 @@ public abstract class BaseBuildRunner<T extends BuildData>
 
 	protected void setUpWorkspace() {
 		if (workspace == null) {
-			throw new RuntimeException("Workspace is null");
+			initWorkspace();
 		}
 
 		workspace.setUp(getJob());
@@ -78,41 +64,39 @@ public abstract class BaseBuildRunner<T extends BuildData>
 
 	protected void tearDownWorkspace() {
 		if (workspace == null) {
-			throw new RuntimeException("Workspace is null");
+			initWorkspace();
 		}
 
 		workspace.tearDown();
 	}
 
-	protected void writeJenkinsJSONObjectToFile() {
-		try {
-			JenkinsResultsParserUtil.write(
-				_jenkinsJSONObjectFile, _jenkinsJSONObject.toString());
-		}
-		catch (IOException ioe) {
-			throw new RuntimeException(ioe);
-		}
+	protected void updateBuildDescription() {
+		String buildDescription = _buildData.getBuildDescription();
+
+		buildDescription = buildDescription.replaceAll("\"", "\\\\\"");
+		buildDescription = buildDescription.replaceAll("\'", "\\\\\'");
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("def job = Jenkins.instance.getItemByFullName(\"");
+		sb.append(_buildData.getJobName());
+		sb.append("\"); ");
+
+		sb.append("def build = job.getBuildByNumber(");
+		sb.append(_buildData.getBuildNumber());
+		sb.append("); ");
+
+		sb.append("build.description = \"");
+		sb.append(buildDescription);
+		sb.append("\";");
+
+		JenkinsResultsParserUtil.executeJenkinsScript(
+			_buildData.getMasterHostname(), "script=" + sb.toString());
 	}
 
 	protected Workspace workspace;
 
-	private JenkinsJSONObject _getJenkinsJSONObjectFromFile() {
-		if (!_jenkinsJSONObjectFile.exists()) {
-			return new JenkinsJSONObject();
-		}
-
-		try {
-			return new JenkinsJSONObject(
-				JenkinsResultsParserUtil.read(_jenkinsJSONObjectFile));
-		}
-		catch (IOException ioe) {
-			throw new RuntimeException(ioe);
-		}
-	}
-
 	private final T _buildData;
-	private final JenkinsJSONObject _jenkinsJSONObject;
-	private final File _jenkinsJSONObjectFile;
 	private final Job _job;
 
 }

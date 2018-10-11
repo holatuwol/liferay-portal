@@ -975,6 +975,7 @@ public abstract class BaseIndexer<T> implements Indexer<T> {
 				assetCategoryTitles.entrySet()) {
 
 			Locale locale = entry.getKey();
+
 			List<String> titles = entry.getValue();
 
 			String[] titlesArray = titles.toArray(new String[titles.size()]);
@@ -1071,20 +1072,8 @@ public abstract class BaseIndexer<T> implements Indexer<T> {
 			BooleanQuery searchQuery, SearchContext searchContext)
 		throws Exception {
 
-		String keywords = searchContext.getKeywords();
-
-		if (Validator.isNull(keywords)) {
-			return Collections.emptyMap();
-		}
-
-		addSearchExpando(searchQuery, searchContext, keywords);
-
-		addSearchLocalizedTerm(
-			searchQuery, searchContext, Field.ASSET_CATEGORY_TITLES,
-			searchContext.isLike());
-
-		return searchQuery.addTerms(
-			Field.KEYWORDS, keywords, searchContext.isLike());
+		return addSearchExpando(
+			searchQuery, searchContext, searchContext.getKeywords());
 	}
 
 	protected void addSearchLayout(

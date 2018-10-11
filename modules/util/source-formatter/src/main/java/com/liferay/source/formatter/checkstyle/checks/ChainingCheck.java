@@ -249,8 +249,8 @@ public class ChainingCheck extends BaseCheck {
 			return;
 		}
 
-		for (int i = DetailASTUtil.getStartLine(methodCallAST) + 1;
-			 i <= DetailASTUtil.getEndLine(methodCallAST); i++) {
+		for (int i = DetailASTUtil.getStartLineNumber(methodCallAST) + 1;
+			 i <= DetailASTUtil.getEndLineNumber(methodCallAST); i++) {
 
 			String line = StringUtil.trim(getLine(i - 1));
 
@@ -386,13 +386,13 @@ public class ChainingCheck extends BaseCheck {
 		}
 
 		while (true) {
-			DetailAST childAST = detailAST.getFirstChild();
-
 			if ((detailAST.getType() != TokenTypes.DOT) &&
 				(detailAST.getType() != TokenTypes.METHOD_CALL)) {
 
 				return null;
 			}
+
+			DetailAST childAST = detailAST.getFirstChild();
 
 			if ((detailAST.getType() == TokenTypes.DOT) &&
 				(childAST.getType() != TokenTypes.METHOD_CALL)) {

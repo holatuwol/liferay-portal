@@ -23,6 +23,10 @@ public interface WorkspaceGitRepository extends LocalGitRepository {
 
 	public String getGitHubDevBranchName();
 
+	public String getType();
+
+	public void setBranchSHA(String branchSHA);
+
 	public void setUp();
 
 	public void tearDown();

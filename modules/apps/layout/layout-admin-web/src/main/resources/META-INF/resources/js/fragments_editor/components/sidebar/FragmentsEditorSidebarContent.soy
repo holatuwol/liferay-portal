@@ -4,110 +4,72 @@
  * FragmentsEditorSidebarContent
  */
 {template .render}
-	{@param fragmentCollections: list<[
-		fragmentEntries: list<[
-			fragmentEntryId: string,
-			imagePreviewURL: string,
-			name: string
-		]>,
-		fragmentCollectionId: string,
-		name: string
-	]>}
+	{@param fragmentCollections: ?}
 	{@param fragmentEntryLinks: ?}
-	{@param sidebarTabs: list<[enabled:bool, id:string, label:string]>}
+	{@param layoutData: ?}
+	{@param sidebarTabs: list<[
+		enabled:bool,
+		id:string,
+		label:string
+	]>}
 	{@param spritemap: string}
-	{@param? dropTargetClass: string}
-	{@param? layoutData: ?}
-	{@param? selectedMappingTypes: [
-		subtype: [
-			id: string,
-			label: string
-		],
-		type: [
-			id: string,
-			label: string
-		]
-	]}
 	{@param? highlightMapping: bool}
+	{@param? selectedMappingTypes: ?}
 	{@param? store: ?}
-	{@param? _handleTabClick: any}
-	{@param? _selectedTab: string}
+	{@param? _handleSectionButtonClick: any}
+	{@param? _sectionId: string}
+	{@param? _sections: list<[
+		icon: string,
+		label: string,
+		sectionId: string
+	]>}
 
 	<div class="fragments-editor-sidebar-content">
-		<div class="sidebar-section">
-			<nav class="navbar navbar-expand-md navbar-underline">
-				<ul class="navbar-nav">
-					{if $sidebarTabs}
-						{foreach $sidebarTab in $sidebarTabs}
-							{if $sidebarTab.enabled}
-								{call .sidebarTab}
-									{param active: $sidebarTab.id == $_selectedTab /}
-									{param id: $sidebarTab.id /}
-									{param key: $sidebarTab.id /}
-									{param handleTabClick: $_handleTabClick /}
-									{param label: $sidebarTab.label /}
-								{/call}
-							{/if}
-						{/foreach}
-					{/if}
-				</ul>
-			</nav>
+		<div class="fragments-editor-sidebar-section">
+			{if $_sectionId == 'fragments'}
+				{call com.liferay.layout.admin.web.SidebarFragmentsSection.render}
+					{param fragmentCollections: $fragmentCollections /}
+					{param fragmentEntryLinks: $fragmentEntryLinks /}
+					{param layoutData: $layoutData /}
+					{param sidebarTabs: $sidebarTabs /}
+					{param spritemap: $spritemap /}
+					{param highlightMapping: $highlightMapping /}
+					{param selectedMappingTypes: $selectedMappingTypes /}
+					{param store: $store /}
+				{/call}
+			{elseif $_sectionId == 'layouts'}
+				{call com.liferay.layout.admin.web.SidebarLayoutsSection.render}
+				{/call}
+			{/if}
 		</div>
 
-		{if $_selectedTab == 'available'}
-			{call com.liferay.layout.admin.web.SidebarAvailableFragments.render}
-				{param dropTargetClass: $dropTargetClass /}
-				{param fragmentCollections: $fragmentCollections /}
-				{param ref: 'sidebarTab' /}
-				{param spritemap: $spritemap /}
-				{param store: $store /}
-			{/call}
-		{elseif $_selectedTab == 'added'}
-			{call com.liferay.layout.admin.web.SidebarAddedFragments.render}
-				{param fragmentEntryLinks: $fragmentEntryLinks /}
-				{param layoutData: $layoutData /}
-				{param ref: 'sidebarTab' /}
-				{param spritemap: $spritemap /}
-				{param store: $store /}
-			{/call}
-		{elseif $_selectedTab == 'mapping'}
-			{call com.liferay.layout.admin.web.SidebarMapping.render}
-				{param highlightMapping: $highlightMapping ?: false /}
-				{param ref: 'sidebarTab' /}
-				{param selectedMappingTypes: $selectedMappingTypes /}
-				{param spritemap: $spritemap /}
-				{param store: $store /}
-			{/call}
-		{/if}
-	</div>
-{/template}
+		<div class="btn-group fragments-editor-sidebar-sections-buttons" role="group">
+			{if $_sections}
+				{foreach $section in $_sections}
+					{let $sectionButtonClasses kind="text"}
+						btn
+						{sp}btn-outline-borderless
 
-/**
- * Sidebar tab
- */
-{template .sidebarTab}
-	{@param id: string}
-	{@param handleTabClick: any}
-	{@param active: bool}
-	{@param label: string}
+						{if $section.sectionId == $_sectionId}
+							{sp}btn-outline-primary
+						{else}
+							{sp}btn-outline-secondary
+						{/if}
+					{/let}
 
-	<li class="nav-item">
-		{let $navLinkClasses kind="text"}
-			nav-link
-			{if $active}
-				{sp}active
+					<button
+						class="{$sectionButtonClasses}"
+						data-onclick="{$_handleSectionButtonClick}"
+						data-section-id="{$section.sectionId}"
+						title="{$section.label}"
+						type="button"
+					>
+						<svg class="lexicon-icon">
+							<use xlink:href="{$spritemap}#{$section.icon}"></use>
+						</svg>
+					</button>
+				{/foreach}
 			{/if}
-		{/let}
-
-		<a
-			class="{$navLinkClasses}"
-			data-onclick="{$handleTabClick}"
-			data-tab-id="{$id}"
-			href="javascript:;"
-		>
-			<span class="text-truncate">
-				{$label}
-			</span>
-		</a>
-	</li>
+		</div>
+	</div>
 {/template}

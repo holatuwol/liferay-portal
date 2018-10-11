@@ -22,26 +22,42 @@ import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 
+import org.json.JSONObject;
+
 /**
  * @author Michael Hashimoto
  */
 public abstract class TopLevelBuildData extends BaseBuildData {
 
-	protected TopLevelBuildData(
-		Map<String, String> buildParameters,
-		JenkinsJSONObject jenkinsJSONObject, String runID) {
+	@Override
+	public Integer getTopLevelBuildNumber() {
+		return getBuildNumber();
+	}
 
-		super(buildParameters, jenkinsJSONObject, runID);
+	@Override
+	public String getTopLevelJobName() {
+		return getJobName();
+	}
 
-		if (!has("dist_nodes")) {
-			put("dist_nodes", _getDistNodes());
-		}
+	@Override
+	public String getTopLevelMasterHostname() {
+		return getMasterHostname();
+	}
 
-		if (!has("dist_path")) {
-			put("dist_path", _getDistPath());
-		}
+	protected TopLevelBuildData(JSONObject jsonObject) {
+		super(jsonObject);
 
+		validateKeys(_REQUIRED_KEYS);
+	}
+
+	protected TopLevelBuildData(Map<String, String> buildParameters) {
+		super(buildParameters);
+
+		put("dist_nodes", _getDistNodes());
+		put("dist_path", _getDistPath());
 		put("top_level_run_id", getRunID());
+
+		validateKeys(_REQUIRED_KEYS);
 	}
 
 	private String _getDistNodes() {
@@ -78,5 +94,8 @@ public abstract class TopLevelBuildData extends BaseBuildData {
 			BuildData.DIST_ROOT_PATH, "/", getMasterHostname(), "/",
 			getJobName(), "/", String.valueOf(getBuildNumber()), "/dist");
 	}
+
+	private static final String[] _REQUIRED_KEYS =
+		{"dist_nodes", "dist_path", "top_level_run_id"};
 
 }
