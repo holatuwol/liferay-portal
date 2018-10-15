@@ -16,10 +16,10 @@ package com.liferay.structured.content.apio.internal.architect.provider;
 
 import com.liferay.apio.architect.provider.Provider;
 import com.liferay.portal.kernel.util.Validator;
-import com.liferay.structured.content.apio.architect.filter.Filter;
-import com.liferay.structured.content.apio.architect.filter.FilterParser;
-import com.liferay.structured.content.apio.architect.filter.InvalidFilterException;
-import com.liferay.structured.content.apio.architect.filter.expression.ExpressionVisitException;
+import com.liferay.portal.odata.filter.Filter;
+import com.liferay.portal.odata.filter.FilterParser;
+import com.liferay.portal.odata.filter.InvalidFilterException;
+import com.liferay.structured.content.apio.internal.architect.filter.StructuredContentEntityModel;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,12 +43,23 @@ public class FilterProvider implements Provider<Filter> {
 		try {
 			return new Filter(_filterParser.parse(filterString));
 		}
-		catch (ExpressionVisitException eve) {
-			throw new InvalidFilterException(eve.getMessage(), eve);
+		catch (Exception e) {
+			throw new InvalidFilterException(
+				String.format(
+					"Invalid query computed from filter '%s': %s", filterString,
+					e.getMessage()),
+				e);
 		}
 	}
 
-	@Reference
+	@Reference(
+		target = "(entity.model.name=" + StructuredContentEntityModel.NAME + ")",
+		unbind = "-"
+	)
+	public void setFilterParser(FilterParser filterParser) {
+		_filterParser = filterParser;
+	}
+
 	private FilterParser _filterParser;
 
 }

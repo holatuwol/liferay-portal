@@ -25,22 +25,51 @@
 >
 	<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 	<aui:input name="assetListEntryId" type="hidden" value="<%= assetListDisplayContext.getAssetListEntryId() %>" />
-	<aui:input name="assetEntryId" type="hidden" />
+	<aui:input name="assetEntryIds" type="hidden" />
 
 	<liferay-frontend:edit-form-body>
-		<h3 class="sheet-subtitle">
+		<h1 class="sheet-title">
 			<span class="autofit-padded-no-gutters autofit-row">
 				<span class="autofit-col autofit-col-expand">
 					<span class="heading-text">
 						<liferay-ui:message key="asset-entries" />
 					</span>
 				</span>
+				<span class="autofit-col">
+					<liferay-ui:icon-menu
+						direction="right"
+						message="select"
+						showArrow="<%= false %>"
+						showWhenSingleIcon="<%= true %>"
+					>
+
+						<%
+						Map<String, Map<String, Object>> manualAddIconDataMap = editAssetListDisplayContext.getManualAddIconDataMap();
+
+						for (Map.Entry<String, Map<String, Object>> entry : manualAddIconDataMap.entrySet()) {
+						%>
+
+							<liferay-ui:icon
+								cssClass="asset-selector"
+								data="<%= entry.getValue() %>"
+								id="<%= themeDisplay.getScopeGroupId() + FriendlyURLNormalizerUtil.normalize(entry.getKey()) %>"
+								message="<%= HtmlUtil.escape(entry.getKey()) %>"
+								url="javascript:;"
+							/>
+
+						<%
+						}
+						%>
+
+					</liferay-ui:icon-menu>
+				</span>
 			</span>
-		</h3>
+		</h1>
 
 		<liferay-ui:search-container
 			compactEmptyResultsMessage="<%= true %>"
-			emptyResultsMessage="none"
+			emptyResultsMessage="no-assets-are-selected"
+			id="assetEntriesSearchContainer"
 			searchContainer="<%= editAssetListDisplayContext.getSearchContainer() %>"
 		>
 			<liferay-ui:search-container-row
@@ -86,12 +115,15 @@
 				/>
 
 				<liferay-ui:search-container-column-jsp
-					path="/asset_list/asset_selection_action.jsp"
+					path="/asset_list/asset_selection_order_up_action.jsp"
 				/>
 
 				<liferay-ui:search-container-column-jsp
-					cssClass="entry-action-column"
-					path="/asset_list/asset_selection_order_action.jsp"
+					path="/asset_list/asset_selection_order_down_action.jsp"
+				/>
+
+				<liferay-ui:search-container-column-jsp
+					path="/asset_list/asset_selection_action.jsp"
 				/>
 			</liferay-ui:search-container-row>
 
@@ -100,38 +132,9 @@
 			/>
 		</liferay-ui:search-container>
 	</liferay-frontend:edit-form-body>
-
-	<liferay-frontend:edit-form-footer>
-		<liferay-ui:icon-menu
-			direction="right"
-			message="select"
-			showArrow="<%= false %>"
-			showWhenSingleIcon="<%= true %>"
-		>
-
-			<%
-			Map<String, Map<String, Object>> manualAddIconDataMap = editAssetListDisplayContext.getManualAddIconDataMap();
-
-			for (Map.Entry<String, Map<String, Object>> entry : manualAddIconDataMap.entrySet()) {
-			%>
-
-				<liferay-ui:icon
-					cssClass="asset-selector"
-					data="<%= entry.getValue() %>"
-					id="<%= themeDisplay.getScopeGroupId() + FriendlyURLNormalizerUtil.normalize(entry.getKey()) %>"
-					message="<%= HtmlUtil.escape(entry.getKey()) %>"
-					url="javascript:;"
-				/>
-
-			<%
-			}
-			%>
-
-		</liferay-ui:icon-menu>
-	</liferay-frontend:edit-form-footer>
 </liferay-frontend:edit-form>
 
-<aui:script sandbox="<%= true %>">
+<aui:script use="liferay-item-selector-dialog">
 	$('body').on(
 		'click',
 		'.asset-selector a',
@@ -140,24 +143,35 @@
 
 			var currentTarget = $(event.currentTarget);
 
-			Liferay.Util.selectEntity(
+			var itemSelectorDialog = new A.LiferayItemSelectorDialog(
 				{
-					dialog: {
-						constrain: true,
-						destroyOnHide: true,
-						modal: true
-					},
 					eventName: '<portlet:namespace />selectAsset',
 					id: '<portlet:namespace />selectAsset' + currentTarget.attr('id'),
-					title: currentTarget.data('title'),
-					uri: currentTarget.data('href')
-				},
-				function(event) {
-					<portlet:namespace />fm.<portlet:namespace />assetEntryId.value = event.entityid;
+					on: {
+						selectedItemChange: function(event) {
+							var selectedItems = event.newVal;
 
-					submitForm(document.<portlet:namespace />fm);
+							if (selectedItems) {
+								var assetEntryIds = [];
+
+								selectedItems.forEach(
+									function(assetEntry) {
+										assetEntryIds.push(assetEntry.entityid);
+									}
+								);
+
+								<portlet:namespace />fm.<portlet:namespace />assetEntryIds.value = assetEntryIds.join(',');
+
+								submitForm(document.<portlet:namespace />fm);
+							}
+						}
+					},
+					title: currentTarget.data('title'),
+					url: currentTarget.data('href')
 				}
 			);
+
+			itemSelectorDialog.open();
 		}
 	);
 </aui:script>

@@ -17,8 +17,13 @@ package com.liferay.asset.list.service.impl;
 import com.liferay.asset.list.model.AssetListEntryAssetEntryRel;
 import com.liferay.asset.list.service.base.AssetListEntryAssetEntryRelLocalServiceBaseImpl;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.model.SystemEventConstants;
+import com.liferay.portal.kernel.model.User;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.systemevent.SystemEvent;
 import com.liferay.portal.kernel.transaction.TransactionCommitCallbackUtil;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -29,7 +34,11 @@ public class AssetListEntryAssetEntryRelLocalServiceImpl
 
 	@Override
 	public AssetListEntryAssetEntryRel addAssetListEntryAssetEntryRel(
-		long assetListEntryId, long assetEntryId) {
+			long assetListEntryId, long assetEntryId, int position,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		User user = userLocalService.getUser(serviceContext.getUserId());
 
 		long assetListEntryAssetEntryRelId = counterLocalService.increment();
 
@@ -37,16 +46,38 @@ public class AssetListEntryAssetEntryRelLocalServiceImpl
 			assetListEntryAssetEntryRelPersistence.create(
 				assetListEntryAssetEntryRelId);
 
+		assetListEntryAssetEntryRel.setUuid(serviceContext.getUuid());
+		assetListEntryAssetEntryRel.setGroupId(
+			serviceContext.getScopeGroupId());
+		assetListEntryAssetEntryRel.setCompanyId(serviceContext.getCompanyId());
+		assetListEntryAssetEntryRel.setUserId(serviceContext.getUserId());
+		assetListEntryAssetEntryRel.setUserName(user.getFullName());
+		assetListEntryAssetEntryRel.setCreateDate(
+			serviceContext.getCreateDate(new Date()));
+		assetListEntryAssetEntryRel.setModifiedDate(
+			serviceContext.getModifiedDate(new Date()));
 		assetListEntryAssetEntryRel.setAssetListEntryId(assetListEntryId);
 		assetListEntryAssetEntryRel.setAssetEntryId(assetEntryId);
-		assetListEntryAssetEntryRel.setPosition(
-			getAssetListEntryAssetEntryRelsCount(assetListEntryId));
+		assetListEntryAssetEntryRel.setPosition(position);
 
 		return assetListEntryAssetEntryRelPersistence.update(
 			assetListEntryAssetEntryRel);
 	}
 
 	@Override
+	public AssetListEntryAssetEntryRel addAssetListEntryAssetEntryRel(
+			long assetListEntryId, long assetEntryId,
+			ServiceContext serviceContext)
+		throws PortalException {
+
+		int position = getAssetListEntryAssetEntryRelsCount(assetListEntryId);
+
+		return addAssetListEntryAssetEntryRel(
+			assetListEntryId, assetEntryId, position, serviceContext);
+	}
+
+	@Override
+	@SystemEvent(type = SystemEventConstants.TYPE_DELETE)
 	public AssetListEntryAssetEntryRel deleteAssetListEntryAssetEntryRel(
 			long assetListEntryId, int position)
 		throws PortalException {
@@ -70,6 +101,14 @@ public class AssetListEntryAssetEntryRelLocalServiceImpl
 		}
 
 		return assetListEntryAssetEntryRel;
+	}
+
+	@Override
+	public void deleteAssetListEntryAssetEntryRelByAssetListEntryId(
+		long assetListEntryId) {
+
+		assetListEntryAssetEntryRelPersistence.removeByAssetListEntryId(
+			assetListEntryId);
 	}
 
 	@Override
@@ -140,6 +179,26 @@ public class AssetListEntryAssetEntryRelLocalServiceImpl
 
 				return null;
 			});
+
+		return assetListEntryAssetEntryRel;
+	}
+
+	@Override
+	public AssetListEntryAssetEntryRel updateAssetListEntryAssetEntryRel(
+			long assetListEntryAssetEntryRelId, long assetListEntryId,
+			long assetEntryId, int position)
+		throws PortalException {
+
+		AssetListEntryAssetEntryRel assetListEntryAssetEntryRel =
+			assetListEntryAssetEntryRelPersistence.findByPrimaryKey(
+				assetListEntryAssetEntryRelId);
+
+		assetListEntryAssetEntryRel.setAssetListEntryId(assetListEntryId);
+		assetListEntryAssetEntryRel.setAssetEntryId(assetEntryId);
+		assetListEntryAssetEntryRel.setPosition(position);
+
+		assetListEntryAssetEntryRelPersistence.update(
+			assetListEntryAssetEntryRel);
 
 		return assetListEntryAssetEntryRel;
 	}

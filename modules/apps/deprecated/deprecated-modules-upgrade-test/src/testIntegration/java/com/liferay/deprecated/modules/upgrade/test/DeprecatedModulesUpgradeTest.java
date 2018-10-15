@@ -19,6 +19,7 @@ import com.liferay.portal.configuration.test.util.ConfigurationTemporarySwapper;
 import com.liferay.portal.kernel.dao.db.DB;
 import com.liferay.portal.kernel.dao.db.DBManagerUtil;
 import com.liferay.portal.kernel.dao.orm.EntityCacheUtil;
+import com.liferay.portal.kernel.dao.orm.FinderCacheUtil;
 import com.liferay.portal.kernel.model.Layout;
 import com.liferay.portal.kernel.model.Release;
 import com.liferay.portal.kernel.service.LayoutLocalService;
@@ -91,6 +92,18 @@ public class DeprecatedModulesUpgradeTest {
 	}
 
 	@Test
+	public void testDeprecatedModulesUpgradePrivateMessaging()
+		throws Exception {
+
+		_testDeprecatedModulesUpgrade(
+			"removePrivateMessagingModuleData",
+			"com.liferay.social.privatemessaging.service",
+			"dependencies/private-messaging-tables.sql",
+			"com_liferay_social_privatemessaging_web_portlet_" +
+				"PrivateMessagingPortlet");
+	}
+
+	@Test
 	public void testDeprecatedModulesUpgradeShopping() throws Exception {
 		_testDeprecatedModulesUpgrade(
 			"removeShoppingModuleData", "com.liferay.shopping.service",
@@ -144,6 +157,8 @@ public class DeprecatedModulesUpgradeTest {
 				new ConfigurationTemporarySwapper(
 					_CONFIGURATION_PID, properties)) {
 
+			FinderCacheUtil.clearLocalCache();
+
 			for (String currentServletContextName : _SERVLET_CONTEXT_NAMES) {
 				Release release = _releaseLocalService.fetchRelease(
 					currentServletContextName);
@@ -182,7 +197,8 @@ public class DeprecatedModulesUpgradeTest {
 
 	private static final String[] _SERVLET_CONTEXT_NAMES = {
 		"com.liferay.chat.service", "com.liferay.mail.reader.service",
-		"com.liferay.shopping.service"
+		"com.liferay.shopping.service",
+		"com.liferay.social.privatemessaging.service"
 	};
 
 	@Inject

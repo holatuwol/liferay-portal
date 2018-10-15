@@ -5,7 +5,7 @@ import {pageStructure} from './util/config.es';
 import {sub} from './util/strings.es';
 import autobind from 'autobind-decorator';
 import AutoSave from './util/AutoSave.es';
-import Builder from './pages/builder/index.es';
+import Builder from './pages/FormBuilder/index.es';
 import ClayModal from 'clay-modal';
 import Component from 'metal-jsx';
 import dom from 'metal-dom';
@@ -121,6 +121,15 @@ class Form extends Component {
 		 */
 
 		published: Config.bool().value(false),
+
+		/**
+		 * The rules of a form.
+		 * @default undefined
+		 * @instance
+		 * @memberof Form
+		 * @type {!array}
+		 */
+		rolesURL: Config.string().required(),
 
 		/**
 		 * The rules of a form.
@@ -457,8 +466,10 @@ class Form extends Component {
 				<LayoutProvider {...layoutProviderProps}>
 					<RuleBuilder
 						functionsMetadata={this.props.functionsMetadata}
+						pages={context.pages}
 						rules={this.props.rules}
 						spritemap={spritemap}
+						url={this.props.rolesURL}
 						visible={showRuleBuilder}
 					/>
 					<Builder

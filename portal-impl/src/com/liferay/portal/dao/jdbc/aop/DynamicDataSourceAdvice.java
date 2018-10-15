@@ -18,8 +18,9 @@ import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.jdbc.aop.DynamicDataSourceTargetSource;
 import com.liferay.portal.kernel.dao.jdbc.aop.MasterDataSource;
 import com.liferay.portal.kernel.dao.jdbc.aop.Operation;
-import com.liferay.portal.spring.aop.ChainableMethodAdvice;
+import com.liferay.portal.spring.aop.AnnotationChainableMethodAdvice;
 import com.liferay.portal.spring.aop.ServiceBeanAopCacheManager;
+import com.liferay.portal.spring.transaction.TransactionInterceptor;
 
 import java.lang.reflect.Method;
 
@@ -32,7 +33,8 @@ import org.springframework.transaction.interceptor.TransactionAttributeSource;
  * @author Shuyang Zhou
  * @author László Csontos
  */
-public class DynamicDataSourceAdvice extends ChainableMethodAdvice {
+public class DynamicDataSourceAdvice
+	extends AnnotationChainableMethodAdvice<MasterDataSource> {
 
 	@Override
 	public Object before(MethodInvocation methodInvocation) throws Throwable {
@@ -44,15 +46,12 @@ public class DynamicDataSourceAdvice extends ChainableMethodAdvice {
 
 		Method targetMethod = methodInvocation.getMethod();
 
-		MasterDataSource masterDataSource =
-			ServiceBeanAopCacheManager.getAnnotation(
-				methodInvocation, MasterDataSource.class,
-				_nullMasterDataSource);
+		MasterDataSource masterDataSource = findAnnotation(methodInvocation);
 
 		if (masterDataSource == _nullMasterDataSource) {
 			TransactionAttribute transactionAttribute =
-				_transactionAttributeSource.getTransactionAttribute(
-					targetMethod, targetClass);
+				_transactionInterceptor.getTransactionAttribute(
+					methodInvocation);
 
 			if ((transactionAttribute != null) &&
 				transactionAttribute.isReadOnly()) {
@@ -77,30 +76,46 @@ public class DynamicDataSourceAdvice extends ChainableMethodAdvice {
 		_dynamicDataSourceTargetSource.popMethod();
 	}
 
+	@Override
+	public MasterDataSource getNullAnnotation() {
+		return _nullMasterDataSource;
+	}
+
 	public void setDynamicDataSourceTargetSource(
 		DynamicDataSourceTargetSource dynamicDataSourceTargetSource) {
 
 		_dynamicDataSourceTargetSource = dynamicDataSourceTargetSource;
 	}
 
+	/**
+	 * @deprecated As of Judson (7.1.x), with no direct replacement
+	 */
+	@Deprecated
 	public void setTransactionAttributeSource(
 		TransactionAttributeSource transactionAttributeSource) {
+	}
 
-		_transactionAttributeSource = transactionAttributeSource;
+	public void setTransactionInterceptor(
+		TransactionInterceptor transactionInterceptor) {
+
+		setNextMethodInterceptor(transactionInterceptor);
+
+		_transactionInterceptor = transactionInterceptor;
+	}
+
+	@Override
+	protected MasterDataSource findAnnotation(
+		MethodInvocation methodInvocation) {
+
+		return serviceBeanAopCacheManager.findAnnotation(
+			methodInvocation, MasterDataSource.class, _nullMasterDataSource);
 	}
 
 	@Override
 	protected void setServiceBeanAopCacheManager(
 		ServiceBeanAopCacheManager serviceBeanAopCacheManager) {
 
-		if (this.serviceBeanAopCacheManager != null) {
-			return;
-		}
-
-		this.serviceBeanAopCacheManager = serviceBeanAopCacheManager;
-
-		serviceBeanAopCacheManager.registerAnnotationChainableMethodAdvice(
-			MasterDataSource.class, null);
+		super.setServiceBeanAopCacheManager(serviceBeanAopCacheManager);
 	}
 
 	private static final MasterDataSource _nullMasterDataSource =
@@ -114,6 +129,6 @@ public class DynamicDataSourceAdvice extends ChainableMethodAdvice {
 		};
 
 	private DynamicDataSourceTargetSource _dynamicDataSourceTargetSource;
-	private TransactionAttributeSource _transactionAttributeSource;
+	private TransactionInterceptor _transactionInterceptor;
 
 }

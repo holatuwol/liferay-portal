@@ -221,9 +221,14 @@
 
 		<execute function="Select" locator1="APConfiguration#FILTER_CATEGORIZATION_SELECT" value1="Categories" />
 
-		<execute macro="AssetCategorization#addCategory">
+		<execute function="Click" locator1="Button#SELECT_CATEGORIES" />
+
+		<execute macro="AssetCategorization#selectCategory">
 			<var name="categoryName" value="${categoryName}" />
-			<var name="vocabularyName" value="${vocabularyName}" />
+		</execute>
+
+		<execute function="AssertTextEquals" locator1="AssetCategorization#CATEGORY" value1="${categoryName}">
+			<var name="key_categoryName" value="${categoryName}" />
 		</execute>
 
 		<execute macro="PortletEntry#save" />
@@ -1089,7 +1094,7 @@
 		<execute function="AssertElementPresent" locator1="Icon#FLAG" />
 		<execute function="AssertElementPresent" locator1="Ratings#YOUR_RATING_LABEL" />
 		<execute function="AssertElementPresent" locator1="Ratings#AVERAGE_LABEL" />
-		<execute function="AssertElementPresent" locator1="Comments#SUBSCRIBE_TO_COMMENTS_LINK" />
+		<execute function="AssertElementPresent" locator1="Button#SUBSCRIBE" />
 		<execute function="AssertElementPresent" locator1="Icon#CUSTOM_EDIT" />
 
 		<execute function="Click" locator1="AP#ASSET_RICH_SUMMARY_TITLE" value1="${assetTitle}" />

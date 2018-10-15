@@ -311,6 +311,15 @@
 			</then>
 		</if>
 
+		<if>
+			<isset var="webContentTextBox" />
+			<then>
+				<execute function="Type" locator1="DDMField#TEXT_BOX" value1="${webContentTextBox}">
+					<var name="key_fieldName" value="${textBoxFieldName}" />
+				</execute>
+			</then>
+		</if>
+
 		<execute function="Click" locator1="Button#PUBLISH" />
 
 		<execute function="SelectFrame" value1="relative=top" />
@@ -378,6 +387,21 @@
 		<execute function="SelectFrameTop" value1="relative=top" />
 
 		<execute function="AssertClick" locator1="ItemSelector#ADD_BUTTON" value1="Add" />
+
+		<execute macro="PortletEntry#publish" />
+	</command>
+
+	<command name="addWithFriendlyURL">
+		<execute macro="WebContent#addCP">
+			<var name="webContentContent" value="${webContentContent}" />
+			<var name="webContentTitle" value="${webContentTitle}" />
+		</execute>
+
+		<execute macro="Panel#expandPanel">
+			<var name="panel" value="Friendly URL" />
+		</execute>
+
+		<execute function="Type" locator1="TextInput#FRIENDLY_URL" value1="${friendlyUrl}" />
 
 		<execute macro="PortletEntry#publish" />
 	</command>
@@ -921,7 +945,7 @@
 		<execute function="SelectFrame" locator1="WCSelectDisplayPage#DISPLAY_PAGE_CONFIGURATION_IFRAME" />
 
 		<if>
-			<contains string="${pageType}" substring="{pageType}" />
+			<equals arg1="${pageType}" arg2="Public Pages" />
 			<then>
 				<execute macro="Navigator#gotoNavItem">
 					<var name="navItem" value="Public Pages" />

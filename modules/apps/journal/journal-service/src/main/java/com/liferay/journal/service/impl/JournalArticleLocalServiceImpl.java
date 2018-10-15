@@ -6378,6 +6378,7 @@ public class JournalArticleLocalServiceImpl
 		// Article
 
 		User user = userLocalService.getUser(userId);
+
 		Date now = new Date();
 
 		if ((status == WorkflowConstants.STATUS_APPROVED) &&
@@ -6683,13 +6684,14 @@ public class JournalArticleLocalServiceImpl
 
 			JSONObject jsonObject = JSONFactoryUtil.createJSONObject(value);
 
-			String uuid = jsonObject.getString("uuid");
-			long groupId = jsonObject.getLong("groupId");
 			boolean tempFile = jsonObject.getBoolean("tempFile");
 
 			if (!tempFile) {
 				continue;
 			}
+
+			String uuid = jsonObject.getString("uuid");
+			long groupId = jsonObject.getLong("groupId");
 
 			FileEntry fileEntry =
 				dlAppLocalService.getFileEntryByUuidAndGroupId(uuid, groupId);
@@ -7788,16 +7790,8 @@ public class JournalArticleLocalServiceImpl
 			ServiceContext serviceContext)
 		throws PortalException {
 
-		String portletId = PortletProviderUtil.getPortletId(
-			JournalArticle.class.getName(), PortletProvider.Action.EDIT);
-
-		String articleURL = getURLViewInContext(
-			article, portletId, serviceContext);
-
 		JournalGroupServiceConfiguration journalGroupServiceConfiguration =
 			getJournalGroupServiceConfiguration(article.getGroupId());
-
-		String articleTitle = article.getTitle(serviceContext.getLanguageId());
 
 		if (action.equals("add") &&
 			journalGroupServiceConfiguration.emailArticleAddedEnabled()) {
@@ -7825,6 +7819,8 @@ public class JournalArticleLocalServiceImpl
 		else {
 			return;
 		}
+
+		String articleTitle = article.getTitle(serviceContext.getLanguageId());
 
 		String fromName = journalGroupServiceConfiguration.emailFromName();
 		String fromAddress =
@@ -7936,6 +7932,12 @@ public class JournalArticleLocalServiceImpl
 		subscriptionSender.setContextAttribute(
 			"[$ARTICLE_DIFFS$]", DiffHtmlUtil.replaceStyles(articleDiffs),
 			false);
+
+		String portletId = PortletProviderUtil.getPortletId(
+			JournalArticle.class.getName(), PortletProvider.Action.EDIT);
+
+		String articleURL = getURLViewInContext(
+			article, portletId, serviceContext);
 
 		JournalFolder folder = article.getFolder();
 
@@ -8577,6 +8579,7 @@ public class JournalArticleLocalServiceImpl
 
 		for (Locale locale : localeSet) {
 			String title = titleMap.get(locale);
+
 			String description = null;
 
 			if (descriptionMap != null) {

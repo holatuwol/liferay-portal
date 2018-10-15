@@ -15,6 +15,7 @@
 package com.liferay.structured.content.apio.internal.architect.resource.test;
 
 import com.liferay.apio.architect.pagination.PageItems;
+import com.liferay.apio.architect.test.util.pagination.PaginationRequest;
 import com.liferay.arquillian.extension.junit.bridge.junit.Arquillian;
 import com.liferay.journal.model.JournalArticle;
 import com.liferay.journal.model.JournalArticleConstants;
@@ -36,12 +37,11 @@ import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
 import com.liferay.portal.kernel.test.util.UserTestUtil;
 import com.liferay.portal.kernel.util.LocaleUtil;
+import com.liferay.portal.odata.filter.Filter;
+import com.liferay.portal.odata.sort.Sort;
 import com.liferay.portal.test.rule.Inject;
 import com.liferay.portal.test.rule.LiferayIntegrationTestRule;
 import com.liferay.portal.test.rule.PermissionCheckerTestRule;
-import com.liferay.structured.content.apio.architect.filter.Filter;
-import com.liferay.structured.content.apio.architect.sort.Sort;
-import com.liferay.structured.content.apio.architect.util.test.PaginationTestUtil;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -148,7 +148,7 @@ public class StructuredContentNestedCollectionResourcePermissionTest
 				new ContextUserReplace(user, permissionChecker)) {
 
 			PageItems<JournalArticle> pageItems = getPageItems(
-				PaginationTestUtil.of(10, 1), _group.getGroupId(),
+				PaginationRequest.of(10, 1), _group.getGroupId(),
 				getThemeDisplay(_group, LocaleUtil.getDefault()),
 				Filter.emptyFilter(), Sort.emptySort());
 

@@ -17,13 +17,17 @@ package com.liferay.jenkins.results.parser;
 import java.io.File;
 import java.io.IOException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+
+import org.dom4j.Element;
 
 /**
  * @author Michael Hashimoto
@@ -33,13 +37,19 @@ public abstract class TopLevelBuildRunner<T extends TopLevelBuildData>
 
 	@Override
 	public void run() {
-		super.run();
+		updateBuildDescription();
 
-		propagateDistFilesToDistNodes();
+		setUpWorkspace();
 
-		invokeBatchJobs();
+		prepareInvocationBuildDataList();
 
-		waitForInvokedJobs();
+		propagateBuildDatabaseToDistNodes();
+
+		invokeDownstreamBuilds();
+
+		waitForDownstreamBuildsToComplete();
+
+		publishJenkinsReport();
 	}
 
 	protected TopLevelBuildRunner(T topLevelBuildData) {
@@ -56,43 +66,201 @@ public abstract class TopLevelBuildRunner<T extends TopLevelBuildData>
 		_topLevelBuild = (TopLevelBuild)build;
 	}
 
-	protected Set<String> getBatchNames() {
-		Job job = getJob();
-
-		return job.getBatchNames();
+	protected void addInvocationBuildData(BuildData buildData) {
+		_invocationBuildDataList.add(buildData);
 	}
 
-	protected String[] getDistFileNames() {
-		return new String[] {BuildData.JENKINS_BUILD_DATA_FILE_NAME};
+	protected void invokeDownstreamBuilds() {
+		for (BuildData invocationBuildData : _invocationBuildDataList) {
+			_invokeDownstreamBuild(invocationBuildData);
+		}
+
+		_invocationBuildDataList.clear();
 	}
 
-	protected void invokeBatchJob(String batchName) {
-		BuildData buildData = getBuildData();
+	protected abstract void prepareInvocationBuildDataList();
 
-		Map<String, String> invocationParameters = new HashMap<>();
+	protected void propagateBuildDatabaseToDistNodes() {
+		if (!JenkinsResultsParserUtil.isCINode()) {
+			return;
+		}
 
-		invocationParameters.put("BATCH_NAME", batchName);
-		invocationParameters.put(
-			"DIST_NODES", StringUtils.join(buildData.getDistNodes(), ","));
-		invocationParameters.put("DIST_PATH", buildData.getDistPath());
-		invocationParameters.put("JENKINS_GITHUB_URL", _getJenkinsGitHubURL());
-		invocationParameters.put(
-			"RUN_ID",
-			"batch_" + JenkinsResultsParserUtil.getDistinctTimeStamp());
-		invocationParameters.put("TOP_LEVEL_RUN_ID", buildData.getRunID());
+		TopLevelBuildData topLevelBuildData = getBuildData();
 
-		invokeJob(
-			buildData.getCohortName(), buildData.getJobName() + "-batch",
-			invocationParameters);
+		File workspaceDir = topLevelBuildData.getWorkspaceDir();
+
+		FilePropagator filePropagator = new FilePropagator(
+			new String[] {BuildDatabase.BUILD_DATABASE_FILE_NAME},
+			JenkinsResultsParserUtil.combine(
+				topLevelBuildData.getHostname(), ":", workspaceDir.toString()),
+			topLevelBuildData.getDistPath(), topLevelBuildData.getDistNodes());
+
+		filePropagator.setCleanUpCommand(_FILE_PROPAGATOR_CLEAN_UP_COMMAND);
+
+		filePropagator.start(_FILE_PROPAGATOR_THREAD_COUNT);
 	}
 
-	protected void invokeBatchJobs() {
-		for (String batchName : getBatchNames()) {
-			invokeBatchJob(batchName);
+	protected void publishJenkinsReport() {
+		Element jenkinsReportElement = _topLevelBuild.getJenkinsReportElement();
+
+		try {
+			TopLevelBuildData topLevelBuildData = getBuildData();
+
+			String jenkinsReportString = StringEscapeUtils.unescapeXml(
+				Dom4JUtil.format(jenkinsReportElement, true));
+
+			File jenkinsReportFile = new File(
+				topLevelBuildData.getWorkspaceDir(), "jenkins-report.html");
+
+			JenkinsResultsParserUtil.write(
+				jenkinsReportFile, jenkinsReportString);
+
+			if (!JenkinsResultsParserUtil.isCINode()) {
+				return;
+			}
+
+			String userContentRelativePath =
+				topLevelBuildData.getUserContentRelativePath();
+
+			userContentRelativePath = userContentRelativePath.replace(
+				")", "\\)");
+			userContentRelativePath = userContentRelativePath.replace(
+				"(", "\\(");
+
+			try {
+				String command = JenkinsResultsParserUtil.combine(
+					"ssh -o NumberOfPasswordPrompts=0 ",
+					topLevelBuildData.getMasterHostname(),
+					" 'mkdir -p /opt/java/jenkins/userContent/",
+					userContentRelativePath, "'");
+
+				JenkinsResultsParserUtil.executeBashCommands(command);
+			}
+			catch (IOException | TimeoutException e) {
+				throw new RuntimeException(e);
+			}
+
+			int maxRetries = 3;
+			int retries = 0;
+
+			while (retries < maxRetries) {
+				try {
+					retries++;
+
+					String command = JenkinsResultsParserUtil.combine(
+						"time rsync -Iqs --chmod=go=rx --timeout=1200 ",
+						jenkinsReportFile.getCanonicalPath(), " ",
+						topLevelBuildData.getMasterHostname(), "::usercontent/",
+						userContentRelativePath);
+
+					JenkinsResultsParserUtil.executeBashCommands(command);
+
+					break;
+				}
+				catch (IOException | TimeoutException e) {
+					if (retries == maxRetries) {
+						throw new RuntimeException(
+							"Unable to send the jenkins-report.html", e);
+					}
+
+					System.out.println(
+						"Unable to execute bash commands, retrying... ");
+
+					e.printStackTrace();
+
+					JenkinsResultsParserUtil.sleep(3000);
+				}
+			}
+		}
+		catch (IOException ioe) {
+			throw new RuntimeException(ioe);
 		}
 	}
 
-	protected void invokeJob(
+	protected void updateJenkinsReport() {
+		if (!_allBuildsAreRunning()) {
+			_lastGeneratedReportTime = -1;
+
+			return;
+		}
+
+		long currentTimeMillis = System.currentTimeMillis();
+
+		if (_lastGeneratedReportTime == -1) {
+			_lastGeneratedReportTime = System.currentTimeMillis();
+
+			publishJenkinsReport();
+
+			return;
+		}
+
+		if ((_lastGeneratedReportTime + _REPORT_GENERATION_INTERVAL) >
+				currentTimeMillis) {
+
+			return;
+		}
+
+		_lastGeneratedReportTime = System.currentTimeMillis();
+
+		publishJenkinsReport();
+	}
+
+	protected void waitForDownstreamBuildsToComplete() {
+		while (true) {
+			_topLevelBuild.update();
+
+			updateJenkinsReport();
+
+			System.out.println(_topLevelBuild.getStatusSummary());
+
+			int completed = _topLevelBuild.getDownstreamBuildCount("completed");
+			int total = _topLevelBuild.getDownstreamBuildCount(null);
+
+			if (completed >= total) {
+				break;
+			}
+
+			JenkinsResultsParserUtil.sleep(
+				_WAIT_FOR_INVOKED_JOB_DURATION * 1000);
+		}
+	}
+
+	private boolean _allBuildsAreRunning() {
+		List<Build> runningBuilds = new ArrayList<>();
+
+		runningBuilds.addAll(_topLevelBuild.getDownstreamBuilds("running"));
+		runningBuilds.addAll(_topLevelBuild.getDownstreamBuilds("completed"));
+
+		List<Build> totalBuilds = _topLevelBuild.getDownstreamBuilds(null);
+
+		if (runningBuilds.size() >= totalBuilds.size()) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private String _getCachedJenkinsGitHubURL() {
+		if (JenkinsResultsParserUtil.isCINode()) {
+			WorkspaceGitRepository jenkinsWorkspaceGitRepository =
+				workspace.getJenkinsWorkspaceGitRepository();
+
+			String gitHubDevBranchName =
+				jenkinsWorkspaceGitRepository.getGitHubDevBranchName();
+
+			if (gitHubDevBranchName != null) {
+				return JenkinsResultsParserUtil.combine(
+					"https://github-dev.liferay.com/liferay/",
+					"liferay-jenkins-ee/tree/", gitHubDevBranchName);
+			}
+		}
+
+		TopLevelBuildData topLevelBuildData = getBuildData();
+
+		return topLevelBuildData.getJenkinsGitHubURL();
+	}
+
+	private void _invokeBuild(
 		String cohortName, String jobName,
 		Map<String, String> invocationParameters) {
 
@@ -105,17 +273,15 @@ public abstract class TopLevelBuildRunner<T extends TopLevelBuildData>
 			throw new RuntimeException(ioe);
 		}
 
-		List<JenkinsMaster> jenkinsMasters =
-			JenkinsResultsParserUtil.getJenkinsMasters(
-				buildProperties, cohortName);
-
-		String randomJenkinsURL =
+		String invocationURL =
 			JenkinsResultsParserUtil.getMostAvailableMasterURL(
-				"http://" + cohortName + ".liferay.com", jenkinsMasters.size());
+				JenkinsResultsParserUtil.combine(
+					"http://", cohortName, ".liferay.com"),
+				1);
 
 		StringBuilder sb = new StringBuilder();
 
-		sb.append(randomJenkinsURL);
+		sb.append(invocationURL);
 		sb.append("/job/");
 		sb.append(jobName);
 		sb.append("/buildWithParameters?token=");
@@ -143,64 +309,24 @@ public abstract class TopLevelBuildRunner<T extends TopLevelBuildData>
 		}
 	}
 
-	protected void propagateDistFilesToDistNodes() {
-		if (!JenkinsResultsParserUtil.isCINode()) {
-			return;
-		}
+	private void _invokeDownstreamBuild(BuildData buildData) {
+		TopLevelBuildData topLevelBuildData = getBuildData();
 
-		writeJenkinsJSONObjectToFile();
+		Map<String, String> invocationParameters = new HashMap<>();
 
-		BuildData buildData = getBuildData();
+		invocationParameters.put(
+			"DIST_NODES",
+			StringUtils.join(topLevelBuildData.getDistNodes(), ","));
+		invocationParameters.put("DIST_PATH", topLevelBuildData.getDistPath());
+		invocationParameters.put(
+			"JENKINS_GITHUB_URL", _getCachedJenkinsGitHubURL());
+		invocationParameters.put("RUN_ID", buildData.getRunID());
+		invocationParameters.put(
+			"TOP_LEVEL_RUN_ID", topLevelBuildData.getRunID());
 
-		File workspaceDir = buildData.getWorkspaceDir();
-
-		FilePropagator filePropagator = new FilePropagator(
-			getDistFileNames(),
-			JenkinsResultsParserUtil.combine(
-				buildData.getHostname(), ":", workspaceDir.toString()),
-			buildData.getDistPath(), buildData.getDistNodes());
-
-		filePropagator.setCleanUpCommand(_FILE_PROPAGATOR_CLEAN_UP_COMMAND);
-
-		filePropagator.start(_FILE_PROPAGATOR_THREAD_COUNT);
-	}
-
-	protected void waitForInvokedJobs() {
-		while (true) {
-			_topLevelBuild.update();
-
-			System.out.println(_topLevelBuild.getStatusSummary());
-
-			int completed = _topLevelBuild.getDownstreamBuildCount("completed");
-			int total = _topLevelBuild.getDownstreamBuildCount(null);
-
-			if (completed >= total) {
-				break;
-			}
-
-			JenkinsResultsParserUtil.sleep(
-				_WAIT_FOR_INVOKED_JOB_DURATION * 1000);
-		}
-	}
-
-	private String _getJenkinsGitHubURL() {
-		if (JenkinsResultsParserUtil.isCINode()) {
-			WorkspaceGitRepository jenkinsWorkspaceGitRepository =
-				workspace.getJenkinsWorkspaceGitRepository();
-
-			String gitHubDevBranchName =
-				jenkinsWorkspaceGitRepository.getGitHubDevBranchName();
-
-			if (gitHubDevBranchName != null) {
-				return JenkinsResultsParserUtil.combine(
-					"https://github-dev.liferay.com/liferay/",
-					"liferay-jenkins-ee/tree/", gitHubDevBranchName);
-			}
-		}
-
-		BuildData buildData = getBuildData();
-
-		return buildData.getJenkinsGitHubURL();
+		_invokeBuild(
+			topLevelBuildData.getCohortName(), buildData.getJobName(),
+			invocationParameters);
 	}
 
 	private static final String _FILE_PROPAGATOR_CLEAN_UP_COMMAND =
@@ -214,8 +340,12 @@ public abstract class TopLevelBuildRunner<T extends TopLevelBuildData>
 
 	private static final int _FILE_PROPAGATOR_THREAD_COUNT = 1;
 
+	private static final long _REPORT_GENERATION_INTERVAL = 1000 * 60 * 5;
+
 	private static final int _WAIT_FOR_INVOKED_JOB_DURATION = 30;
 
+	private final List<BuildData> _invocationBuildDataList = new ArrayList<>();
+	private long _lastGeneratedReportTime = -1;
 	private final TopLevelBuild _topLevelBuild;
 
 }

@@ -14,60 +14,35 @@
 
 package com.liferay.jenkins.results.parser;
 
+import org.json.JSONObject;
+
 /**
  * @author Michael Hashimoto
  */
 public class OtherPortalWorkspaceGitRepository
 	extends BasePortalWorkspaceGitRepository {
 
+	public static final String TYPE = "portal.other";
+
+	@Override
+	public String getType() {
+		return TYPE;
+	}
+
+	protected OtherPortalWorkspaceGitRepository(JSONObject jsonObject) {
+		super(jsonObject);
+	}
+
 	protected OtherPortalWorkspaceGitRepository(
-		PortalWorkspaceGitRepository primaryPortalWorkspaceGitRepository) {
+		PullRequest pullRequest, String upstreamBranchName) {
 
-		super(
-			_getGitHubURL(primaryPortalWorkspaceGitRepository),
-			_getUpstreamBranchName(primaryPortalWorkspaceGitRepository), null);
-
-		this.primaryPortalWorkspaceGitRepository =
-			primaryPortalWorkspaceGitRepository;
+		super(pullRequest, upstreamBranchName);
 	}
 
-	protected final PortalWorkspaceGitRepository
-		primaryPortalWorkspaceGitRepository;
+	protected OtherPortalWorkspaceGitRepository(
+		RemoteGitRef remoteGitRef, String upstreamBranchName) {
 
-	private static String _getGitHubURL(
-		PortalWorkspaceGitRepository primaryPortalWorkspaceGitRepository) {
-
-		String upstreamBranchName = _getUpstreamBranchName(
-			primaryPortalWorkspaceGitRepository);
-
-		StringBuilder sb = new StringBuilder();
-
-		sb.append("https://github.com/liferay/liferay-portal");
-
-		if (!upstreamBranchName.equals("master")) {
-			sb.append("-ee");
-		}
-
-		sb.append("/tree/");
-		sb.append(upstreamBranchName);
-
-		return sb.toString();
-	}
-
-	private static String _getUpstreamBranchName(
-		PortalWorkspaceGitRepository primaryPortalWorkspaceGitRepository) {
-
-		String portalUpstreamBranchName =
-			primaryPortalWorkspaceGitRepository.getUpstreamBranchName();
-
-		if (portalUpstreamBranchName.contains("7.0.x")) {
-			return portalUpstreamBranchName.replace("7.0.x", "master");
-		}
-		else if (portalUpstreamBranchName.contains("7.1.x")) {
-			return portalUpstreamBranchName.replace("7.1.x", "7.0.x");
-		}
-
-		return portalUpstreamBranchName.replace("master", "7.0.x");
+		super(remoteGitRef, upstreamBranchName);
 	}
 
 }

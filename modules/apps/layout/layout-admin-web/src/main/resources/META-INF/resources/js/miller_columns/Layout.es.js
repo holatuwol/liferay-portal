@@ -4,12 +4,14 @@ import Soy from 'metal-soy';
 
 import './LayoutBreadcrumbs.es';
 import './LayoutColumn.es';
+import {DRAG_POSITIONS, LayoutDragDrop} from './utils/LayoutDragDrop.es';
 import templates from './Layout.soy';
 
 /**
  * Component that allows to show layouts tree in form of three dependent
  * columns. It integrates three <LayoutColumn /> components for N-th, N-th + 2
  * and N-th + 3 levels of layouts tree.
+ * @review
  */
 
 class Layout extends Component {
@@ -47,25 +49,459 @@ class Layout extends Component {
 				this.searchContainer_ = searchContainer;
 			}
 		);
+
+		this._deleteEmptyColumns(this.layoutColumns);
+
+		this.layoutColumns = this.layoutColumns.map(
+			layoutColumn => [...layoutColumn]
+		);
+	}
+
+	/**
+	 * @inheritDoc
+	 * @review
+	 */
+
+	dispose() {
+		this._layoutDragDrop.dispose();
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 
-	rendered() {
+	rendered(firstRendered) {
 		requestAnimationFrame(
 			() => {
 				this.refs.layoutColumns.scrollLeft = this.refs.layoutColumns.scrollWidth;
 			}
 		);
+
+		if (firstRendered) {
+			this._initializeLayoutDragDrop();
+		}
+	}
+
+	/**
+	 * @param {Array} layoutColumns
+	 * @private
+	 * @review
+	 */
+
+	_deleteEmptyColumns(layoutColumns) {
+		return layoutColumns.length > 3 ?
+			layoutColumns.filter(layoutColumn => layoutColumn.length > 0) :
+			layoutColumns;
+	}
+
+	/**
+	 * @param {Array} layoutColumn
+	 * @private
+	 * @return {string}
+	 * @review
+	 */
+
+	_getLayoutColumnActiveItem(layoutColumn) {
+		let activeItemPlid = null;
+
+		for (let i = 0; i < layoutColumn.length; i++) {
+			if (layoutColumn[i].active) {
+				activeItemPlid = layoutColumn[i].plid;
+			}
+		}
+
+		return activeItemPlid;
+	}
+
+	/**
+	 * @param {Array} layoutColumns
+	 * @param {string} plid
+	 * @private
+	 * @return {object|null}
+	 * @review
+	 */
+
+	_getLayoutColumnItemByPlid(layoutColumns, plid) {
+		let item = null;
+
+		for (let i = 0; i < layoutColumns.length; i++) {
+			for (let j = 0; j < layoutColumns[i].length; j++) {
+				if (layoutColumns[i][j].plid === plid) {
+					item = layoutColumns[i][j];
+				}
+			}
+		}
+
+		return item;
+	}
+
+	/**
+	 * @param {Array} layoutColumns
+	 * @param {string} plid
+	 * @private
+	 * @return {object|null}
+	 * @review
+	 */
+
+	_getParentColumnByPlid(layoutColumns, plid) {
+		let column = null;
+
+		for (let i = 0; i < layoutColumns.length; i++) {
+			for (let j = 0; j < layoutColumns[i].length; j++) {
+				if (layoutColumns[i][j].plid === plid) {
+					column = layoutColumns[i];
+				}
+			}
+		}
+
+		return column;
+	}
+
+	/**
+	 * Handle dragLayoutColumnItem event
+	 * @param {!object} eventData
+	 * @param {!string} eventData.position
+	 * @param {!string} eventData.targetItemPlid
+	 * @private
+	 * @review
+	 */
+
+	_handleDragLayoutColumnItem(eventData) {
+		const sourceColumn = this._getParentColumnByPlid(this.layoutColumns, eventData.sourceItemPlid);
+		const sourceColumnIndex = this.layoutColumns.indexOf(sourceColumn);
+		const sourceItem = this._getLayoutColumnItemByPlid(this.layoutColumns, eventData.sourceItemPlid);
+
+		const targetColumn = this._getParentColumnByPlid(this.layoutColumns, eventData.targetItemPlid);
+		const targetColumnIndex = this.layoutColumns.indexOf(targetColumn);
+		const targetItem = this._getLayoutColumnItemByPlid(this.layoutColumns, eventData.targetItemPlid);
+
+		const targetInFirstColumn = this.layoutColumns.indexOf(targetColumn) === 0;
+		const targetIsSource = sourceItem === targetItem;
+
+		const targetIsChild = (
+			sourceItem.active &&
+			(sourceColumnIndex < targetColumnIndex)
+		);
+
+		const targetIsParent = (
+			targetItem.active &&
+			(eventData.position === DRAG_POSITIONS.inside) &&
+			(targetColumnIndex === (sourceColumnIndex - 1))
+		);
+
+		if (
+			!targetInFirstColumn &&
+			!targetIsSource &&
+			!targetIsChild &&
+			!targetIsParent
+		) {
+			this._draggingItemPosition = eventData.position;
+			this._hoveredLayoutColumnItemPlid = eventData.targetItemPlid;
+		}
+	}
+
+	/**
+	 * Method executed when a column is left empty after dragging.
+	 * Updates target item's status and removes empty columns if any.
+	 *
+	 * @param {!Array} layoutColumns
+	 * @param {!number} sourceColumnIndex
+	 * @param {!Array} sourceItem
+	 * @param {!number} targetColumnIndex
+	 * @private
+	 * @review
+	 */
+
+	_handleEmptyColumn(
+		layoutColumns,
+		sourceColumnIndex,
+		sourceItem,
+		targetColumnIndex
+	) {
+		if (sourceItem.active && (sourceColumnIndex != targetColumnIndex)) {
+			sourceItem.active = false;
+			this._removeFollowingColumns(layoutColumns, sourceColumnIndex);
+		}
+
+		const previousColumn = layoutColumns[sourceColumnIndex - 1];
+
+		const activeItemPlid = this._getLayoutColumnActiveItem(previousColumn);
+
+		const activeItem = this._getLayoutColumnItemByPlid(
+			layoutColumns,
+			activeItemPlid
+		);
+
+		activeItem.hasChild = false;
+	}
+
+	/**
+	 * Handle layout column item check event
+	 * @param {!object} eventData
+	 * @param {string} eventData.delegateTarget.value
+	 * @private
+	 * @review
+	 */
+
+	_handleLayoutColumnItemCheck(eventData) {
+		this._setLayoutColumnItemChecked(eventData.delegateTarget.value);
+	}
+
+	/**
+	 * @private
+	 * @review
+	 */
+
+	_handleLeaveLayoutColumnItem() {
+		this._resetHoveredData();
+	}
+
+	/**
+	 * @param {!object} eventData
+	 * @param {!string} eventData.sourceItemPlid
+	 * @param {!string} eventData.targetItemPlid
+	 * @private
+	 * @review
+	 */
+
+	_handleMoveLayoutColumnItem(eventData) {
+		if (this._draggingItemPosition) {
+			const layoutColumns = this.layoutColumns.map(
+				layoutColumn => [...layoutColumn]
+			);
+
+			const sourceItemPlid = eventData.sourceItemPlid;
+			const targetItemPlid = eventData.targetItemPlid;
+
+			const sourceItem = this._getLayoutColumnItemByPlid(
+				layoutColumns,
+				sourceItemPlid
+			);
+
+			const targetItem = this._getLayoutColumnItemByPlid(
+				layoutColumns,
+				targetItemPlid
+			);
+
+			const sourceColumn = this._getParentColumnByPlid(
+				layoutColumns,
+				sourceItemPlid
+			);
+
+			const targetColumn = this._getParentColumnByPlid(
+				layoutColumns,
+				targetItemPlid
+			);
+
+			const sourceColumnIndex = layoutColumns.indexOf(sourceColumn);
+			const targetColumnIndex = layoutColumns.indexOf(targetColumn);
+
+			sourceColumn.splice(sourceColumn.indexOf(sourceItem), 1);
+
+			let parentPlid = null;
+			let priority = null;
+
+			if (this._draggingItemPosition === DRAG_POSITIONS.inside) {
+				this._moveItemInside(
+					layoutColumns,
+					sourceColumnIndex,
+					sourceItem,
+					targetItem,
+					targetColumnIndex
+				);
+
+				parentPlid = targetItemPlid;
+			}
+			else {
+				priority = targetColumn.indexOf(targetItem);
+
+				if (this._draggingItemPosition === DRAG_POSITIONS.bottom) {
+					priority++;
+				}
+
+				targetColumn.splice(priority, 0, sourceItem);
+
+				parentPlid = this._getLayoutColumnActiveItem(
+					layoutColumns[targetColumnIndex - 1]
+				);
+			}
+
+			if (sourceColumn.length === 0) {
+				this._handleEmptyColumn(
+					layoutColumns,
+					sourceColumnIndex,
+					sourceItem,
+					targetColumnIndex
+				);
+
+				this._deleteEmptyColumns(layoutColumns);
+			}
+
+			if (sourceItem.active && (sourceColumnIndex != targetColumnIndex)) {
+				sourceItem.active = false;
+
+				this._removeFollowingColumns(layoutColumns, sourceColumnIndex);
+
+				this._deleteEmptyColumns(layoutColumns);
+			}
+
+			this._moveLayoutColumnItemOnServer(
+				parentPlid,
+				sourceItemPlid,
+				priority
+			)
+				.then(
+					() => {
+						this.layoutColumns = layoutColumns;
+
+						requestAnimationFrame(
+							() => {
+								this._initializeLayoutDragDrop();
+							}
+						);
+					}
+				);
+		}
+
+		this._resetHoveredData();
+	}
+
+	/**
+	 * @private
+	 * @review
+	 */
+
+	_initializeLayoutDragDrop() {
+		this._layoutDragDrop = new LayoutDragDrop();
+
+		this._layoutDragDrop.on(
+			'dragLayoutColumnItem',
+			this._handleDragLayoutColumnItem.bind(this)
+		);
+
+		this._layoutDragDrop.on(
+			'leaveLayoutColumnItem',
+			this._handleLeaveLayoutColumnItem.bind(this)
+		);
+
+		this._layoutDragDrop.on(
+			'moveLayoutColumnItem',
+			this._handleMoveLayoutColumnItem.bind(this)
+		);
+	}
+
+	/**
+	 * @param {!Array} layoutColumns
+	 * @param {!number} sourceColumnIndex
+	 * @param {!Array} sourceItem
+	 * @param {!Array} targetItem
+	 * @param {!number} targetColumnIndex
+	 * @private
+	 * @review
+	 */
+
+	_moveItemInside(layoutColumns, sourceColumnIndex, sourceItem, targetItem, targetColumnIndex) {
+		if (targetItem.active) {
+			let nextColumn = null;
+
+			if (layoutColumns[targetColumnIndex + 1]) {
+				nextColumn = layoutColumns[targetColumnIndex + 1];
+			}
+			else {
+				nextColumn = [];
+			}
+
+			nextColumn.splice(nextColumn.length, 0, sourceItem);
+		}
+
+		if (sourceItem.active) {
+			this._removeFollowingColumns(layoutColumns, sourceColumnIndex);
+
+			this._deleteEmptyColumns(layoutColumns);
+		}
+
+		targetItem.hasChild = true;
+	}
+
+	/**
+	 * Sends the movement of an item to the server.
+	 * @param {string} parentPlid
+	 * @param {string} plid
+	 * @param {string} priority
+	 * @private
+	 * @review
+	 */
+
+	_moveLayoutColumnItemOnServer(parentPlid, plid, priority) {
+		const formData = new FormData();
+
+		formData.append(`${this.portletNamespace}plid`, plid);
+		formData.append(`${this.portletNamespace}parentPlid`, parentPlid);
+
+		if (priority != null) {
+			formData.append(`${this.portletNamespace}priority`, priority);
+		}
+
+		return fetch(
+			this.moveLayoutColumnItemURL,
+			{
+				body: formData,
+				credentials: 'include',
+				method: 'POST'
+			}
+		).catch(
+			() => {
+				this._resetHoveredData();
+			}
+		);
+	}
+
+	/**
+	 * @param {!Array} layoutColumns
+	 * @param {!number} startColumnIndex
+	 * @private
+	 * @review
+	 */
+
+	_removeFollowingColumns(layoutColumns, startColumnIndex) {
+		for (let i = startColumnIndex + 1; i < layoutColumns.length; i++) {
+			layoutColumns[i] = [];
+		}
+	}
+
+	/**
+	 * Resets hovered information to null
+	 * @private
+	 */
+
+	_resetHoveredData() {
+		this._draggingItemPosition = null;
+		this._hoveredLayoutColumnItemPlid = null;
+	}
+
+	/** Set an item active property to true
+	 * @param {string} plid
+	 * @private
+	 * @return {object|null}
+	 * @review
+	 */
+
+	_setLayoutColumnItemChecked(plid) {
+		for (let i = 0; i < this.layoutColumns.length; i++) {
+			for (let j = 0; j < this.layoutColumns[i].length; j++) {
+				if (this.layoutColumns[i][j].plid === plid) {
+					this.layoutColumns[i][j].checked = true;
+				}
+			}
+		}
 	}
 }
 
 /**
  * State definition.
- * @type {!Object}
+ * @review
  * @static
+ * @type {!Object}
  */
 
 Layout.STATE = {
@@ -99,6 +535,7 @@ Layout.STATE = {
 				{
 					actionURLs: Config.object().required(),
 					active: Config.bool().required(),
+					checked: Config.bool().required(),
 					hasChild: Config.bool().required(),
 					homePage: Config.bool().required(),
 					homePageTitle: Config.string().required(),
@@ -109,6 +546,16 @@ Layout.STATE = {
 			)
 		)
 	).required(),
+
+	/**
+	 * URL for moving a layout column item through its column.
+	 * @default undefined
+	 * @instance
+	 * @review
+	 * @type {!string}
+	 */
+
+	moveLayoutColumnItemURL: Config.string().required(),
 
 	/**
 	 * URL for using icons
@@ -135,8 +582,38 @@ Layout.STATE = {
 	 * @type {!string}
 	 */
 
-	siteNavigationMenuNames: Config.string().required()
+	siteNavigationMenuNames: Config.string().required(),
 
+	/**
+	 * Nearest border of the hovered layout column item when dragging.
+	 * @default undefined
+	 * @instance
+	 * @review
+	 * @type {!string}
+	 */
+
+	_draggingItemPosition: Config.string().internal(),
+
+	/**
+	 * Id of the hovered layout column item when dragging.
+	 * @default undefined
+	 * @instance
+	 * @review
+	 * @type {!string}
+	 */
+
+	_hoveredLayoutColumnItemPlid: Config.string().internal(),
+
+	/**
+	 * Internal LayoutDragDrop instance
+	 * @default null
+	 * @instance
+	 * @memberOf Layout
+	 * @review
+	 * @type {object|null}
+	 */
+
+	_layoutDragDrop: Config.internal().value(null)
 };
 
 Soy.register(Layout, templates);

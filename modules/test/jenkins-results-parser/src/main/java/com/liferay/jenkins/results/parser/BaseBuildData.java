@@ -17,18 +17,18 @@ package com.liferay.jenkins.results.parser;
 import java.io.File;
 import java.io.IOException;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
  * @author Michael Hashimoto
  */
-public abstract class BaseBuildData extends JSONObject implements BuildData {
+public abstract class BaseBuildData implements BuildData {
 
 	public static String getJobName(String buildURL) {
 		if (buildURL == null) {
@@ -45,35 +45,28 @@ public abstract class BaseBuildData extends JSONObject implements BuildData {
 	}
 
 	@Override
+	public String getBuildDescription() {
+		return getString("build_description");
+	}
+
+	@Override
 	public Integer getBuildNumber() {
-		return getInt("build_number");
+		return optInt("build_number");
 	}
 
 	@Override
 	public String getBuildURL() {
-		return getString("build_url");
+		return optString("build_url");
 	}
 
 	@Override
 	public String getCohortName() {
-		return getString("cohort_name");
-	}
-
-	@Override
-	public List<String> getDistNodes() {
-		String distNodes = getString("dist_nodes");
-
-		return Arrays.asList(distNodes.split(","));
-	}
-
-	@Override
-	public String getDistPath() {
-		return getString("dist_path");
+		return optString("cohort_name");
 	}
 
 	@Override
 	public String getHostname() {
-		return getString("hostname");
+		return optString("hostname");
 	}
 
 	@Override
@@ -83,144 +76,195 @@ public abstract class BaseBuildData extends JSONObject implements BuildData {
 
 	@Override
 	public String getJobName() {
-		return getString("job_name");
+		return optString("job_name");
+	}
+
+	@Override
+	public JSONObject getJSONObject() {
+		return _jsonObject;
 	}
 
 	@Override
 	public String getMasterHostname() {
-		return getString("master_hostname");
+		return optString("master_hostname");
 	}
 
 	@Override
 	public String getRunID() {
-		return _runID;
+		return getString("run_id");
+	}
+
+	@Override
+	public String getUserContentRelativePath() {
+		return JenkinsResultsParserUtil.combine(
+			"jobs/", getTopLevelJobName(), "/builds/",
+			String.valueOf(getTopLevelBuildNumber()), "/");
 	}
 
 	@Override
 	public File getWorkspaceDir() {
-		return new File(getString("workspace_dir"));
+		return getFile("workspace_dir");
 	}
 
 	@Override
-	public JSONObject toJSONObject() {
-		return this;
+	public void setBuildDescription(String buildDescription) {
+		put("build_description", buildDescription);
 	}
 
-	protected BaseBuildData(
-		Map<String, String> buildParameters,
-		JenkinsJSONObject jenkinsJSONObject) {
-
-		this(buildParameters, jenkinsJSONObject, _DEFAULT_RUN_ID);
+	@Override
+	public void setJenkinsGitHubURL(String jenkinsGitHubURL) {
+		put("jenkins_github_url", jenkinsGitHubURL);
 	}
 
-	protected BaseBuildData(
-		Map<String, String> buildParameters,
-		JenkinsJSONObject jenkinsJSONObject, String runID) {
-
-		super(_getBuildDataSource(jenkinsJSONObject, runID));
-
-		if (runID == null) {
-			runID = _DEFAULT_RUN_ID;
-		}
-
-		_runID = runID;
-
-		if (!jenkinsJSONObject.has(runID)) {
-			jenkinsJSONObject.put(runID, this);
-		}
-
-		String buildURL;
-
-		if (has("build_url")) {
-			buildURL = getString("build_url");
-		}
-		else {
-			if (!buildParameters.containsKey("BUILD_URL")) {
-				throw new RuntimeException("Please set BUILD_URL");
-			}
-
-			buildURL = buildParameters.get("BUILD_URL");
-		}
-
-		Matcher matcher = _buildURLPattern.matcher(buildURL);
-
-		if (!matcher.find()) {
-			throw new RuntimeException("Invalid Build URL " + buildURL);
-		}
-
-		if (!has("build_number")) {
-			put("build_number", Integer.valueOf(matcher.group("buildNumber")));
-		}
-
-		if (!has("build_url")) {
-			put("build_url", buildURL);
-		}
-
-		if (!has("cohort_name")) {
-			put("cohort_name", matcher.group("cohortName"));
-		}
-
-		if (!has("hostname")) {
-			put("hostname", JenkinsResultsParserUtil.getHostName("default"));
-		}
-
-		if (!has("jenkins_github_url")) {
-			String jenkinsGithubURL = buildParameters.get("JENKINS_GITHUB_URL");
-
-			if ((jenkinsGithubURL == null) || jenkinsGithubURL.equals("")) {
-				jenkinsGithubURL = _DEFAULT_JENKINS_GITHUB_URL;
-			}
-
-			put("jenkins_github_url", jenkinsGithubURL);
-		}
-
-		if (!has("job_name")) {
-			put("job_name", matcher.group("jobName"));
-		}
-
-		if (!has("master_hostname")) {
-			put("master_hostname", matcher.group("masterHostname"));
-		}
-
-		if (!has("workspace_dir")) {
-			put("workspace_dir", _getWorkspaceDir(buildParameters));
-		}
-	}
-
-	private static String _getBuildDataSource(
-		JenkinsJSONObject jenkinsJSONObject, String runID) {
-
-		if (runID == null) {
-			return "{}";
-		}
-
-		JSONObject jsonObject = jenkinsJSONObject.optJSONObject(runID);
-
-		if (jsonObject != null) {
-			return jsonObject.toString();
-		}
-
-		return "{}";
-	}
-
-	private String _getWorkspaceDir(Map<String, String> buildParameters) {
-		File workspaceDir = new File(
-			buildParameters.getOrDefault("WORKSPACE", _DEFAULT_WORKSPACE));
-
+	@Override
+	public void setWorkspaceDir(File workspaceDir) {
 		try {
-			return workspaceDir.getCanonicalPath();
+			put("workspace_dir", workspaceDir.getCanonicalPath());
 		}
 		catch (IOException ioe) {
 			throw new RuntimeException(ioe);
 		}
 	}
 
-	private static final String _DEFAULT_JENKINS_GITHUB_URL =
-		"https://github.com/liferay/liferay-jenkins-ee/master";
+	protected static boolean isValidJSONObject(
+		JSONObject jsonObject, String type) {
 
-	private static final String _DEFAULT_RUN_ID = "default";
+		if (jsonObject == null) {
+			return false;
+		}
 
-	private static final String _DEFAULT_WORKSPACE = ".";
+		if (type == null) {
+			return false;
+		}
+
+		if (jsonObject.has("type")) {
+			if (type.equals(jsonObject.getString("type"))) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	protected BaseBuildData(String runID, String jobName, String buildURL) {
+		_jsonObject = buildDatabase.getBuildDataJSONObject(runID);
+
+		put("run_id", runID);
+
+		if (jobName == null) {
+			throw new RuntimeException("Please set a job name");
+		}
+
+		put("job_name", jobName);
+
+		if (buildURL == null) {
+			return;
+		}
+
+		_setBuildURL(buildURL);
+
+		if (!has("build_description")) {
+			setBuildDescription(_getDefaultBuildDescription());
+		}
+
+		setJenkinsGitHubURL(DEFAULT_JENKINS_GITHUB_URL);
+		setWorkspaceDir(DEFAULT_WORKSPACE_DIR);
+
+		validateKeys(_REQUIRED_KEYS);
+	}
+
+	protected File getFile(String key) {
+		return new File(getString(key));
+	}
+
+	protected JSONArray getJSONArray(String key) {
+		return _jsonObject.getJSONArray(key);
+	}
+
+	protected JSONObject getJSONObject(String key) {
+		return _jsonObject.getJSONObject(key);
+	}
+
+	protected List<String> getList(String key) {
+		JSONArray jsonArray = getJSONArray(key);
+
+		List<String> list = new ArrayList<>(jsonArray.length());
+
+		for (int i = 0; i < jsonArray.length(); i++) {
+			list.add(jsonArray.getString(i));
+		}
+
+		return list;
+	}
+
+	protected String getString(String key) {
+		return _jsonObject.getString(key);
+	}
+
+	protected abstract String getType();
+
+	protected boolean has(String key) {
+		return _jsonObject.has(key);
+	}
+
+	protected Integer optInt(String key) {
+		return _jsonObject.optInt(key);
+	}
+
+	protected String optString(String key) {
+		return _jsonObject.optString(key);
+	}
+
+	protected String optString(String key, String defaultValue) {
+		return _jsonObject.optString(key, defaultValue);
+	}
+
+	protected void put(String key, Object value) {
+		_jsonObject.put(key, value);
+
+		BuildDatabase buildDatabase = BuildDatabaseUtil.getBuildDatabase();
+
+		buildDatabase.putBuildData(getRunID(), this);
+	}
+
+	protected void validateKeys(String[] requiredKeys) {
+		for (String requiredKey : requiredKeys) {
+			if (!has(requiredKey)) {
+				throw new RuntimeException("Missing " + requiredKey);
+			}
+		}
+	}
+
+	protected static final BuildDatabase buildDatabase =
+		BuildDatabaseUtil.getBuildDatabase();
+
+	private String _getDefaultBuildDescription() {
+		return JenkinsResultsParserUtil.combine(
+			"<a href=\"https://", getTopLevelMasterHostname(),
+			".liferay.com/userContent/", getUserContentRelativePath(),
+			"jenkins-report.html\">Jenkins Report</a>");
+	}
+
+	private void _setBuildURL(String buildURL) {
+		Matcher matcher = _buildURLPattern.matcher(buildURL);
+
+		if (!matcher.find()) {
+			throw new RuntimeException("Invalid build url " + buildURL);
+		}
+
+		put("build_number", Integer.valueOf(matcher.group("buildNumber")));
+		put("build_url", buildURL);
+		put("cohort_name", matcher.group("cohortName"));
+		put("hostname", JenkinsResultsParserUtil.getHostName("default"));
+		put("master_hostname", matcher.group("masterHostname"));
+		put("type", getType());
+	}
+
+	private static final String[] _REQUIRED_KEYS = {
+		"build_description", "build_number", "build_url", "cohort_name",
+		"hostname", "jenkins_github_url", "job_name", "master_hostname",
+		"run_id", "workspace_dir"
+	};
 
 	private static final Pattern _buildURLPattern = Pattern.compile(
 		JenkinsResultsParserUtil.combine(
@@ -228,6 +272,6 @@ public abstract class BaseBuildData extends JSONObject implements BuildData {
 			"(\\.liferay\\.com)?/job/(?<jobName>[^/]+)/(.*/)?",
 			"(?<buildNumber>\\d+)/?"));
 
-	private final String _runID;
+	private final JSONObject _jsonObject;
 
 }

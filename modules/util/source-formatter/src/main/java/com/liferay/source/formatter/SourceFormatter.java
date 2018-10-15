@@ -37,6 +37,8 @@ import com.liferay.source.formatter.util.DebugUtil;
 import com.liferay.source.formatter.util.FileUtil;
 import com.liferay.source.formatter.util.SourceFormatterUtil;
 
+import com.puppycrawl.tools.checkstyle.api.CheckstyleException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -236,13 +238,23 @@ public class SourceFormatter {
 
 			sourceFormatter.format();
 		}
-		catch (GitException ge) {
-			System.out.println(ge.getMessage());
-
-			System.exit(0);
-		}
 		catch (Exception e) {
-			ArgumentsUtil.processMainException(arguments, e);
+			if (e instanceof GitException) {
+				System.out.println(e.getMessage());
+			}
+			else {
+				CheckstyleException checkstyleException =
+					_getNestedCheckstyleException(e);
+
+				if (checkstyleException != null) {
+					checkstyleException.printStackTrace();
+				}
+				else {
+					e.printStackTrace();
+				}
+			}
+
+			System.exit(1);
 		}
 	}
 
@@ -270,6 +282,7 @@ public class SourceFormatter {
 
 		_progressStatusThread.start();
 
+		_sourceProcessors.add(new BNDRunSourceProcessor());
 		_sourceProcessors.add(new BNDSourceProcessor());
 		_sourceProcessors.add(new CodeownersSourceProcessor());
 		_sourceProcessors.add(new ConfigSourceProcessor());
@@ -413,6 +426,24 @@ public class SourceFormatter {
 
 	public List<SourceMismatchException> getSourceMismatchExceptions() {
 		return _sourceMismatchExceptions;
+	}
+
+	private static CheckstyleException _getNestedCheckstyleException(
+		Exception e) {
+
+		Throwable cause = e;
+
+		while (true) {
+			if (cause == null) {
+				return null;
+			}
+
+			if (cause instanceof CheckstyleException) {
+				return (CheckstyleException)cause;
+			}
+
+			cause = cause.getCause();
+		}
 	}
 
 	private void _addDependentFileNames() {
