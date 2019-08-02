@@ -1325,7 +1325,7 @@ public class SitesImpl implements Sites {
 		throws Exception {
 
 		layoutSet = LayoutSetLocalServiceUtil.fetchLayoutSet(
-				layoutSet.getLayoutSetId());
+			layoutSet.getLayoutSetId());
 
 		if (!isLayoutSetMergeable(group, layoutSet)) {
 			return;
@@ -1358,15 +1358,15 @@ public class SitesImpl implements Sites {
 
 			if (_log.isDebugEnabled()) {
 				if (_log.isDebugEnabled()) {
-					_log.debug(StringBundler.concat(
-						"Applying layout set prototype ",
-						layoutSetPrototype.getUuid(),
-						" (mvccVersion ", layoutSetPrototype.getMvccVersion(),
-						"_ to layout set ", layoutSet.getLayoutSetId(),
-						" (mvccVersion ", layoutSet.getMvccVersion(), ")"));
+					_log.debug(
+						StringBundler.concat(
+							"Applying layout set prototype ",
+							layoutSetPrototype.getUuid(), " (mvccVersion ",
+							layoutSetPrototype.getMvccVersion(),
+							"_ to layout set ", layoutSet.getLayoutSetId(),
+							" (mvccVersion ", layoutSet.getMvccVersion(), ")"));
 				}
 			}
-
 
 			boolean importData = true;
 
@@ -1378,9 +1378,6 @@ public class SitesImpl implements Sites {
 			if ((lastMergeTime > 0) || (lastResetTime > 0)) {
 				importData = false;
 			}
-
-			Map<String, String[]> parameterMap =
-				getLayoutSetPrototypesParameters(importData);
 
 			layoutSet = LayoutSetLocalServiceUtil.getLayoutSet(
 				layoutSet.getLayoutSetId());
@@ -1394,6 +1391,9 @@ public class SitesImpl implements Sites {
 			}
 
 			removeMergeFailFriendlyURLLayouts(layoutSet);
+
+			Map<String, String[]> parameterMap =
+				getLayoutSetPrototypesParameters(importData);
 
 			importLayoutSetPrototype(
 				layoutSetPrototype, layoutSet.getGroupId(),
@@ -1766,11 +1766,12 @@ public class SitesImpl implements Sites {
 			MergeLayoutPrototypesThreadLocal.setInProgress(true);
 
 			if (_log.isDebugEnabled()) {
-				_log.debug(StringBundler.concat(
-					"Applying layout prototype ", layoutPrototype.getUuid(),
-					" (mvccVersion ", layoutPrototype.getMvccVersion(),
-					"_ to layout ", layout.getPlid(), " (mvccVersion ",
-					layout.getMvccVersion(), ")"));
+				_log.debug(
+					StringBundler.concat(
+						"Applying layout prototype ", layoutPrototype.getUuid(),
+						" (mvccVersion ", layoutPrototype.getMvccVersion(),
+						"_ to layout ", layout.getPlid(), " (mvccVersion ",
+						layout.getMvccVersion(), ")"));
 			}
 
 			applyLayoutPrototype(layoutPrototype, layout, true);
@@ -1939,8 +1940,8 @@ public class SitesImpl implements Sites {
 		catch (Exception e) {
 			_log.error(
 				StringBundler.concat(
-					"Unable to copy file ", file.getAbsolutePath(),
-					" to ", cacheFile.getAbsolutePath()),
+					"Unable to copy file ", file.getAbsolutePath(), " to ",
+					cacheFile.getAbsolutePath()),
 				e);
 		}
 
@@ -2063,10 +2064,8 @@ public class SitesImpl implements Sites {
 
 			file = _exportInProgressMap.computeIfAbsent(
 				cacheFileName,
-				fileName ->
-					exportLayoutSetPrototype(
-						user, layoutSetPrototype, parameterMap, fileName)
-				);
+				fileName -> exportLayoutSetPrototype(
+					user, layoutSetPrototype, parameterMap, fileName));
 
 			_exportInProgressMap.remove(cacheFileName);
 		}
@@ -2250,13 +2249,13 @@ public class SitesImpl implements Sites {
 		}
 	}
 
-	private final ConcurrentHashMap<String, File> _exportInProgressMap =
-		new ConcurrentHashMap<>();
-
 	private static final String _TEMP_DIR =
 		SystemProperties.get(SystemProperties.TMP_DIR) +
 			"/liferay/layout_set_prototype/";
 
 	private static final Log _log = LogFactoryUtil.getLog(SitesImpl.class);
+
+	private final ConcurrentHashMap<String, File> _exportInProgressMap =
+		new ConcurrentHashMap<>();
 
 }
