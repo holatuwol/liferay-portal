@@ -119,19 +119,17 @@ class JournalPortlet extends PortletBase {
 		const selectedLanguageId =
 			event.source && event.source.getSelectedLanguageId();
 
-		if (selectedLanguageId) {
-			this._updateLocalizableInput(
-				'descriptionMapAsXML',
-				defaultLanguageId,
-				selectedLanguageId
-			);
+		this._updateLocalizableInput(
+			'descriptionMapAsXML',
+			defaultLanguageId,
+			selectedLanguageId
+		);
 
-			this._updateLocalizableInput(
-				'titleMapAsXML',
-				defaultLanguageId,
-				selectedLanguageId
-			);
-		}
+		this._updateLocalizableInput(
+			'titleMapAsXML',
+			defaultLanguageId,
+			selectedLanguageId
+		);
 	}
 
 	/**
@@ -261,27 +259,33 @@ class JournalPortlet extends PortletBase {
 		const inputComponent = Liferay.component(this.ns(name));
 
 		if (inputComponent) {
-			const inputSelectedValue = inputComponent.getValue(
-				selectedLanguageId
-			);
+			if(selectedLanguageId == null) {
+				selectedLanguageId = inputComponent.getSelectedLanguageId();
+			}
 
-			if (inputSelectedValue === '') {
-				const inputDefaultValue = inputComponent.getValue(
-					defaultLanguageId
+			if(selectedLanguageId) {
+				const inputSelectedValue = inputComponent.getValue(
+					selectedLanguageId
 				);
 
-				// LPS-92493
+				if (inputSelectedValue === '') {
+					const inputDefaultValue = inputComponent.getValue(
+						defaultLanguageId
+					);
 
-				const eventHandler = AOP.before(
-					() => AOP.prevent(),
-					inputComponent,
-					'updateInputLanguage'
-				);
+					// LPS-92493
 
-				inputComponent.selectFlag(selectedLanguageId);
-				inputComponent.updateInput(inputDefaultValue);
+					const eventHandler = AOP.before(
+						() => AOP.prevent(),
+						inputComponent,
+						'updateInputLanguage'
+					);
 
-				eventHandler.detach();
+					inputComponent.selectFlag(selectedLanguageId);
+					inputComponent.updateInput(inputDefaultValue);
+
+					eventHandler.detach();
+				}
 			}
 		}
 	}
