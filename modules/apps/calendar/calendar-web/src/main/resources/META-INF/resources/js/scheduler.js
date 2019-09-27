@@ -52,6 +52,9 @@ AUI.add(
 			Liferay.Util.getLexiconIconTpl('angle-left') +
 			'</button>';
 
+		var TPL_SCHEDULER_VIEW_TABLE_ROW =
+			'<div class="scheduler-view-table-row"></div>';
+
 		var WEEKLY = 'WEEKLY';
 
 		var Time = Liferay.Time;
@@ -879,11 +882,45 @@ AUI.add(
 
 					var weeks = DateMath.getWeeksInMonth(date, firstDayOfWeek);
 
-					A.each(instance.tableRows, function(item, index) {
-						if (index < weeks) {
-							item.removeClass('hide');
-						} else {
-							item.addClass('hide');
+					var displayRowsCount = instance.tableRows.size();
+
+					var rowIndex;
+
+					if (displayRowsCount > weeks) {
+						for (
+							rowIndex = displayRowsCount;
+							rowIndex > weeks;
+							rowIndex--
+						) {
+							instance.tableRows.pop();
+						}
+					}
+
+					if (weeks > displayRowsCount) {
+						for (
+							rowIndex = displayRowsCount;
+							rowIndex < weeks;
+							rowIndex++
+						) {
+							var tableGridNode = instance.tableGridNode.item(
+								rowIndex
+							);
+
+							if (
+								tableGridNode.one('tr')._node.childNodes
+									.length === DAYS_OF_WEEK.length
+							) {
+								var rowNode = A.Node.create(
+									TPL_SCHEDULER_VIEW_TABLE_ROW
+								);
+
+								rowNode.append(tableGridNode);
+								instance.tableRows.push(rowNode);
+							} else {
+								instance.tableRows.push(
+									instance.buildGridRowNode(rowIndex)
+								);
+							}
 						}
 					});
 
