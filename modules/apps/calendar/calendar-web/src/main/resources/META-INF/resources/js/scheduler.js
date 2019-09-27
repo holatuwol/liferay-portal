@@ -802,6 +802,31 @@ AUI.add(
 
 		var SchedulerMonthView = A.Component.create({
 			ATTRS: {
+				displayDaysInterval: {
+					getter() {
+						var instance = this;
+
+						var scheduler = instance.get('scheduler');
+
+						var weeks = 6;
+
+						if (scheduler) {
+							var viewDate = scheduler.get('viewDate');
+
+							var firstDayOfWeek = scheduler.get(
+								'firstDayOfWeek'
+							);
+
+							weeks = DateMath.getWeeksInMonth(
+								viewDate,
+								firstDayOfWeek
+							);
+						}
+
+						return weeks * DAYS_OF_WEEK.length;
+					}
+				},
+
 				navigationDateFormatter: {
 					validator: isFunction,
 					value(date) {
