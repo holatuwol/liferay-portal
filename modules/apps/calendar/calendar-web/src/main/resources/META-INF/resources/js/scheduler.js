@@ -922,7 +922,10 @@ AUI.add(
 								);
 							}
 						}
-					});
+					}
+
+					instance.tableRowContainer._node.innerHTML = '';
+					instance.tableRowContainer.appendChild(instance.tableRows);
 
 					SchedulerMonthView.superclass._uiSetDate.apply(
 						this,
