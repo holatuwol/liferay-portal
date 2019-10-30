@@ -22,6 +22,8 @@ checkoutDXPScript {
 		}
 
 		if (Validator.isNotNull(byteArrayOutputStream.toString())) {
+			logger.lifecycle "git checkout refs/heads/master-private -- build-working-dir.xml working.dir.properties"
+
 			exec {
 				commandLine "git", "checkout", "refs/heads/master-private", "--", "build-working-dir.xml", "working.dir.properties"
 				workingDir = projectDir.parentFile
