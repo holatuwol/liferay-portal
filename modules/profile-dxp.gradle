@@ -16,36 +16,14 @@ checkoutDXPScript {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
 
 		exec {
-			commandLine "git", "remote", "-v"
+			commandLine "git", "show-ref", "refs/heads/master-private"
+			ignoreExitValue = true
 			standardOutput = byteArrayOutputStream
 		}
 
-		String[] lines = byteArrayOutputStream.toString().split("\n")
-
-		String remoteLine = lines.find({ String line -> line.contains(gitRepositoryURL)})
-
-		String remoteName = null
-
-		if (remoteLine != null) {
-			String candidateRemoteName = remoteLine.split("\\s")[0]
-
-			byteArrayOutputStream = new ByteArrayOutputStream()
-
+		if (Validator.isNotNull(byteArrayOutputStream.toString())) {
 			exec {
-				commandLine "git", "for-each-ref", "refs/remotes/" + candidateRemoteName + "/master-private"
-				standardOutput = byteArrayOutputStream
-			}
-
-			String refInfo = byteArrayOutputStream.toString()
-
-			if (refInfo.length() != 0) {
-				remoteName = candidateRemoteName
-			}
-		}
-
-		if (remoteName != null) {
-			exec {
-				commandLine "git", "checkout", remoteName + "/master-private", "--", "build-working-dir.xml", "working.dir.properties"
+				commandLine "git", "checkout", "refs/heads/master-private", "--", "build-working-dir.xml", "working.dir.properties"
 				workingDir = projectDir.parentFile
 			}
 		}
