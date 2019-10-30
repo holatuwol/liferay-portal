@@ -13,14 +13,14 @@ String gitRepositoryURL = "git@github.com:liferay/liferay-portal-ee.git"
 
 checkoutDXPScript {
 	doLast {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream()
+		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()
 
 		exec {
 			commandLine "git", "remote", "-v"
-			standardOutput = baos
+			standardOutput = byteArrayOutputStream
 		}
 
-		String[] lines = baos.toString().split("\n")
+		String[] lines = byteArrayOutputStream.toString().split("\n")
 
 		String remoteLine = lines.find({ String line -> line.contains(gitRepositoryURL)})
 
@@ -29,14 +29,14 @@ checkoutDXPScript {
 		if (remoteLine != null) {
 			String candidateRemoteName = remoteLine.split("\\s")[0]
 
-			baos = new ByteArrayOutputStream()
+			byteArrayOutputStream = new ByteArrayOutputStream()
 
 			exec {
 				commandLine "git", "for-each-ref", "refs/remotes/" + candidateRemoteName + "/master-private"
-				standardOutput = baos
+				standardOutput = byteArrayOutputStream
 			}
 
-			String refInfo = baos.toString()
+			String refInfo = byteArrayOutputStream.toString()
 
 			if (refInfo.length() != 0) {
 				remoteName = candidateRemoteName
