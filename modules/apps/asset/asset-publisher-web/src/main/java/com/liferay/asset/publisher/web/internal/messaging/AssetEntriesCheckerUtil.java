@@ -263,6 +263,7 @@ public class AssetEntriesCheckerUtil {
 		SubscriptionSender subscriptionSender = new SubscriptionSender();
 
 		subscriptionSender.setCompanyId(assetEntry.getCompanyId());
+		subscriptionSender.setGroupId(assetEntry.getGroupId());
 		subscriptionSender.setContextAttributes(
 			"[$ASSET_ENTRIES$]",
 			com.liferay.petra.string.StringUtil.merge(
