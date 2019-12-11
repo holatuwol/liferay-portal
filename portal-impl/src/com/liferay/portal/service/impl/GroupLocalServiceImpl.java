@@ -4498,8 +4498,7 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 					}
 				}
 				else if (type == GroupFriendlyURLException.ENDS_WITH_DASH) {
-					friendlyURL = StringUtil.replaceLast(
-						friendlyURL, CharPool.DASH, StringPool.BLANK);
+					friendlyURL = friendlyURL + ++i;
 				}
 				else {
 					friendlyURL = StringPool.SLASH + "group-" + classPK;
