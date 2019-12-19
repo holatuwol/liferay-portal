@@ -62,6 +62,7 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.service.base.UserGroupLocalServiceBaseImpl;
 import com.liferay.portal.service.persistence.constants.UserGroupFinderConstants;
 import com.liferay.portal.util.PropsValues;
+import com.liferay.portlet.usersadmin.util.UserReindexManager;
 import com.liferay.users.admin.kernel.util.UsersAdminUtil;
 
 import java.io.File;

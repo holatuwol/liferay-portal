@@ -69,6 +69,7 @@ import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.service.base.OrganizationLocalServiceBaseImpl;
 import com.liferay.portal.util.PropsValues;
 import com.liferay.portlet.usersadmin.search.OrganizationUsersSearcher;
+import com.liferay.portlet.usersadmin.util.UserReindexManager;
 import com.liferay.users.admin.kernel.file.uploads.UserFileUploadsSettings;
 import com.liferay.users.admin.kernel.organization.types.OrganizationTypesSettings;
 import com.liferay.users.admin.kernel.util.UsersAdminUtil;
