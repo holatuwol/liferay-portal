@@ -12,7 +12,7 @@
  * details.
  */
 
-package com.liferay.portal.service.impl;
+package com.liferay.portlet.usersadmin.util;
 
 import com.liferay.petra.lang.SafeClosable;
 import com.liferay.petra.string.StringBundler;
