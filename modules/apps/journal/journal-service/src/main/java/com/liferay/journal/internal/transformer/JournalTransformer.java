@@ -74,6 +74,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletResponse;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -239,7 +240,20 @@ public class JournalTransformer {
 				HttpServletRequest httpServletRequest =
 					themeDisplay.getRequest();
 
+				PortletRequest originalPortletRequest = null;
+				PortletResponse originalPortletResponse = null;
+
 				if (portletRequestModel != null) {
+
+					// Store original request attributes
+
+					originalPortletRequest =
+						(PortletRequest)httpServletRequest.getAttribute(
+							JavaConstants.JAVAX_PORTLET_REQUEST);
+					originalPortletResponse =
+						(PortletResponse)httpServletRequest.getAttribute(
+							JavaConstants.JAVAX_PORTLET_RESPONSE);
+
 					httpServletRequest.setAttribute(
 						JavaConstants.JAVAX_PORTLET_REQUEST,
 						portletRequestModel.getPortletRequest());
@@ -252,6 +266,17 @@ public class JournalTransformer {
 				}
 
 				template.prepare(httpServletRequest);
+
+				// Restore request attributes
+
+				if (portletRequestModel != null) {
+					httpServletRequest.setAttribute(
+						JavaConstants.JAVAX_PORTLET_REQUEST,
+						originalPortletRequest);
+					httpServletRequest.setAttribute(
+						JavaConstants.JAVAX_PORTLET_RESPONSE,
+						originalPortletResponse);
+				}
 			}
 
 			if (contextObjects != null) {
