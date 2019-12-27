@@ -1,0 +1,4 @@
+Bundle-Name: Liferay Portal Scripting OSGi
+Bundle-SymbolicName: com.liferay.portal.scripting.osgi
+Bundle-Version: 1.0.0
+DynamicImport-Package: *
