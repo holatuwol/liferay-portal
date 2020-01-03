@@ -18,6 +18,8 @@ import com.liferay.portal.kernel.scripting.Scripting;
 import com.liferay.portal.kernel.util.AggregateClassLoader;
 import com.liferay.portal.kernel.util.FileUtil;
 
+import java.util.Set;
+
 import org.apache.felix.service.command.Descriptor;
 
 import org.osgi.service.component.annotations.Component;
@@ -28,7 +30,10 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(
 	immediate = true,
-	property = {"osgi.command.function=execute", "osgi.command.scope=system"},
+	property = {
+		"osgi.command.function=execute", "osgi.command.function=showLanguages",
+		"osgi.command.scope=script"
+	},
 	service = ScriptingOSGiCommands.class
 )
 public class ScriptingOSGiCommands {
@@ -46,6 +51,15 @@ public class ScriptingOSGiCommands {
 		_scripting.exec(null, null, language, script);
 
 		return null;
+	}
+
+	@Descriptor("Show all available scripting languages")
+	public void showLanguages() {
+		Set<String> supportedLanguages = _scripting.getSupportedLanguages();
+
+		for (String supportedLanguage : supportedLanguages) {
+			System.out.println(supportedLanguage);
+		}
 	}
 
 	private void _setContextClassLoader() {
