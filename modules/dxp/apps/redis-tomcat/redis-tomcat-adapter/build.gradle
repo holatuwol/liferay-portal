@@ -1,0 +1,5 @@
+dependencies {
+	compileOnly group: "org.osgi", name: "osgi.core", version: "6.0.0"
+	compileOnly project(":dxp:apps:redis-tomcat:redis-tomcat-client")
+	compileOnly project(":core:petra:petra-lang")
+}
