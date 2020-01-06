@@ -1,0 +1,6 @@
+Bundle-Name: Liferay Redis Tomcat Client
+Bundle-SymbolicName: com.liferay.redis.tomcat.client
+Bundle-Version: 1.0.0
+-includeresource:\
+	@redisson-all-[0-9.]*.jar;lib:=true,\
+	@redisson-tomcat-9-[0-9.]*.jar;lib:=true

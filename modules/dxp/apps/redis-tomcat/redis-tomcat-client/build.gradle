@@ -1,0 +1,10 @@
+dependencies {
+	compileOnly group: "de.ruedigermoeller", name: "fst", version: "2.57"
+	compileOnly group: "org.redisson", name: "redisson-all", version: "3.12.0"
+	compileOnly group: "org.redisson", name: "redisson-tomcat-9", version: "3.12.0"
+	compileOnly project(":core:petra:petra-lang")
+}
+
+liferay {
+	deployDir = appServerLibGlobalDir
+}
