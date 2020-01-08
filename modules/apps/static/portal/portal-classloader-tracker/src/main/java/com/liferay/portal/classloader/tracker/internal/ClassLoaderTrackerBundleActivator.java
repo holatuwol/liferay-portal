@@ -31,6 +31,13 @@ public class ClassLoaderTrackerBundleActivator implements BundleActivator {
 
 	@Override
 	public void start(BundleContext bundleContext) {
+		Bundle bundle = bundleContext.getBundle();
+
+		BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
+
+		ClassLoaderPool.register(
+			"DynamicClassLoader", bundleWiring.getClassLoader());
+
 		_bundleTracker = new BundleTracker<ClassLoader>(
 			bundleContext, Bundle.STARTING | Bundle.ACTIVE, null) {
 
@@ -64,6 +71,8 @@ public class ClassLoaderTrackerBundleActivator implements BundleActivator {
 	@Override
 	public void stop(BundleContext context) {
 		_bundleTracker.close();
+
+		ClassLoaderPool.unregister("DynamicClassLoader");
 	}
 
 	private String _toClassLoaderName(Bundle bundle) {

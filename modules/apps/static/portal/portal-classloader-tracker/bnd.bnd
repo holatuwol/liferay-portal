@@ -2,3 +2,4 @@ Bundle-Activator: com.liferay.portal.classloader.tracker.internal.ClassLoaderTra
 Bundle-Name: Liferay Portal Class Loader Tracker
 Bundle-SymbolicName: com.liferay.portal.classloader.tracker
 Bundle-Version: 4.0.0
+DynamicImport-Package: *
