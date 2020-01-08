@@ -42,25 +42,10 @@ public class KaleoScriptingEvaluator {
 		Map<String, Object> inputObjects =
 			_scriptingContextBuilder.buildScriptingContext(executionContext);
 
-		Thread currentThread = Thread.currentThread();
-
-		ClassLoader contextClassLoader = currentThread.getContextClassLoader();
-
-		Class<?> clazz = getClass();
-
-		ClassLoader classLoader = clazz.getClassLoader();
-
 		Map<String, Object> results = null;
 
-		try {
-			currentThread.setContextClassLoader(classLoader);
-
-			results = _scripting.eval(
-				null, inputObjects, outputObjects, scriptLanguage, script);
-		}
-		finally {
-			currentThread.setContextClassLoader(contextClassLoader);
-		}
+		results = _scripting.eval(
+			null, inputObjects, outputObjects, scriptLanguage, script);
 
 		Map<String, Serializable> resultsWorkflowContext =
 			(Map<String, Serializable>)results.get(
