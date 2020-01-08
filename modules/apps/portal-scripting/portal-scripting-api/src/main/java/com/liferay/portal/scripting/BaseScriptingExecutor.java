@@ -14,6 +14,7 @@
 
 package com.liferay.portal.scripting;
 
+import com.liferay.petra.lang.ClassLoaderPool;
 import com.liferay.portal.kernel.scripting.ScriptingContainer;
 import com.liferay.portal.kernel.scripting.ScriptingException;
 import com.liferay.portal.kernel.scripting.ScriptingExecutor;
@@ -60,12 +61,9 @@ public abstract class BaseScriptingExecutor implements ScriptingExecutor {
 	protected ClassLoader getClassLoader() {
 		Class<?> clazz = getClass();
 
-		ClassLoader classLoader = clazz.getClassLoader();
-
-		Thread currentThread = Thread.currentThread();
-
 		return AggregateClassLoader.getAggregateClassLoader(
-			classLoader, currentThread.getContextClassLoader());
+			clazz.getClassLoader(),
+			ClassLoaderPool.getClassLoader("DynamicClassLoader"));
 	}
 
 }
