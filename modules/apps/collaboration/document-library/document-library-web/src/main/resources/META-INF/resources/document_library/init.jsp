@@ -28,6 +28,8 @@ portletName = dlRequestHelper.getResourcePortletName();
 String portletResource = dlRequestHelper.getPortletResource();
 
 DLPortletInstanceSettings dlPortletInstanceSettings = dlRequestHelper.getDLPortletInstanceSettings();
+int entriesPerPage = dlPortletInstanceSettings.getEntriesPerPage();
+
 DLGroupServiceSettings dlGroupServiceSettings = dlRequestHelper.getDLGroupServiceSettings();
 
 long rootFolderId = dlPortletInstanceSettings.getRootFolderId();

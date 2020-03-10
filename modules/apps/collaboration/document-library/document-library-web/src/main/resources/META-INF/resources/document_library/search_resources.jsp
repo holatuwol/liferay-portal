@@ -58,7 +58,7 @@ portletURL.setParameter("breadcrumbsFolderId", String.valueOf(breadcrumbsFolderI
 portletURL.setParameter("searchFolderId", String.valueOf(searchFolderId));
 portletURL.setParameter("keywords", keywords);
 
-SearchContainer searchContainer = new SearchContainer(liferayPortletRequest, portletURL, null, null);
+SearchContainer searchContainer = new SearchContainer(liferayPortletRequest, null, null, SearchContainer.DEFAULT_CUR_PARAM, entriesPerPage, portletURL, null, null);
 %>
 
 <aui:input name="repositoryId" type="hidden" value="<%= repositoryId %>" />
