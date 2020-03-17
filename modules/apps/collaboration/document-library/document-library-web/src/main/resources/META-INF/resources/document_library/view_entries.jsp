@@ -55,6 +55,12 @@ portletURL.setParameter("folderId", String.valueOf(folderId));
 
 SearchContainer dlSearchContainer = new SearchContainer(liferayPortletRequest, null, null, "curEntry", SearchContainer.DEFAULT_DELTA, portletURL, null, null);
 
+int maxEntriesPerPage = dlPortletInstanceSettings.getEntriesPerPage();
+
+if (dlSearchContainer.getDelta() > maxEntriesPerPage) {
+	dlSearchContainer.setDelta(maxEntriesPerPage);
+}
+
 EntriesChecker entriesChecker = new EntriesChecker(liferayPortletRequest, liferayPortletResponse);
 
 entriesChecker.setCssClass("entry-selector");
