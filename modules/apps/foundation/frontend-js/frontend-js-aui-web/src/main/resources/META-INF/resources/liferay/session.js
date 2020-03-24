@@ -336,10 +336,20 @@ AUI.add(
 
 								var elapsed = sessionLength;
 
+								var sessionState = instance.get('sessionState');
+
 								if (Lang.toInt(timestamp)) {
 									timeOffset = Math.floor((Date.now() - timestamp) / 1000) * 1000;
 
 									elapsed = timeOffset;
+
+									if (instance._initTimestamp < timestamp) {
+										instance._initTimestamp = timestamp;
+
+										if (sessionState != 'active') {
+											instance.set('sessionState', 'active', SRC_EVENT_OBJ);
+										}
+									}
 								}
 								else {
 									timestamp = 'expired';
@@ -360,7 +370,7 @@ AUI.add(
 										hasExpired = true;
 									}
 
-									var sessionState = instance.get('sessionState');
+									sessionState = instance.get('sessionState');
 
 									if (hasExpired && sessionState != 'expired') {
 										if (extend) {
