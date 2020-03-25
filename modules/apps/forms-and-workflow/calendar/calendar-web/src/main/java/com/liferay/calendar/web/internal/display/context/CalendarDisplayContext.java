@@ -47,7 +47,14 @@ public class CalendarDisplayContext {
 		List<Calendar> otherCalendars = new ArrayList<>();
 
 		for (long calendarId : calendarIds) {
-			Calendar calendar = _calendarService.fetchCalendar(calendarId);
+			Calendar calendar = null;
+
+			try {
+				calendar = _calendarService.fetchCalendar(calendarId);
+			}
+			catch (PortalException pe) {
+				continue;
+			}
 
 			if (calendar == null) {
 				continue;
