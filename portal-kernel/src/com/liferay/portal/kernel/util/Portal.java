@@ -1080,6 +1080,11 @@ public interface Portal {
 		String portletName);
 
 	public String getSiteAdminURL(
+			ThemeDisplay themeDisplay, Group group, String ppid,
+			Map<String, String[]> params)
+		throws PortalException;
+
+	public String getSiteAdminURL(
 			Company company, Group group, String ppid,
 			Map<String, String[]> params)
 		throws PortalException;
