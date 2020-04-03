@@ -375,7 +375,7 @@ AUI.add(
 											expirationMoment = true;
 										}
 									}
-									else if (hasWarned && !hasExpired && !extend) {
+									else if (!extend) {
 										instance.warn();
 
 										warningMoment = true;
