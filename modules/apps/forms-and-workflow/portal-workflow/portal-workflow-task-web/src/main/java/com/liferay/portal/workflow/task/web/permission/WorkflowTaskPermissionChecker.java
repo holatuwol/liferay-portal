@@ -14,9 +14,11 @@
 
 package com.liferay.portal.workflow.task.web.permission;
 
+import com.liferay.portal.kernel.model.ResourceConstants;
 import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.security.permission.PermissionChecker;
+import com.liferay.portal.kernel.service.ResourcePermissionLocalServiceUtil;
 import com.liferay.portal.kernel.util.ArrayUtil;
 import com.liferay.portal.kernel.workflow.WorkflowTask;
 import com.liferay.portal.kernel.workflow.WorkflowTaskAssignee;
@@ -58,6 +60,27 @@ public class WorkflowTaskPermissionChecker {
 		}
 
 		return false;
+	}
+
+	public boolean hasRolePermission(
+		long companyId, long groupId, PermissionChecker permissionChecker,
+		String actionId) {
+
+		try {
+			String name = "com.liferay.dynamic.data.lists.model.DDLRecordSet";
+			String primKey =
+				"com.liferay.dynamic.data.lists.model.DDLRecordSet";
+
+			long[] roleIds = permissionChecker.getRoleIds(
+				permissionChecker.getUserId(), groupId);
+
+			return ResourcePermissionLocalServiceUtil.hasResourcePermission(
+				companyId, name, ResourceConstants.SCOPE_INDIVIDUAL, primKey,
+				roleIds, actionId);
+		}
+		catch (Exception e) {
+			return false;
+		}
 	}
 
 	protected boolean isWorkflowTaskAssignableToRoles(

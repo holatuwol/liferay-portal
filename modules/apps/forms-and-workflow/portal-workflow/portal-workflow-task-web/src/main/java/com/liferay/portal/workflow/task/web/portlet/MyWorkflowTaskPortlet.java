@@ -18,6 +18,8 @@ import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.GetterUtil;
@@ -139,8 +141,14 @@ public class MyWorkflowTaskPortlet extends MVCPortlet {
 		long groupId = GetterUtil.getLong(
 			(String)workflowContext.get(WorkflowConstants.CONTEXT_GROUP_ID));
 
+		PermissionChecker permissionChecker =
+			themeDisplay.getPermissionChecker();
+
 		if (!_workflowTaskPermissionChecker.hasPermission(
-				groupId, workflowTask, themeDisplay.getPermissionChecker())) {
+				groupId, workflowTask, permissionChecker) &&
+			!_workflowTaskPermissionChecker.hasRolePermission(
+				themeDisplay.getCompanyId(), groupId, permissionChecker,
+				ActionKeys.VIEW)) {
 
 			throw new PrincipalException(
 				String.format(
