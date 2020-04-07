@@ -1769,6 +1769,14 @@ public class PortalUtil {
 		return getPortal().getSiteAdminURL(group, ppid, params);
 	}
 
+	public static String getSiteAdminURL(
+			ThemeDisplay themeDisplay, String ppid,
+			Map<String, String[]> params)
+		throws PortalException {
+
+		return getPortal().getSiteAdminURL(themeDisplay, ppid, params);
+	}
+
 	/**
 	 * @deprecated As of 7.0.0, replaced by {@link
 	 *             #getCurrentAndAncestorSiteGroupIds(long)}
