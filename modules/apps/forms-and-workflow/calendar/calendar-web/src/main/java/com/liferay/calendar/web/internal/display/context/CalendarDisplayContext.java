@@ -19,7 +19,10 @@ import com.liferay.calendar.model.CalendarResource;
 import com.liferay.calendar.service.CalendarLocalService;
 import com.liferay.calendar.service.CalendarService;
 import com.liferay.portal.kernel.exception.PortalException;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 
@@ -47,7 +50,17 @@ public class CalendarDisplayContext {
 		List<Calendar> otherCalendars = new ArrayList<>();
 
 		for (long calendarId : calendarIds) {
-			Calendar calendar = _calendarService.fetchCalendar(calendarId);
+			Calendar calendar = null;
+
+			try {
+				calendar = _calendarService.fetchCalendar(calendarId);
+			}
+			catch (PrincipalException pe) {
+				_log.error(
+					"This user does not have VIEW permission for calendar" +
+						calendarId);
+				continue;
+			}
 
 			if (calendar == null) {
 				continue;
@@ -100,6 +113,9 @@ public class CalendarDisplayContext {
 
 		return otherCalendars;
 	}
+
+	private static final Log _log = LogFactoryUtil.getLog(
+		CalendarDisplayContext.class);
 
 	private final CalendarLocalService _calendarLocalService;
 	private final CalendarService _calendarService;
