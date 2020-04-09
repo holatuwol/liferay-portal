@@ -14,6 +14,9 @@
 
 package com.liferay.portal.workflow.task.web.portlet;
 
+import com.liferay.asset.kernel.model.AssetEntry;
+import com.liferay.asset.kernel.model.AssetRenderer;
+import com.liferay.asset.kernel.model.AssetRendererFactory;
 import com.liferay.portal.configuration.metatype.bnd.util.ConfigurableUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCPortlet;
@@ -29,12 +32,15 @@ import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.kernel.workflow.WorkflowConstants;
 import com.liferay.portal.kernel.workflow.WorkflowException;
+import com.liferay.portal.kernel.workflow.WorkflowHandler;
+import com.liferay.portal.kernel.workflow.WorkflowHandlerRegistryUtil;
 import com.liferay.portal.kernel.workflow.WorkflowInstance;
 import com.liferay.portal.kernel.workflow.WorkflowInstanceManagerUtil;
 import com.liferay.portal.kernel.workflow.WorkflowTask;
 import com.liferay.portal.kernel.workflow.WorkflowTaskManagerUtil;
 import com.liferay.portal.workflow.task.web.configuration.WorkflowTaskWebConfiguration;
 import com.liferay.portal.workflow.task.web.permission.WorkflowTaskPermissionChecker;
+import com.liferay.portlet.asset.service.permission.AssetEntryPermission;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -144,11 +150,30 @@ public class MyWorkflowTaskPortlet extends MVCPortlet {
 		PermissionChecker permissionChecker =
 			themeDisplay.getPermissionChecker();
 
+		long classPK = GetterUtil.getLong(
+			(String)workflowContext.get(
+				WorkflowConstants.CONTEXT_ENTRY_CLASS_PK));
+
+		String className = (String)workflowContext.get(
+			WorkflowConstants.CONTEXT_ENTRY_CLASS_NAME);
+
+		WorkflowHandler<?> workflowHandler =
+			WorkflowHandlerRegistryUtil.getWorkflowHandler(className);
+
+		AssetRenderer<?> assetRenderer = workflowHandler.getAssetRenderer(
+			classPK);
+		AssetRendererFactory<?> assetRendererFactory =
+			assetRenderer.getAssetRendererFactory();
+
+		AssetEntry assetEntry = assetRendererFactory.getAssetEntry(
+			workflowHandler.getClassName(), assetRenderer.getClassPK());
+
+		boolean isViewable = AssetEntryPermission.contains(
+			permissionChecker, assetEntry, ActionKeys.VIEW);
+
 		if (!_workflowTaskPermissionChecker.hasPermission(
 				groupId, workflowTask, permissionChecker) &&
-			!_workflowTaskPermissionChecker.hasRolePermission(
-				themeDisplay.getCompanyId(), groupId, permissionChecker,
-				ActionKeys.VIEW)) {
+			!isViewable) {
 
 			throw new PrincipalException(
 				String.format(
