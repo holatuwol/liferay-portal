@@ -4989,8 +4989,8 @@ public class PortalImpl implements Portal {
 
 		sb.append(
 			getPortalURL(
-				themeDisplay.getServerName(), getPortalServerPort(false),
-				false));
+				themeDisplay.getServerName(), themeDisplay.getServerPort(),
+				themeDisplay.isSecure()));
 
 		sb.append(getPathFriendlyURLPrivateGroup());
 
@@ -8552,7 +8552,7 @@ public class PortalImpl implements Portal {
 
 		StringBundler sb = new StringBundler(4);
 
-		boolean https = false;
+		boolean https = secure;
 
 		if (secure ||
 			StringUtil.equalsIgnoreCase(
