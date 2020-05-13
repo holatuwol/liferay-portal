@@ -405,6 +405,44 @@ public class FriendlyURLEntryLocalServiceImpl
 	}
 
 	@Override
+	public FriendlyURLEntry updateClassPK(long friendlyURLEntryId, long classPK)
+		throws PortalException {
+
+		FriendlyURLEntry friendlyURLEntry =
+			friendlyURLEntryPersistence.findByPrimaryKey(friendlyURLEntryId);
+
+		//update FriendlyURLEntryMapping
+		FriendlyURLEntryMapping friendlyURLEntryMapping =
+			friendlyURLEntryMappingPersistence.fetchByC_C(
+				friendlyURLEntry.getClassNameId(),
+				friendlyURLEntry.getClassPK());
+
+		friendlyURLEntryMapping.setClassPK(classPK);
+
+		friendlyURLEntryMappingPersistence.update(friendlyURLEntryMapping);
+
+		////update FriendlyURLEntry
+		friendlyURLEntry.setClassPK(classPK);
+
+		friendlyURLEntry = friendlyURLEntryPersistence.update(friendlyURLEntry);
+
+		//update FriendlyURLEntryLocalizations
+		List<FriendlyURLEntryLocalization> friendlyURLEntryLocalizations =
+			friendlyURLEntryLocalizationPersistence.findByFriendlyURLEntryId(
+				friendlyURLEntryId);
+
+		for (FriendlyURLEntryLocalization friendlyURLEntryLocalization :
+				friendlyURLEntryLocalizations) {
+
+			friendlyURLEntryLocalization.setClassPK(classPK);
+
+			updateFriendlyURLLocalization(friendlyURLEntryLocalization);
+		}
+
+		return friendlyURLEntry;
+	}
+
+	@Override
 	public FriendlyURLEntry updateFriendlyURLEntry(
 			long friendlyURLEntryId, long classNameId, long classPK,
 			String defaultLanguageId, Map<String, String> urlTitleMap)

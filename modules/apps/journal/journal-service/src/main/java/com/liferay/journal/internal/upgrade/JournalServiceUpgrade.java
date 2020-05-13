@@ -25,6 +25,7 @@ import com.liferay.dynamic.data.mapping.service.DDMStorageLinkLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMStructureLocalService;
 import com.liferay.dynamic.data.mapping.service.DDMTemplateLinkLocalService;
 import com.liferay.dynamic.data.mapping.util.DefaultDDMStructureHelper;
+import com.liferay.friendly.url.service.FriendlyURLEntryLocalService;
 import com.liferay.journal.internal.upgrade.util.JournalArticleImageUpgradeHelper;
 import com.liferay.journal.internal.upgrade.v0_0_2.UpgradeClassNames;
 import com.liferay.journal.internal.upgrade.v0_0_3.UpgradeJournalArticleType;
@@ -260,6 +261,10 @@ public class JournalServiceUpgrade implements UpgradeStepRegistrator {
 				JournalArticle.class.getName(),
 				UpgradeDiscussionSubscriptionClassName.DeletionMode.
 					DELETE_OLD));
+		registry.register(
+			"3.2.3", "4.0.0",
+			new com.liferay.journal.internal.upgrade.v4_0_0.
+				UpgradeFriendlyURLClassPK(_friendlyURLEntryLocalService));
 	}
 
 	protected void deleteTempImages() throws Exception {
