@@ -367,9 +367,13 @@ public class JournalArticleImpl extends JournalArticleBaseImpl {
 
 		long classNameId = PortalUtil.getClassNameId(JournalArticle.class);
 
+		JournalArticle lastApprovedJournalArticle =
+			JournalArticleLocalServiceUtil.getLatestArticle(
+				getResourcePrimKey(), WorkflowConstants.STATUS_APPROVED);
+
 		List<FriendlyURLEntry> friendlyURLEntries =
 			FriendlyURLEntryLocalServiceUtil.getFriendlyURLEntries(
-				getGroupId(), classNameId, getResourcePrimKey());
+				getGroupId(), classNameId, lastApprovedJournalArticle.getId());
 
 		if (friendlyURLEntries.isEmpty()) {
 			friendlyURLMap.put(
@@ -381,7 +385,7 @@ public class JournalArticleImpl extends JournalArticleBaseImpl {
 
 		FriendlyURLEntry friendlyURLEntry =
 			FriendlyURLEntryLocalServiceUtil.getMainFriendlyURLEntry(
-				classNameId, getResourcePrimKey());
+				classNameId, lastApprovedJournalArticle.getId());
 
 		List<FriendlyURLEntryLocalization> friendlyURLEntryLocalizations =
 			FriendlyURLEntryLocalServiceUtil.getFriendlyURLEntryLocalizations(

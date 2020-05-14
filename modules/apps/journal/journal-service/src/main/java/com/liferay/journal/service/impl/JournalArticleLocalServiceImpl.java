@@ -425,7 +425,7 @@ public class JournalArticleLocalServiceImpl
 		friendlyURLMap = _checkFriendlyURLMap(locale, friendlyURLMap, titleMap);
 
 		Map<String, String> urlTitleMap = _getURLTitleMap(
-			groupId, resourcePrimKey, friendlyURLMap, titleMap);
+			groupId, id, friendlyURLMap, titleMap);
 
 		String urlTitle = urlTitleMap.get(LocaleUtil.toLanguageId(locale));
 
@@ -1360,13 +1360,11 @@ public class JournalArticleLocalServiceImpl
 
 		List<FriendlyURLEntry> friendlyURLEntries =
 			friendlyURLEntryLocalService.getFriendlyURLEntries(
-				article.getGroupId(), classNameId,
-				article.getResourcePrimKey());
+				article.getGroupId(), classNameId, article.getId());
 
 		if (!friendlyURLEntries.isEmpty()) {
 			friendlyURLEntryLocalService.deleteFriendlyURLEntry(
-				article.getGroupId(), JournalArticle.class,
-				article.getResourcePrimKey());
+				article.getGroupId(), JournalArticle.class, article.getId());
 		}
 
 		// Article
@@ -1963,8 +1961,8 @@ public class JournalArticleLocalServiceImpl
 				groupId, JournalArticle.class, urlTitle);
 
 		if (friendlyURLEntry != null) {
-			JournalArticle article = fetchLatestArticle(
-				friendlyURLEntry.getClassPK(), status);
+			JournalArticle article = fetchArticle(
+				friendlyURLEntry.getClassPK());
 
 			if ((article != null) && (article.getGroupId() != groupId)) {
 				article = fetchLatestArticle(
@@ -5595,7 +5593,7 @@ public class JournalArticleLocalServiceImpl
 		Locale locale = getArticleDefaultLocale(content);
 
 		Map<String, String> urlTitleMap = _getURLTitleMap(
-			groupId, article.getResourcePrimKey(), friendlyURLMap, titleMap);
+			groupId, article.getId(), friendlyURLMap, titleMap);
 
 		String urlTitle = urlTitleMap.get(LocaleUtil.toLanguageId(locale));
 
@@ -6480,6 +6478,8 @@ public class JournalArticleLocalServiceImpl
 			if ((expirationDate != null) && expirationDate.before(now)) {
 				article.setExpirationDate(null);
 			}
+
+			_deletePreviousFriendlyURL(article);
 		}
 
 		if (status == WorkflowConstants.STATUS_EXPIRED) {
@@ -8538,23 +8538,25 @@ public class JournalArticleLocalServiceImpl
 			friendlyURLEntryLocalService.getFriendlyURLEntries(
 				article.getGroupId(),
 				classNameLocalService.getClassNameId(JournalArticle.class),
-				article.getResourcePrimKey());
+				article.getId());
 
-		FriendlyURLEntry newFriendlyURLEntry =
+		if (friendlyURLEntries.isEmpty()) {
 			friendlyURLEntryLocalService.addFriendlyURLEntry(
 				article.getGroupId(),
 				classNameLocalService.getClassNameId(JournalArticle.class),
-				article.getResourcePrimKey(), urlTitleMap, serviceContext);
+				article.getId(), urlTitleMap, serviceContext);
+
+			return;
+		}
 
 		for (FriendlyURLEntry friendlyURLEntry : friendlyURLEntries) {
-			if (newFriendlyURLEntry.getFriendlyURLEntryId() ==
-					friendlyURLEntry.getFriendlyURLEntryId()) {
-
-				continue;
+			if (friendlyURLEntry.getClassPK() == article.getId()) {
+				friendlyURLEntryLocalService.updateFriendlyURLEntry(
+					friendlyURLEntry.getFriendlyURLEntryId(),
+					classNameLocalService.getClassNameId(JournalArticle.class),
+					article.getId(), article.getDefaultLanguageId(),
+					urlTitleMap);
 			}
-
-			friendlyURLEntryLocalService.deleteFriendlyURLEntry(
-				friendlyURLEntry);
 		}
 	}
 
@@ -8817,6 +8819,28 @@ public class JournalArticleLocalServiceImpl
 		}
 	}
 
+	private void _deletePreviousFriendlyURL(JournalArticle article) {
+		try {
+			JournalArticle lastApprovedJournalArticle = getLatestArticle(
+				article.getResourcePrimKey(),
+				WorkflowConstants.STATUS_APPROVED);
+
+			List<FriendlyURLEntry> friendlyURLEntries =
+				friendlyURLEntryLocalService.getFriendlyURLEntries(
+					article.getGroupId(),
+					classNameLocalService.getClassNameId(JournalArticle.class),
+					lastApprovedJournalArticle.getId());
+
+			for (FriendlyURLEntry friendlyURLEntry : friendlyURLEntries) {
+				friendlyURLEntryLocalService.deleteFriendlyURLEntry(
+					friendlyURLEntry);
+			}
+		}
+		catch (PortalException portalException) {
+			_log.error(portalException, portalException);
+		}
+	}
+
 	private Map<String, String> _getFriendlyURLMap(
 			JournalArticle article, ThemeDisplay themeDisplay)
 		throws PortalException {
@@ -8900,7 +8924,7 @@ public class JournalArticleLocalServiceImpl
 	}
 
 	private Map<String, String> _getURLTitleMap(
-		long groupId, long resourcePrimKey, Map<Locale, String> friendlyURLMap,
+		long groupId, long id, Map<Locale, String> friendlyURLMap,
 		Map<Locale, String> titleMap) {
 
 		Map<String, String> urlTitleMap = new HashMap<>();
@@ -8918,8 +8942,8 @@ public class JournalArticleLocalServiceImpl
 
 			String urlTitle = friendlyURLEntryLocalService.getUniqueUrlTitle(
 				groupId,
-				classNameLocalService.getClassNameId(JournalArticle.class),
-				resourcePrimKey, friendlyURL);
+				classNameLocalService.getClassNameId(JournalArticle.class), id,
+				friendlyURL);
 
 			urlTitleMap.put(LocaleUtil.toLanguageId(entry.getKey()), urlTitle);
 		}
