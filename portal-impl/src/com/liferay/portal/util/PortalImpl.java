@@ -8380,10 +8380,7 @@ public class PortalImpl implements Portal {
 						);
 					}
 
-					if (_containsHostname(virtualHostnames, portalDomain) ||
-						PropsValues.VIRTUAL_HOSTS_DEFAULT_SITE_NAME.equals(
-							group.getGroupKey())) {
-
+					if (_isSafeToStripOffFriendlyURL(themeDisplay, group)) {
 						String path = StringPool.BLANK;
 
 						if (themeDisplay.isWidget()) {
@@ -8697,6 +8694,39 @@ public class PortalImpl implements Portal {
 		}
 
 		return group;
+	}
+
+	private boolean _isSafeToStripOffFriendlyURL(
+		ThemeDisplay themeDisplay, Group group) {
+
+		String portalDomain = themeDisplay.getPortalDomain();
+		LayoutSet layoutSet = themeDisplay.getLayoutSet();
+
+		TreeMap<String, String> virtualHostnames = getVirtualHostnames(
+			layoutSet);
+		Company company = themeDisplay.getCompany();
+
+		String portalInstanceVirtualHostName = company.getVirtualHostname();
+
+		boolean isPortalInstanceVirtualHost = StringUtil.equalsIgnoreCase(
+			themeDisplay.getServerName(), portalInstanceVirtualHostName);
+
+		if (isPortalInstanceVirtualHost) {
+			if (virtualHostnames.containsKey(portalInstanceVirtualHostName)) {
+				return true;
+			}
+
+			return false;
+		}
+
+		if (_containsHostname(virtualHostnames, portalDomain) ||
+			PropsValues.VIRTUAL_HOSTS_DEFAULT_SITE_NAME.equals(
+				group.getGroupKey())) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private static final Log _logWebServerServlet = LogFactoryUtil.getLog(
