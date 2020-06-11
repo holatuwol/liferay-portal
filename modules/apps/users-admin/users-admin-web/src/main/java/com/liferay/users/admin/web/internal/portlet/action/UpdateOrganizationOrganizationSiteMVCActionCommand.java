@@ -14,27 +14,38 @@
 
 package com.liferay.users.admin.web.internal.portlet.action;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.NoSuchOrganizationException;
+import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.EmailAddress;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.model.Layout;
+import com.liferay.portal.kernel.model.LayoutConstants;
+import com.liferay.portal.kernel.model.LayoutTypePortlet;
 import com.liferay.portal.kernel.model.OrgLabor;
 import com.liferay.portal.kernel.model.Organization;
 import com.liferay.portal.kernel.model.Phone;
+import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.Website;
 import com.liferay.portal.kernel.portlet.bridges.mvc.BaseMVCActionCommand;
 import com.liferay.portal.kernel.portlet.bridges.mvc.MVCActionCommand;
 import com.liferay.portal.kernel.security.auth.PrincipalException;
 import com.liferay.portal.kernel.security.permission.ActionKeys;
 import com.liferay.portal.kernel.service.EmailAddressService;
+import com.liferay.portal.kernel.service.LayoutLocalService;
 import com.liferay.portal.kernel.service.OrgLaborService;
 import com.liferay.portal.kernel.service.OrganizationService;
 import com.liferay.portal.kernel.service.PhoneService;
+import com.liferay.portal.kernel.service.ServiceContext;
+import com.liferay.portal.kernel.service.UserLocalServiceUtil;
 import com.liferay.portal.kernel.service.WebsiteService;
 import com.liferay.portal.kernel.service.permission.GroupPermissionUtil;
 import com.liferay.portal.kernel.servlet.SessionErrors;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
+import com.liferay.portal.kernel.util.FriendlyURLNormalizerUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.WebKeys;
+import com.liferay.portal.util.PropsValues;
 import com.liferay.sites.kernel.util.Sites;
 import com.liferay.users.admin.constants.UsersAdminPortletKeys;
 
@@ -137,11 +148,52 @@ public class UpdateOrganizationOrganizationSiteMVCActionCommand
 				privateLayoutSetPrototypeId,
 				publicLayoutSetPrototypeLinkEnabled,
 				privateLayoutSetPrototypeLinkEnabled);
+
+			_addManageLayout(organizationGroup, true);
 		}
+	}
+
+	private void _addManageLayout(Group group, boolean privateLayout)
+			throws PortalException {
+		long groupId = group.getGroupId();
+
+		String friendlyURL = FriendlyURLNormalizerUtil.normalize(
+			PropsValues.CONTROL_PANEL_LAYOUT_FRIENDLY_URL);
+
+		Layout layout = _layoutLocalService.fetchLayoutByFriendlyURL(groupId, privateLayout,
+			friendlyURL);
+
+		if(layout != null ) {
+			return;
+		}
+
+		User user = UserLocalServiceUtil.getDefaultUser(
+			group.getCompanyId());
+
+		long userId = user.getUserId();
+
+		ServiceContext serviceContext = new ServiceContext();
+
+		layout = _layoutLocalService.addLayout(
+			userId, groupId, privateLayout,
+			LayoutConstants.DEFAULT_PARENT_LAYOUT_ID,
+			PropsValues.CONTROL_PANEL_LAYOUT_NAME, StringPool.BLANK,
+			StringPool.BLANK, LayoutConstants.TYPE_PORTLET, false, true,
+			friendlyURL, serviceContext);
+
+		LayoutTypePortlet layoutTypePortlet =
+			(LayoutTypePortlet)layout.getLayoutType();
+
+		layoutTypePortlet.setLayoutTemplateId(
+			userId, "1_column_dynamic", false);
+		_layoutLocalService.updateLayout(layout);
 	}
 
 	@Reference
 	private EmailAddressService _emailAddressService;
+
+	@Reference
+	private LayoutLocalService _layoutLocalService;
 
 	@Reference
 	private OrganizationService _organizationService;

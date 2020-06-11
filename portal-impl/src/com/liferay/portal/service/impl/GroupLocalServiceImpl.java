@@ -854,6 +854,15 @@ public class GroupLocalServiceImpl extends GroupLocalServiceBaseImpl {
 			BackgroundTaskManagerUtil.deleteGroupBackgroundTasks(
 				group.getGroupId());
 
+			if (group.isOrganization()) {
+				String friendlyURL = FriendlyURLNormalizerUtil.normalize(
+					PropsValues.CONTROL_PANEL_LAYOUT_FRIENDLY_URL);
+
+				Layout layout = layoutLocalService.fetchLayoutByFriendlyURL(group.getGroupId(),
+					true, friendlyURL);
+				layoutLocalService.deleteLayout(layout);
+			}
+
 			// Layout set branches
 
 			layoutSetBranchLocalService.deleteLayoutSetBranches(
