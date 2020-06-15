@@ -105,6 +105,7 @@ import java.util.stream.Stream;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 
+import jdk.nashorn.internal.objects.annotations.Getter;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -174,6 +175,14 @@ public class JournalArticleIndexer extends BaseIndexer<JournalArticle> {
 		if ((classNameId != null) && (classNameId != 0)) {
 			contextBooleanFilter.addRequiredTerm(
 				Field.CLASS_NAME_ID, classNameId.toString());
+		}
+
+		long userId = GetterUtil.getLong(
+			searchContext.getAttribute(Field.USER_ID));
+
+		if (userId > 0) {
+			contextBooleanFilter.addRequiredTerm(
+				Field.USER_ID, String.valueOf(userId));
 		}
 
 		addStatus(contextBooleanFilter, searchContext);
@@ -452,6 +461,7 @@ public class JournalArticleIndexer extends BaseIndexer<JournalArticle> {
 		}
 
 		document.addKeyword(Field.FOLDER_ID, journalArticle.getFolderId());
+		document.addKeyword(Field.USER_ID, journalArticle.getUserId());
 
 		String articleId = journalArticle.getArticleId();
 
