@@ -18,8 +18,11 @@ import com.liferay.calendar.model.Calendar;
 import com.liferay.calendar.model.CalendarResource;
 import com.liferay.calendar.service.CalendarLocalService;
 import com.liferay.calendar.service.CalendarService;
+import com.liferay.calendar.service.permission.CalendarPermission;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
+import com.liferay.portal.kernel.security.permission.ActionKeys;
+import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 
@@ -46,7 +49,16 @@ public class CalendarDisplayContext {
 
 		List<Calendar> otherCalendars = new ArrayList<>();
 
+		PermissionChecker permissionChecker =
+			_themeDisplay.getPermissionChecker();
+
 		for (long calendarId : calendarIds) {
+			if (!CalendarPermission.contains(
+					permissionChecker, calendarId, ActionKeys.VIEW)) {
+
+				continue;
+			}
+
 			Calendar calendar = _calendarService.fetchCalendar(calendarId);
 
 			if (calendar == null) {
