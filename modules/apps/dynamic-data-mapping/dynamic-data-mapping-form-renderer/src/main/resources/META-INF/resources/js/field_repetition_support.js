@@ -251,6 +251,7 @@ AUI.add(
 
 					field.set('repeatedIndex', repeatedSiblings.indexOf(field));
 					field.set('repetitions', repeatedSiblings);
+					field.set('name', instance.getQualifiedName());
 				}
 			},
 

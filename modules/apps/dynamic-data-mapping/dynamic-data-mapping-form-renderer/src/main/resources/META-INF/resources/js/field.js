@@ -203,7 +203,7 @@ AUI.add(
 					getInputSelector: function() {
 						var instance = this;
 
-						var qualifiedName = instance.getQualifiedName().replace(/\$/ig, '\\$');
+						var qualifiedName = instance.getQualifiedName().replace(/\$/ig, '\$');
 
 						return '[name="' + qualifiedName + '"]';
 					},
