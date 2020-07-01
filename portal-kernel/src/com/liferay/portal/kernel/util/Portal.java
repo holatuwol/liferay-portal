@@ -1093,6 +1093,11 @@ public interface Portal {
 			Group group, String ppid, Map<String, String[]> params)
 		throws PortalException;
 
+	public String getSiteAdminURL(
+			String portalURL, Group group, String ppid,
+			Map<String, String[]> params)
+		throws PortalException;
+
 	/**
 	 * @deprecated As of 7.0.0, replaced by {@link
 	 *             #getCurrentAndAncestorSiteGroupIds(long)}
