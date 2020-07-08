@@ -24,6 +24,10 @@ import com.liferay.portal.kernel.workflow.WorkflowTask;
 import com.liferay.portal.kernel.workflow.WorkflowTaskManagerUtil;
 import com.liferay.portal.workflow.task.web.permission.WorkflowTaskPermissionChecker;
 
+import java.io.Serializable;
+
+import java.util.Map;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 
@@ -50,9 +54,14 @@ public class AssignTaskMVCActionCommand
 		WorkflowTask workflowTask = WorkflowTaskManagerUtil.getWorkflowTask(
 			themeDisplay.getCompanyId(), workflowTaskId);
 
-		if (!_workflowTaskPermissionChecker.hasPermission(
-				themeDisplay.getScopeGroupId(), workflowTask,
-				themeDisplay.getPermissionChecker())) {
+		final Map<String, Serializable> optionalAttributes =
+			workflowTask.getOptionalAttributes();
+
+		final long groupId = Long.parseLong(
+			(String)optionalAttributes.get("groupId"));
+
+		if (!_workflowTaskPermissionChecker.hasAssignPermission(
+				groupId, workflowTask, themeDisplay.getPermissionChecker())) {
 
 			throw new PrincipalException(
 				String.format(

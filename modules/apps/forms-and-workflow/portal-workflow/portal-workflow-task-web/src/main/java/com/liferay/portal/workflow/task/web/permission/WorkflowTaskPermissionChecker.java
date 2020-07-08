@@ -26,38 +26,18 @@ import com.liferay.portal.kernel.workflow.WorkflowTaskAssignee;
  */
 public class WorkflowTaskPermissionChecker {
 
-	public boolean hasPermission(
+	public boolean hasAssignPermission(
 		long groupId, WorkflowTask workflowTask,
 		PermissionChecker permissionChecker) {
 
-		if (permissionChecker.isOmniadmin() ||
-			permissionChecker.isCompanyAdmin()) {
+		return _hasPermission(groupId, workflowTask, permissionChecker, true);
+	}
 
-			return true;
-		}
+	public boolean hasViewPermission(
+		long groupId, WorkflowTask workflowTask,
+		PermissionChecker permissionChecker) {
 
-		if (!permissionChecker.isContentReviewer(
-				permissionChecker.getCompanyId(), groupId)) {
-
-			return false;
-		}
-
-		long[] roleIds = permissionChecker.getRoleIds(
-			permissionChecker.getUserId(), groupId);
-
-		for (WorkflowTaskAssignee workflowTaskAssignee :
-				workflowTask.getWorkflowTaskAssignees()) {
-
-			if (isWorkflowTaskAssignableToRoles(
-					workflowTaskAssignee, roleIds) ||
-				isWorkflowTaskAssignableToUser(
-					workflowTaskAssignee, permissionChecker.getUserId())) {
-
-				return true;
-			}
-		}
-
-		return false;
+		return _hasPermission(groupId, workflowTask, permissionChecker, false);
 	}
 
 	protected boolean isWorkflowTaskAssignableToRoles(
@@ -89,6 +69,41 @@ public class WorkflowTaskPermissionChecker {
 
 		if (workflowTaskAssignee.getAssigneeClassPK() == userId) {
 			return true;
+		}
+
+		return false;
+	}
+
+	private boolean _hasPermission(
+		long groupId, WorkflowTask workflowTask,
+		PermissionChecker permissionChecker, boolean checkingAssignPermission) {
+
+		if (permissionChecker.isOmniadmin() ||
+			permissionChecker.isCompanyAdmin()) {
+
+			return true;
+		}
+
+		if (checkingAssignPermission &&
+			!permissionChecker.isContentReviewer(
+				permissionChecker.getCompanyId(), groupId)) {
+
+			return false;
+		}
+
+		long[] roleIds = permissionChecker.getRoleIds(
+			permissionChecker.getUserId(), groupId);
+
+		for (WorkflowTaskAssignee workflowTaskAssignee :
+				workflowTask.getWorkflowTaskAssignees()) {
+
+			if (isWorkflowTaskAssignableToRoles(
+					workflowTaskAssignee, roleIds) ||
+				isWorkflowTaskAssignableToUser(
+					workflowTaskAssignee, permissionChecker.getUserId())) {
+
+				return true;
+			}
 		}
 
 		return false;

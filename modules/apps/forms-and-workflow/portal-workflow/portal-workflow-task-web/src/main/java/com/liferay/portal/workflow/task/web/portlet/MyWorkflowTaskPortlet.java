@@ -31,6 +31,7 @@ import com.liferay.portal.workflow.task.web.configuration.WorkflowTaskWebConfigu
 import com.liferay.portal.workflow.task.web.permission.WorkflowTaskPermissionChecker;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import java.util.Map;
 
@@ -123,9 +124,14 @@ public class MyWorkflowTaskPortlet extends MVCPortlet {
 			WorkflowTask workflowTask, ThemeDisplay themeDisplay)
 		throws PortalException {
 
-		if (!_workflowTaskPermissionChecker.hasPermission(
-				themeDisplay.getScopeGroupId(), workflowTask,
-				themeDisplay.getPermissionChecker())) {
+		final Map<String, Serializable> optionalAttributes =
+			workflowTask.getOptionalAttributes();
+
+		final long groupId = Long.parseLong(
+			(String)optionalAttributes.get("groupId"));
+
+		if (!_workflowTaskPermissionChecker.hasViewPermission(
+				groupId, workflowTask, themeDisplay.getPermissionChecker())) {
 
 			throw new PrincipalException(
 				String.format(
