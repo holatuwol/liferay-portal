@@ -2129,7 +2129,7 @@
 			</library>
 			<library>
 				<file-name>com.liferay.petra.json.web.service.client.jar!commons-codec.jar</file-name>
-				<version>1.7</version>
+				<version>1.13</version>
 				<project-name>Commons Codec</project-name>
 				<project-url>http://commons.apache.org/codec/</project-url>
 				<licenses>
@@ -3614,7 +3614,7 @@
 			</library>
 			<library>
 				<file-name>com.liferay.portal.store.s3.jar!commons-codec.jar</file-name>
-				<version>1.6</version>
+				<version>1.13</version>
 				<project-name>Commons Codec</project-name>
 				<project-url>http://commons.apache.org/codec/</project-url>
 				<licenses>
@@ -4034,7 +4034,7 @@
 			</library>
 			<library>
 				<file-name>com.liferay.portal.vulcan.impl.jar!commons-codec.jar</file-name>
-				<version>1.10</version>
+				<version>1.13</version>
 				<project-name>Apache Commons Codec</project-name>
 				<project-url>http://commons.apache.org/proper/commons-codec/</project-url>
 				<licenses>
@@ -4563,7 +4563,7 @@
 			</library>
 			<library>
 				<file-name>com.liferay.sync.security.jar!commons-codec.jar</file-name>
-				<version>1.4</version>
+				<version>1.13</version>
 				<project-name>Commons Codec</project-name>
 				<project-url>http://commons.apache.org/codec/</project-url>
 				<licenses>
@@ -6165,7 +6165,7 @@
 			</library>
 			<library>
 				<file-name>lib/portal/commons-codec.jar</file-name>
-				<version>1.9</version>
+				<version>1.13</version>
 				<project-name>Commons Codec</project-name>
 				<project-url>http://commons.apache.org/codec</project-url>
 				<licenses>
