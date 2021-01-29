@@ -99,6 +99,7 @@ public class StagedLayoutSetStagedModelDataHandler
 		StagedLayoutSet.class.getName()
 	};
 
+
 	@Override
 	public String[] getClassNames() {
 		return CLASS_NAMES;
