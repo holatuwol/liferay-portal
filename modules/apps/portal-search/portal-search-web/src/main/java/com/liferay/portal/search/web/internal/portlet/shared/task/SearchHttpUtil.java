@@ -20,6 +20,9 @@ import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.util.Http;
 import com.liferay.portal.kernel.util.JavaConstants;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.PropsKeys;
+import com.liferay.portal.kernel.util.PropsUtil;
+import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.util.Validator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,7 +53,8 @@ public class SearchHttpUtil {
 				JavaConstants.JAVAX_SERVLET_FORWARD_QUERY_STRING);
 		}
 		else {
-			requestURL = String.valueOf(httpServletRequest.getRequestURL());
+			requestURL = _getAbsolutePath(
+				String.valueOf(httpServletRequest.getRequestURL()));
 
 			queryString = httpServletRequest.getQueryString();
 		}
@@ -101,6 +105,25 @@ public class SearchHttpUtil {
 	@Reference(unbind = "-")
 	protected void setPortal(Portal portal) {
 		_portal = portal;
+	}
+
+	private static String _getAbsolutePath(String url) {
+		if (_isHttpsEnabled() && !StringUtil.startsWith(url, "https")) {
+			return StringUtil.replaceFirst(url, "http", "https");
+		}
+
+		return url;
+	}
+
+	private static boolean _isHttpsEnabled() {
+		if (Http.HTTPS.equals(PropsUtil.get(PropsKeys.WEB_SERVER_PROTOCOL)) ||
+			Http.HTTPS.equals(
+				PropsUtil.get(PropsKeys.PORTAL_INSTANCE_PROTOCOL))) {
+
+			return true;
+		}
+
+		return false;
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(SearchHttpUtil.class);
