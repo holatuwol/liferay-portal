@@ -145,7 +145,7 @@ public class EmailNotificationSender
 			}
 		}
 
-		mailMessage.setBulkAddresses(
+		mailMessage.setTo(
 			internetAddresses.toArray(new InternetAddress[0]));
 
 		_mailService.sendEmail(mailMessage);
