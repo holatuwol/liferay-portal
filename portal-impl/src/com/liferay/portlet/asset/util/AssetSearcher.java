@@ -164,7 +164,9 @@ public class AssetSearcher extends BaseSearcher {
 				keyword = StringUtil.quote(keyword, CharPool.QUOTE);
 			}
 
-			StringQuery stringQuery = new StringQuery(keyword);
+			String escapedKeyword = keyword.replace("/", "\\/");
+
+			StringQuery stringQuery = new StringQuery(escapedKeyword);
 
 			keywordsQuery.add(stringQuery, BooleanClauseOccur.MUST);
 		}
