@@ -386,7 +386,7 @@ public class ComboServlet extends HttpServlet {
 
 		Portlet portlet = PortletLocalServiceUtil.getPortletById(portletId);
 
-		if (portlet.isUndeployedPortlet()) {
+		if ((portlet == null) ||  portlet.isUndeployedPortlet()) {
 			return null;
 		}
 
@@ -396,7 +396,8 @@ public class ComboServlet extends HttpServlet {
 
 		String resourcePath = getResourcePath(modulePath);
 
-		if (!PortalUtil.isValidResourceId(resourcePath)) {
+		if (!StringUtil.startsWith(resourcePath, CharPool.SLASH) ||
+				!PortalUtil.isValidResourceId(resourcePath)) {
 			if (_log.isWarnEnabled()) {
 				_log.warn(
 					"Invalid resource " + request.getRequestURL() + "?" +
