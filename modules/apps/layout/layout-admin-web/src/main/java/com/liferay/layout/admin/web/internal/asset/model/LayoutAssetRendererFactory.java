@@ -63,15 +63,19 @@ public class LayoutAssetRendererFactory
 
 		Layout layout = _layoutLocalService.getLayout(classPK);
 
-		User user = _userLocalService.getUserById(layout.getUserId());
-
 		AssetEntry assetEntry = _assetEntryLocalService.createAssetEntry(
 			classPK);
 
 		assetEntry.setGroupId(layout.getGroupId());
-		assetEntry.setCompanyId(user.getCompanyId());
-		assetEntry.setUserId(user.getUserId());
-		assetEntry.setUserName(user.getFullName());
+
+		User user = _userLocalService.fetchUser(layout.getUserId());
+
+		if (user != null) {
+			assetEntry.setCompanyId(user.getCompanyId());
+			assetEntry.setUserId(user.getUserId());
+			assetEntry.setUserName(user.getFullName());
+		}
+
 		assetEntry.setCreateDate(layout.getCreateDate());
 		assetEntry.setClassNameId(
 			_portal.getClassNameId(Layout.class.getName()));
@@ -85,8 +89,14 @@ public class LayoutAssetRendererFactory
 	public AssetRenderer<Layout> getAssetRenderer(long plid, int type)
 		throws PortalException {
 
+		Layout layout = _layoutLocalService.fetchLayout(plid);
+
+		if (layout == null) {
+			return null;
+		}
+
 		LayoutAssetRenderer layoutAssetRenderer = new LayoutAssetRenderer(
-			_layoutLocalService.getLayout(plid));
+			layout);
 
 		layoutAssetRenderer.setAssetRendererType(type);
 		layoutAssetRenderer.setServletContext(_servletContext);
