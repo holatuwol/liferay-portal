@@ -180,7 +180,9 @@ import com.liferay.portal.kernel.workflow.WorkflowThreadLocal;
 import com.liferay.portal.model.impl.LayoutImpl;
 import com.liferay.portal.model.impl.UserCacheModel;
 import com.liferay.portal.model.impl.UserImpl;
+import com.liferay.portal.module.util.BundleUtil;
 import com.liferay.portal.security.auth.AuthPipeline;
+import com.liferay.portal.security.auth.AuthVerifierPipeline;
 import com.liferay.portal.security.auth.EmailAddressGeneratorFactory;
 import com.liferay.portal.security.auth.EmailAddressValidatorFactory;
 import com.liferay.portal.security.auth.FullNameValidatorFactory;
@@ -5688,17 +5690,10 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 
 			String digest = user.getDigest();
 
-			if (skipLiferayCheck ||
-				!PropsValues.AUTH_PIPELINE_ENABLE_LIFERAY_CHECK ||
-				Validator.isNull(digest)) {
+			if (Validator.isNull(digest)) {
+				user.setDigest(user.getDigest(password));
 
-				String newDigest = user.getDigest(password);
-
-				if (!newDigest.equals(digest)) {
-					user.setDigest(newDigest);
-
-					user = userPersistence.update(user);
-				}
+				user = userPersistence.update(user);
 			}
 		}
 
