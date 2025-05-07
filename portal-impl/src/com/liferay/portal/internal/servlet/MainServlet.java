@@ -149,7 +149,7 @@ public class MainServlet extends HttpServlet {
 		List<Portlet> portlets = PortletLocalServiceUtil.getPortlets();
 
 		if (_log.isDebugEnabled()) {
-			_log.debug("Destroy portlets");
+			_log.debug("Destroy " + portlets.size() + " portlets because we are destroying MainServlet");
 		}
 
 		try {
