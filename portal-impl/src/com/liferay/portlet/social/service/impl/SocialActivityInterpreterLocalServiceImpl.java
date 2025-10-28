@@ -181,7 +181,7 @@ public class SocialActivityInterpreterLocalServiceImpl
 			}
 		}
 		catch (Exception exception) {
-			_log.error(exception, exception);
+			_log.error(exception);
 		}
 
 		if (activity.getMirrorActivityId() > 0) {
